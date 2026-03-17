@@ -1,6 +1,7 @@
 import { AppShell } from '../../shared/layout/AppShell'
 import { useAppState } from '../../app/state/use-app-state'
 import { buildAnalyticsReport } from '../../core/domain/analytics'
+import { Link } from 'react-router-dom'
 
 const rangeOptions = [7, 14, 30]
 
@@ -115,6 +116,14 @@ export function AnalyticsPage() {
               Mantive a regra do legado: e preciso ter pelo menos 3 dias unicos de check-in
               para considerar o painel mais confiavel.
             </p>
+            <div className="toolbar">
+              <Link className="button button-secondary" to="/app">
+                Voltar para home
+              </Link>
+              <Link className="button button-primary" to="/check-in">
+                Fazer check-in
+              </Link>
+            </div>
           </article>
         ) : null}
 

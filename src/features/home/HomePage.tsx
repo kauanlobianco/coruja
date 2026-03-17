@@ -19,6 +19,7 @@ function formatPtDate(value: string | null) {
 function getPrimaryAction(state: ReturnType<typeof useAppState>['state'], now: Date) {
   if (!hasCheckInToday(state.checkIns, now)) {
     return {
+      key: 'check-in',
       label: 'Fazer check-in de hoje',
       description: 'Seu check-in diario ainda esta pendente e deve abrir a rotina principal.',
       path: appRoutes.checkIn,
@@ -28,6 +29,7 @@ function getPrimaryAction(state: ReturnType<typeof useAppState>['state'], now: D
   const lastCheckIn = state.checkIns.at(-1)
   if (lastCheckIn && lastCheckIn.craving >= 7) {
     return {
+      key: 'sos',
       label: 'Ir para Panico agora',
       description: `Sua ultima fissura foi ${lastCheckIn.craving}/10. Vale reforcar a protecao antes que ela cresca.`,
       path: appRoutes.sos,
@@ -36,6 +38,7 @@ function getPrimaryAction(state: ReturnType<typeof useAppState>['state'], now: D
 
   if (!state.blocker.isEnabled) {
     return {
+      key: 'blocker',
       label: 'Ativar bloqueador',
       description: 'A camada de protecao ainda esta desligada para este dispositivo.',
       path: appRoutes.blocker,
@@ -43,6 +46,7 @@ function getPrimaryAction(state: ReturnType<typeof useAppState>['state'], now: D
   }
 
   return {
+    key: 'journal',
     label: 'Escrever no journal',
     description: 'O basico do dia esta coberto. Registre contexto para consolidar a rotina.',
     path: appRoutes.journal,
@@ -81,6 +85,142 @@ export function HomePage() {
     ? Math.min(100, Math.round((state.streak.current / state.profile.goalDays) * 100))
     : 0
   const todaySummary = useMemo(() => getTodaySummary(state, demoNow), [demoNow, state])
+  const orderedCards = useMemo(() => {
+    const cards = [
+      {
+        key: 'check-in',
+        element: (
+          <article
+            key="check-in"
+            className="info-card home-list-card"
+            onClick={() => navigate(appRoutes.checkIn)}
+          >
+            <div className="home-list-head">
+              <div>
+                <span className="section-label">Check-in</span>
+                <h2>Check-in do dia</h2>
+              </div>
+              <div className="home-card-status">
+                {primaryAction.key === 'check-in' ? <span className="status-pill status-next">Recomendado</span> : null}
+                <span className={hasCheckInDoneToday ? 'status-pill status-ready' : 'status-pill status-next'}>
+                  {hasCheckInDoneToday ? 'Concluido' : 'Pendente'}
+                </span>
+              </div>
+            </div>
+            {lastCheckIn ? (
+              <div className="home-item-body">
+                <p>Ultimo registro em {formatPtDate(lastCheckIn.createdAt)}</p>
+                <p>
+                  Fissura {lastCheckIn.craving}/10, estado {lastCheckIn.mentalState} e{' '}
+                  {lastCheckIn.triggers.length} gatilho(s) mapeado(s).
+                </p>
+              </div>
+            ) : (
+              <p>Sem registro hoje. Esta e a primeira acao importante da sua rotina.</p>
+            )}
+            {primaryAction.key === 'check-in' ? <p>{todaySummary}</p> : null}
+            <span className="text-link">Abrir check-in</span>
+          </article>
+        ),
+      },
+      {
+        key: 'journal',
+        element: (
+          <article
+            key="journal"
+            className="info-card home-list-card"
+            onClick={() => navigate(appRoutes.journal)}
+          >
+            <div className="home-list-head">
+              <div>
+                <span className="section-label">Journal</span>
+                <h2>Reflexao e contexto</h2>
+              </div>
+              <div className="home-card-status">
+                {primaryAction.key === 'journal' ? <span className="status-pill status-next">Recomendado</span> : null}
+                <span className="status-pill">{state.journalEntries.length} entrada(s)</span>
+              </div>
+            </div>
+            {lastJournalEntry ? (
+              <div className="home-item-body">
+                <p>Ultima entrada em {formatPtDate(lastJournalEntry.createdAt)}</p>
+                <p>{lastJournalEntry.title}</p>
+              </div>
+            ) : (
+              <p>Escreva para clarear o momento e guardar aprendizados da jornada.</p>
+            )}
+            {primaryAction.key === 'journal' ? <p>{todaySummary}</p> : null}
+            <span className="text-link">Abrir journal</span>
+          </article>
+        ),
+      },
+      {
+        key: 'blocker',
+        element: (
+          <article
+            key="blocker"
+            className="info-card home-list-card"
+            onClick={() => navigate(appRoutes.blocker)}
+          >
+            <div className="home-list-head">
+              <div>
+                <span className="section-label">Bloqueador</span>
+                <h2>Protecao de sites</h2>
+              </div>
+              <div className="home-card-status">
+                {primaryAction.key === 'blocker' ? <span className="status-pill status-next">Recomendado</span> : null}
+                <span
+                  className={
+                    state.blocker.isEnabled ? 'status-pill status-ready' : 'status-pill status-later'
+                  }
+                >
+                  {state.blocker.isEnabled ? 'Ativo' : 'Inativo'}
+                </span>
+              </div>
+            </div>
+            <div className="home-item-body">
+              <p>
+                {state.blocker.isEnabled
+                  ? `${state.blocker.blockedDomains.length || 11} dominios protegidos e ${state.blocker.blockedAttempts.length} tentativa(s) bloqueada(s).`
+                  : 'Ative a protecao para reduzir exposicao em momentos vulneraveis.'}
+              </p>
+              {state.blocker.blockedAttempts.length > 0 ? (
+                <p>
+                  Ultimo bloqueio em{' '}
+                  {formatPtDate(state.blocker.blockedAttempts.at(-1)?.createdAt ?? null)}.
+                </p>
+              ) : null}
+            </div>
+            {primaryAction.key === 'blocker' ? <p>{todaySummary}</p> : null}
+            <span className="text-link">Abrir bloqueador</span>
+          </article>
+        ),
+      },
+    ]
+
+    return [...cards].sort((left, right) => {
+      if (left.key === primaryAction.key) {
+        return -1
+      }
+
+      if (right.key === primaryAction.key) {
+        return 1
+      }
+
+      return 0
+    })
+  }, [
+    hasCheckInDoneToday,
+    lastCheckIn,
+    lastJournalEntry,
+    navigate,
+    primaryAction.key,
+    state.blocker.blockedAttempts,
+    state.blocker.blockedDomains.length,
+    state.blocker.isEnabled,
+    state.journalEntries.length,
+    todaySummary,
+  ])
 
   return (
     <AppShell
@@ -122,93 +262,7 @@ export function HomePage() {
           </div>
         </article>
 
-        <article className="info-card home-card-action">
-          <span className="section-label">Hoje</span>
-          <h2>{primaryAction.label}</h2>
-          <p>{primaryAction.description}</p>
-          <p>{todaySummary}</p>
-          <div className="hero-actions">
-            <button className="button button-primary" onClick={() => navigate(primaryAction.path)}>
-              Continuar
-            </button>
-            <button className="button button-secondary" onClick={() => navigate(appRoutes.sos)}>
-              Abrir panico
-            </button>
-          </div>
-        </article>
-
-        <article className="info-card home-list-card" onClick={() => navigate(appRoutes.checkIn)}>
-          <div className="home-list-head">
-            <div>
-              <span className="section-label">Check-in</span>
-              <h2>Check-in do dia</h2>
-            </div>
-            <span className={hasCheckInDoneToday ? 'status-pill status-ready' : 'status-pill status-next'}>
-              {hasCheckInDoneToday ? 'Concluido' : 'Pendente'}
-            </span>
-          </div>
-          {lastCheckIn ? (
-            <div className="home-item-body">
-              <p>Ultimo registro em {formatPtDate(lastCheckIn.createdAt)}</p>
-              <p>
-                Fissura {lastCheckIn.craving}/10, estado {lastCheckIn.mentalState} e{' '}
-                {lastCheckIn.triggers.length} gatilho(s) mapeado(s).
-              </p>
-            </div>
-          ) : (
-            <p>Sem registro hoje. Esta e a primeira acao importante da sua rotina.</p>
-          )}
-          <span className="text-link">Abrir check-in</span>
-        </article>
-
-        <article className="info-card home-list-card" onClick={() => navigate(appRoutes.journal)}>
-          <div className="home-list-head">
-            <div>
-              <span className="section-label">Journal</span>
-              <h2>Reflexao e contexto</h2>
-            </div>
-            <span className="status-pill">{state.journalEntries.length} entrada(s)</span>
-          </div>
-          {lastJournalEntry ? (
-            <div className="home-item-body">
-              <p>Ultima entrada em {formatPtDate(lastJournalEntry.createdAt)}</p>
-              <p>{lastJournalEntry.title}</p>
-            </div>
-          ) : (
-            <p>Escreva para clarear o momento e guardar aprendizados da jornada.</p>
-          )}
-          <span className="text-link">Abrir journal</span>
-        </article>
-
-        <article className="info-card home-list-card" onClick={() => navigate(appRoutes.blocker)}>
-          <div className="home-list-head">
-            <div>
-              <span className="section-label">Bloqueador</span>
-              <h2>Protecao de sites</h2>
-            </div>
-            <span
-              className={
-                state.blocker.isEnabled ? 'status-pill status-ready' : 'status-pill status-later'
-              }
-            >
-              {state.blocker.isEnabled ? 'Ativo' : 'Inativo'}
-            </span>
-          </div>
-          <div className="home-item-body">
-            <p>
-              {state.blocker.isEnabled
-                ? `${state.blocker.blockedDomains.length || 11} dominios protegidos e ${state.blocker.blockedAttempts.length} tentativa(s) bloqueada(s).`
-                : 'Ative a protecao para reduzir exposicao em momentos vulneraveis.'}
-            </p>
-            {state.blocker.blockedAttempts.length > 0 ? (
-              <p>
-                Ultimo bloqueio em{' '}
-                {formatPtDate(state.blocker.blockedAttempts.at(-1)?.createdAt ?? null)}.
-              </p>
-            ) : null}
-          </div>
-          <span className="text-link">Abrir bloqueador</span>
-        </article>
+        {orderedCards.map((card) => card.element)}
 
         <section className="panel-stack">
           <div className="section-header">

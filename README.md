@@ -56,7 +56,10 @@ Documentos que passam a orientar as proximas fases:
 - [home-contract.md](C:/vibecode/coruja/docs/home-contract.md)
 - [architecture-freeze-phase-3.md](C:/vibecode/coruja/docs/architecture-freeze-phase-3.md)
 - [architecture-freeze-phase-5.md](C:/vibecode/coruja/docs/architecture-freeze-phase-5.md)
+- [architecture-freeze-phase-9.md](C:/vibecode/coruja/docs/architecture-freeze-phase-9.md)
 - [migration-roadmap.md](C:/vibecode/coruja/docs/migration-roadmap.md)
+- [qa-matrix.md](C:/vibecode/coruja/docs/qa-matrix.md)
+- [error-empty-states.md](C:/vibecode/coruja/docs/error-empty-states.md)
 
 ## Referencias em codigo
 

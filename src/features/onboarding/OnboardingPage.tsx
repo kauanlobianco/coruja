@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAppState } from '../../app/state/use-app-state'
 import { AppShell } from '../../shared/layout/AppShell'
-import { getPrePurchaseName } from '../pre-purchase/storage'
+import { getPrePurchaseAge, getPrePurchaseName } from '../pre-purchase/storage'
 
 const goalOptions = [
   {
@@ -71,8 +71,12 @@ export function OnboardingPage() {
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault()
 
+    const prePurchaseAge = getPrePurchaseAge()
+    const resolvedAge = state.profile.age ?? (prePurchaseAge.trim() ? Number(prePurchaseAge) : null)
+
     await completeOnboarding({
       name: name.trim() || 'Usuario',
+      age: resolvedAge,
       goalDays,
       motivations,
       triggers,

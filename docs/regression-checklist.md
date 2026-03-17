@@ -10,6 +10,9 @@ Use este checklist sempre que mexermos em:
 - SOS
 - recaida
 - bloqueador Android
+- estados vazios
+- estados de erro
+- demo clock
 
 O objetivo aqui nao e testar design. E validar se a logica central do app continua integra.
 
@@ -158,6 +161,30 @@ Esperado:
 - sessao local deve sair limpa
 - backup remoto nao deve ser apagado
 - novo boot deve voltar para o funil inicial
+
+## 12. Estados vazios e de erro
+
+1. abrir analytics sem historico suficiente
+2. abrir biblioteca
+3. abrir settings sem conta ou sem backup confirmado
+
+Esperado:
+
+- cada tela deve explicar o estado atual
+- deve existir proximo passo claro
+- nao pode parecer bug ou tela quebrada
+
+## 13. Demo clock
+
+1. avancar dias no painel demo
+2. conferir home, check-in e analytics
+3. voltar para hoje real
+
+Esperado:
+
+- streak deve acompanhar o deslocamento
+- regra de check-in diario deve respeitar a data simulada
+- analytics deve refletir o periodo calculado com a data demo
 
 ## Regra de ouro
 

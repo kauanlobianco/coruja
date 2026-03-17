@@ -73,7 +73,7 @@ export interface AppStateContextValue {
   demoNow: Date
   demoOffsetDays: number
   completeOnboarding: (
-    payload: Pick<UserProfile, 'name' | 'goalDays' | 'motivations' | 'triggers'>,
+    payload: Pick<UserProfile, 'name' | 'age' | 'goalDays' | 'motivations' | 'triggers'>,
   ) => Promise<void>
   setProAccess: (enabled: boolean) => Promise<void>
   setBlockerEnabled: (enabled: boolean) => Promise<void>
@@ -555,6 +555,7 @@ export function AppStateProvider({ children }: PropsWithChildren) {
             ...current.profile,
             ...profile,
             startDate: current.profile.startDate ?? now,
+            joinedAt: current.profile.joinedAt ?? now,
           },
         }),
         { syncRemote: true },

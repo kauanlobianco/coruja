@@ -40,6 +40,7 @@ const steps: FunnelStep[] = [
 const initialState: PrePurchaseState = {
   step: 'landing',
   quizIndex: 0,
+  pendingQuizAnswerIndex: null,
   quizAnswers: [],
   score: 0,
   name: '',
@@ -123,6 +124,10 @@ const markerRules = [
 
 function getProgress(step: FunnelStep) {
   return ((steps.indexOf(step) + 1) / steps.length) * 100
+}
+
+function getQuizProgress(index: number) {
+  return ((index + 1) / quizQuestions.length) * 100
 }
 
 function getPlanDate() {
@@ -257,7 +262,7 @@ export function PrePurchasePage() {
     setState((current) => ({ ...current, step }))
   }
 
-  function answerQuiz(questionId: number, answerIndex: number, points: number) {
+  function confirmQuizAnswer(questionId: number, answerIndex: number, points: number) {
     setState((current) => {
       const quizAnswers = [
         ...current.quizAnswers,
@@ -273,6 +278,7 @@ export function PrePurchasePage() {
       if (isLast) {
         return {
           ...current,
+          pendingQuizAnswerIndex: null,
           quizAnswers,
           score,
           step: 'loading',
@@ -281,6 +287,7 @@ export function PrePurchasePage() {
 
       return {
         ...current,
+        pendingQuizAnswerIndex: null,
         quizAnswers,
         score,
         quizIndex: current.quizIndex + 1,
@@ -330,21 +337,45 @@ export function PrePurchasePage() {
         <div className="phone-frame">
           <div className="phone-notch" aria-hidden="true" />
 
-          <div className="funnel-frame funnel-phone-frame">
-            <header className="funnel-header">
-              <div>
+          <div
+            className={
+              state.step === 'quiz'
+                ? 'funnel-frame funnel-phone-frame funnel-phone-frame-quiz'
+                : 'funnel-frame funnel-phone-frame'
+            }
+          >
+            <header
+              className={state.step === 'quiz' ? 'funnel-header funnel-header-quiz' : 'funnel-header'}
+            >
+              <div className="funnel-header-main">
                 <span className="eyebrow">Pre-compra</span>
                 <h1>Coruja</h1>
               </div>
-              <div className="funnel-progress">
-                <span>{Math.round(getProgress(state.step))}%</span>
-                <div className="progress-track">
-                  <div
-                    className="progress-fill"
-                    style={{ width: `${getProgress(state.step)}%` }}
-                  />
+              {state.step === 'quiz' ? (
+                <div className="funnel-progress funnel-progress-quiz">
+                  <div className="funnel-progress-topline">
+                    <span className="section-label">Quiz</span>
+                    <span className="status-pill">
+                      {state.quizIndex + 1}/{quizQuestions.length}
+                    </span>
+                  </div>
+                  <div className="progress-track">
+                    <div
+                      className="progress-fill"
+                      style={{ width: `${getQuizProgress(state.quizIndex)}%` }}
+                    />
+                  </div>
                 </div>
-              </div>
+              ) : (
+                <div className="funnel-progress">
+                  <div className="progress-track">
+                    <div
+                      className="progress-fill"
+                      style={{ width: `${getProgress(state.step)}%` }}
+                    />
+                  </div>
+                </div>
+              )}
             </header>
 
             {state.step === 'landing' ? (
@@ -378,24 +409,49 @@ export function PrePurchasePage() {
             ) : null}
 
             {state.step === 'quiz' ? (
-              <section className="funnel-panel">
-                <span className="section-label">Quiz</span>
-                <h2>
-                  Pergunta {state.quizIndex + 1} de {quizQuestions.length}
-                </h2>
-                <p>{currentQuestion.prompt}</p>
-                <p>Fator: {currentQuestion.factor}</p>
-                <div className="answer-grid">
+              <section className="funnel-panel quiz-panel">
+                <div className="quiz-copy">
+                  <h2>{currentQuestion.prompt}</h2>
+                  <p>Fator: {currentQuestion.factor}</p>
+                </div>
+                <div className="answer-grid quiz-answer-grid">
                   {currentQuestion.answers.map((answer, answerIndex) => (
                     <button
                       key={answer.label}
-                      className="answer-card"
-                      onClick={() => answerQuiz(currentQuestion.id, answerIndex, answer.points)}
+                      className={
+                        state.pendingQuizAnswerIndex === answerIndex
+                          ? 'answer-card answer-card-active'
+                          : 'answer-card'
+                      }
+                      onClick={() =>
+                        setState((current) => ({
+                          ...current,
+                          pendingQuizAnswerIndex: answerIndex,
+                        }))
+                      }
                     >
                       <strong>{answer.label}</strong>
                     </button>
                   ))}
                 </div>
+                <button
+                  className="button button-primary quiz-confirm-button"
+                  disabled={state.pendingQuizAnswerIndex === null}
+                  onClick={() => {
+                    if (state.pendingQuizAnswerIndex === null) {
+                      return
+                    }
+
+                    const selectedAnswer = currentQuestion.answers[state.pendingQuizAnswerIndex]
+                    void confirmQuizAnswer(
+                      currentQuestion.id,
+                      state.pendingQuizAnswerIndex,
+                      selectedAnswer.points,
+                    )
+                  }}
+                >
+                  Confirmar resposta
+                </button>
               </section>
             ) : null}
 

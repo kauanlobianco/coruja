@@ -2,10 +2,12 @@ import type { PrePurchaseState } from './types'
 
 const STORAGE_KEY = 'coruja.prepurchase.session'
 const PREFILL_NAME_KEY = 'coruja.prepurchase.name'
+const PREFILL_AGE_KEY = 'coruja.prepurchase.age'
 
 export function savePrePurchaseState(state: PrePurchaseState) {
   sessionStorage.setItem(STORAGE_KEY, JSON.stringify(state))
   sessionStorage.setItem(PREFILL_NAME_KEY, state.name)
+  sessionStorage.setItem(PREFILL_AGE_KEY, state.age)
 }
 
 export function loadPrePurchaseState() {
@@ -21,6 +23,8 @@ export function loadPrePurchaseState() {
 
     return {
       ...parsed,
+      pendingQuizAnswerIndex:
+        typeof parsed.pendingQuizAnswerIndex === 'number' ? parsed.pendingQuizAnswerIndex : null,
       quizAnswers: Array.isArray(parsed.quizAnswers)
         ? parsed.quizAnswers
             .map((answer, index) => {
@@ -48,4 +52,8 @@ export function clearPrePurchaseState() {
 
 export function getPrePurchaseName() {
   return sessionStorage.getItem(PREFILL_NAME_KEY) ?? ''
+}
+
+export function getPrePurchaseAge() {
+  return sessionStorage.getItem(PREFILL_AGE_KEY) ?? ''
 }

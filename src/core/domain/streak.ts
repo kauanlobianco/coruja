@@ -1,4 +1,5 @@
 import type { AppModel } from './models'
+import { defaultAppModel } from './models'
 
 function getUtcDayStamp(date: Date) {
   return Date.UTC(date.getFullYear(), date.getMonth(), date.getDate())
@@ -28,6 +29,12 @@ export function normalizeAppModel(model: AppModel, now = new Date()): AppModel {
 
   return {
     ...model,
+    profile: {
+      ...defaultAppModel.profile,
+      ...model.profile,
+      age: model.profile.age ?? null,
+      joinedAt: model.profile.joinedAt ?? null,
+    },
     streak: {
       ...model.streak,
       current,

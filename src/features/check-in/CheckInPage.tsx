@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { AppShell } from '../../shared/layout/AppShell'
 import { useAppState } from '../../app/state/use-app-state'
 import { buildCheckInStrategy, hasCheckInToday } from '../../core/domain/check-in'
+import { appRoutes } from '../../core/config/routes'
 
 const mentalStates = [
   { id: 'calmo', label: 'Calmo', note: 'Sem muita pressao percebida agora.' },
@@ -32,6 +33,7 @@ function getCravingLabel(craving: number) {
 export function CheckInPage() {
   const navigate = useNavigate()
   const { state, saveCheckIn, demoNow } = useAppState()
+  const [pledgeConfirmed, setPledgeConfirmed] = useState(false)
   const [craving, setCraving] = useState(0)
   const [mentalState, setMentalState] = useState<string | null>(null)
   const [selectedTriggers, setSelectedTriggers] = useState<string[]>([])
@@ -62,9 +64,34 @@ export function CheckInPage() {
     )
   }
 
-  async function handleSave(escalatedToSos: boolean) {
-    if (!mentalState || !strategy) {
+  const selectedMentalState = mentalStates.find((item) => item.id === mentalState) ?? null
+  const suggestSos = craving >= 7
+  const suggestLibrary = craving >= 4 && craving < 7
+
+  async function handleStrategyAction(destination: 'home' | 'sos' | 'library') {
+    const escalatedToSos = destination === 'sos'
+    const result = await handlePersistCheckIn(escalatedToSos)
+
+    if (!result) {
       return
+    }
+
+    if (destination === 'sos') {
+      navigate(appRoutes.sos, { replace: true })
+      return
+    }
+
+    if (destination === 'library') {
+      navigate(appRoutes.library, { replace: true })
+      return
+    }
+
+    navigate(appRoutes.home, { replace: true })
+  }
+
+  async function handlePersistCheckIn(escalatedToSos: boolean) {
+    if (!mentalState || !strategy) {
+      return false
     }
 
     const result = await saveCheckIn({
@@ -76,18 +103,69 @@ export function CheckInPage() {
       escalatedToSos,
     })
 
-    if (!result.saved) {
-      return
-    }
-
-    navigate(escalatedToSos ? '/sos' : '/app', { replace: true })
+    return result.saved
   }
 
-  const selectedMentalState = mentalStates.find((item) => item.id === mentalState) ?? null
-  const suggestSos = craving >= 7
+  const strategyOverlay =
+    !alreadyCheckedIn && showStrategy && strategy ? (
+      <section className="checkin-modal-backdrop">
+        <article className="info-card highlight-card checkin-modal-card">
+          <span className="section-label">Estrategia do dia</span>
+          <h2>
+            {suggestSos
+              ? 'Intervencao imediata'
+              : suggestLibrary
+                ? 'Desacelerar agora'
+                : 'Proximo passo do dia'}
+          </h2>
+          <p>{strategy}</p>
+          {selectedMentalState ? (
+            <p>
+              Estado lido: <strong>{selectedMentalState.label}</strong>
+            </p>
+          ) : null}
+          {suggestSos ? (
+            <p className="warning-banner">
+              A fissura esta alta. O caminho mais seguro agora e salvar este check-in e ir para
+              Panico.
+            </p>
+          ) : null}
+          {suggestLibrary ? (
+            <p className="warning-banner">
+              A fissura esta media. Vale salvar este momento e entrar em um conteudo de relaxamento
+              na Biblioteca.
+            </p>
+          ) : null}
+          <div className="hero-actions">
+            <button
+              className="button button-secondary"
+              onClick={() => void handleStrategyAction('home')}
+            >
+              Continuar para home
+            </button>
+            {suggestLibrary ? (
+              <button
+                className="button button-secondary"
+                onClick={() => void handleStrategyAction('library')}
+              >
+                Relaxar agora
+              </button>
+            ) : null}
+            {suggestSos ? (
+              <button
+                className="button button-primary"
+                onClick={() => void handleStrategyAction('sos')}
+              >
+                Ir para Panico
+              </button>
+            ) : null}
+          </div>
+        </article>
+      </section>
+    ) : null
 
   return (
-    <AppShell title="Check-in do dia" eyebrow="Rotina diaria">
+    <AppShell title="Check-in do dia" eyebrow="Rotina diaria" overlay={strategyOverlay}>
       <section className="panel-stack">
         {alreadyCheckedIn ? (
           <article className="info-card highlight-card">
@@ -108,6 +186,24 @@ export function CheckInPage() {
           </article>
         ) : (
           <>
+            <article className="info-card highlight-card">
+              <span className="section-label">Compromisso de hoje</span>
+              <h2>Qual e sua decisao para este dia?</h2>
+              <p>
+                Antes de medir fissura e contexto, marque o compromisso do dia com sua
+                recuperacao. Isso deixa o check-in mais intencional e menos automatico.
+              </p>
+              <button
+                className={pledgeConfirmed ? 'button button-primary' : 'button button-secondary'}
+                type="button"
+                onClick={() => setPledgeConfirmed((current) => !current)}
+              >
+                {pledgeConfirmed
+                  ? 'Compromisso confirmado para hoje'
+                  : 'Hoje eu vou proteger meu dia e evitar recaida'}
+              </button>
+            </article>
+
             <article className="info-card highlight-card">
               <span className="section-label">Leitura do momento</span>
               <h2>Como esta sua fissura agora?</h2>
@@ -130,6 +226,7 @@ export function CheckInPage() {
                 min={0}
                 max={10}
                 value={craving}
+                disabled={!pledgeConfirmed}
                 onChange={(event) => setCraving(Number(event.target.value))}
               />
             </article>
@@ -149,6 +246,7 @@ export function CheckInPage() {
                       mentalState === item.id ? 'plan-card plan-card-active' : 'plan-card'
                     }
                     type="button"
+                    disabled={!pledgeConfirmed}
                     onClick={() => setMentalState(item.id)}
                   >
                     <strong>{item.label}</strong>
@@ -171,6 +269,7 @@ export function CheckInPage() {
                     key={item}
                     className={selectedTriggers.includes(item) ? 'chip active' : 'chip'}
                     type="button"
+                    disabled={!pledgeConfirmed}
                     onClick={() => toggleTrigger(item)}
                   >
                     {item}
@@ -191,6 +290,7 @@ export function CheckInPage() {
                 id="notes"
                 className="textarea"
                 value={notes}
+                disabled={!pledgeConfirmed}
                 onChange={(event) => setNotes(event.target.value)}
                 placeholder="O que esta acontecendo agora?"
               />
@@ -208,47 +308,17 @@ export function CheckInPage() {
                 <button
                   className="button button-primary"
                   type="button"
-                  disabled={!mentalState}
+                  disabled={!pledgeConfirmed || !mentalState}
                   onClick={() => setShowStrategy(true)}
                 >
                   Gerar minha estrategia
                 </button>
               </article>
-            ) : (
-              <article className="info-card highlight-card">
-                <span className="section-label">Estrategia recomendada</span>
-                <h2>{suggestSos ? 'Intervencao imediata' : 'Proximo passo do dia'}</h2>
-                <p>{strategy}</p>
-                {selectedMentalState ? (
-                  <p>
-                    Estado lido: <strong>{selectedMentalState.label}</strong>
-                  </p>
-                ) : null}
-                {suggestSos ? (
-                  <p className="warning-banner">
-                    A fissura esta alta. O caminho mais seguro agora e salvar este
-                    check-in e seguir direto para o SOS.
-                  </p>
-                ) : null}
-                <div className="hero-actions">
-                  <button className="button button-secondary" onClick={() => setShowStrategy(false)}>
-                    Revisar respostas
-                  </button>
-                  <button
-                    className="button button-secondary"
-                    onClick={() => void handleSave(false)}
-                  >
-                    Salvar e voltar para a home
-                  </button>
-                  <button className="button button-primary" onClick={() => void handleSave(true)}>
-                    Salvar e ir para SOS
-                  </button>
-                </div>
-              </article>
-            )}
+            ) : null}
           </>
         )}
       </section>
+
     </AppShell>
   )
 }

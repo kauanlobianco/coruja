@@ -51,6 +51,7 @@ export interface PlanOption {
 export interface PrePurchaseState {
   step: FunnelStep
   quizIndex: number
+  pendingQuizAnswerIndex: number | null
   quizAnswers: QuizAnswer[]
   score: number
   name: string

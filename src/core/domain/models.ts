@@ -1,9 +1,11 @@
 export interface UserProfile {
   name: string
+  age: number | null
   goalDays: number
   motivations: string[]
   triggers: string[]
   startDate: string | null
+  joinedAt: string | null
   avatarId: number
 }
 
@@ -99,10 +101,12 @@ export const defaultAppModel: AppModel = {
   hasProAccess: false,
   profile: {
     name: '',
+    age: null,
     goalDays: 14,
     motivations: [],
     triggers: [],
     startDate: null,
+    joinedAt: null,
     avatarId: 1,
   },
   streak: {

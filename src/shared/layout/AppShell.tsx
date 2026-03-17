@@ -7,6 +7,7 @@ interface AppShellProps extends PropsWithChildren {
   title: string
   eyebrow: string
   actions?: ReactNode
+  overlay?: ReactNode
   shellMode?: 'entry' | 'app' | 'system'
 }
 
@@ -14,6 +15,7 @@ export function AppShell({
   title,
   eyebrow,
   actions,
+  overlay,
   children,
   shellMode = 'app',
 }: AppShellProps) {
@@ -60,15 +62,18 @@ export function AppShell({
           <div className="phone-notch" aria-hidden="true" />
 
           <div className="app-frame">
-            <header className="app-topbar">
-              <div className="hero-copy">
-                <span className="eyebrow">{eyebrow}</span>
-                <h1>{title}</h1>
-              </div>
-              {actions ? <div className="toolbar toolbar-mobile">{actions}</div> : null}
-            </header>
+            <main className="content-grid app-content">
+              <header className="app-topbar">
+                <div className="hero-copy">
+                  <span className="eyebrow">{eyebrow}</span>
+                  <h1>{title}</h1>
+                </div>
+                {actions ? <div className="toolbar toolbar-mobile">{actions}</div> : null}
+              </header>
 
-            <main className="content-grid app-content">{children}</main>
+              {children}
+            </main>
+            {overlay}
 
             {shellMode === 'app' ? (
               <nav className="bottom-nav" aria-label="Navegacao principal">

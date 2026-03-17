@@ -12,10 +12,12 @@ const appStateSchema = z.object({
   hasProAccess: z.boolean(),
   profile: z.object({
     name: z.string(),
+    age: z.number().int().min(0).nullable().optional().catch(null).default(null),
     goalDays: z.number().int().min(1),
     motivations: z.array(z.string()),
     triggers: z.array(z.string()),
     startDate: z.string().nullable(),
+    joinedAt: z.string().nullable().optional().catch(null).default(null),
     avatarId: z.number().int().min(1),
   }),
   streak: z.object({

@@ -9,7 +9,7 @@ import type {
 export const quizQuestions: QuizQuestion[] = [
   {
     id: 1,
-    prompt: 'Genero',
+    prompt: 'Qual e o seu genero?',
     factor: 'Demografico',
     answers: [
       { label: 'Homem', points: 0 },
@@ -23,14 +23,14 @@ export const quizQuestions: QuizQuestion[] = [
     factor: 'Intensidade',
     answers: [
       { label: 'Menos de uma vez por semana', points: 0 },
-      { label: 'Mais de uma vez por semana', points: 2 },
-      { label: 'Todo dia', points: 4 },
+      { label: 'De 1 a 6 vezes por semana', points: 2 },
+      { label: 'Todos os dias', points: 4 },
       { label: 'Mais de uma vez por dia', points: 6 },
     ],
   },
   {
     id: 3,
-    prompt: 'Quando foi seu primeiro contato?',
+    prompt: 'Com que idade voce teve o primeiro contato?',
     factor: 'Precocidade',
     answers: [
       { label: '18 anos ou mais', points: 0 },
@@ -41,24 +41,24 @@ export const quizQuestions: QuizQuestion[] = [
   },
   {
     id: 4,
-    prompt: 'Onde voce costuma consumir esse tipo de conteudo?',
+    prompt: 'Onde esse consumo acontece com mais frequencia?',
     factor: 'Contexto / Plataforma',
     answers: [
       { label: 'Site de conteudo adulto', points: 0 },
-      { label: 'Rede social (Twitter, Instagram...)', points: 1 },
-      { label: 'Canais de mensagem (WhatsApp, Telegram...)', points: 2 },
+      { label: 'Redes sociais', points: 1 },
+      { label: 'Apps de mensagem e grupos privados', points: 2 },
       { label: 'Plataformas pagas (OnlyFans, etc.)', points: 3 },
     ],
   },
   {
     id: 5,
-    prompt: 'Quanto tempo dura uma sessao tipica?',
+    prompt: 'Quanto tempo costuma durar uma sessao?',
     factor: 'Tempo dispendido',
     answers: [
-      { label: 'Ate 10 min', points: 0 },
-      { label: '10-30 min', points: 2 },
-      { label: '30-60 min', points: 3 },
-      { label: 'Mais de 60 min', points: 5 },
+      { label: 'Ate 10 minutos', points: 0 },
+      { label: 'Entre 10 e 30 minutos', points: 2 },
+      { label: 'Entre 30 e 60 minutos', points: 3 },
+      { label: 'Mais de 60 minutos', points: 5 },
     ],
   },
   {
@@ -67,10 +67,10 @@ export const quizQuestions: QuizQuestion[] = [
     factor: 'Autocritica',
     answers: [
       { label: 'Nao', points: 0 },
-      { label: 'Talvez / nao tenho certeza', points: 3 },
-      { label: 'Sim, leve (me incomoda um pouco)', points: 7 },
-      { label: 'Sim, atrapalha areas da vida', points: 12 },
-      { label: 'Sim, parece fora de controle', points: 16 },
+      { label: 'Talvez, nao tenho certeza', points: 3 },
+      { label: 'Sim, me incomoda um pouco', points: 7 },
+      { label: 'Sim, ja atrapalha areas da minha vida', points: 12 },
+      { label: 'Sim, sinto que esta fora de controle', points: 16 },
     ],
   },
   {
@@ -91,9 +91,9 @@ export const quizQuestions: QuizQuestion[] = [
     answers: [
       { label: 'Nao', points: 0 },
       { label: 'Raramente', points: 2 },
-      { label: 'As vezes (percebo impacto)', points: 5 },
+      { label: 'As vezes, e eu percebo esse impacto', points: 5 },
       { label: 'Frequentemente', points: 9 },
-      { label: 'Muito (evito sexo / atrapalha bastante)', points: 12 },
+      { label: 'Muito, a ponto de evitar sexo ou me atrapalhar bastante', points: 12 },
     ],
   },
   {
@@ -101,11 +101,11 @@ export const quizQuestions: QuizQuestion[] = [
     prompt: 'Como voce se sente logo apos o consumo desse tipo de conteudo?',
     factor: 'Reforco negativo / ciclo vicioso',
     answers: [
-      { label: 'Normal / relaxado', points: 0 },
-      { label: 'Leve culpa / desconforto', points: 2 },
+      { label: 'Normal ou relaxado', points: 0 },
+      { label: 'Com leve culpa ou desconforto', points: 2 },
       { label: 'Arrependimento frequente', points: 5 },
-      { label: 'Ansioso / triste / irritado depois', points: 8 },
-      { label: 'Pessimo (vergonha forte / vazio / autoaversao)', points: 10 },
+      { label: 'Ansioso, triste ou irritado depois', points: 8 },
+      { label: 'Muito mal, com vergonha forte, vazio ou aversao a mim mesmo', points: 10 },
     ],
   },
   {
@@ -114,10 +114,10 @@ export const quizQuestions: QuizQuestion[] = [
     factor: 'Escalada / tolerancia',
     answers: [
       { label: 'Nao', points: 0 },
-      { label: 'As vezes busco novidade', points: 3 },
-      { label: 'Tenho notado escalada gradual', points: 6 },
-      { label: 'Preciso de coisas bem diferentes do inicio', points: 8 },
-      { label: 'Sim, so consigo com conteudo bem mais extremo', points: 10 },
+      { label: 'As vezes procuro novidade', points: 3 },
+      { label: 'Tenho percebido uma escalada aos poucos', points: 6 },
+      { label: 'Preciso de coisas bem diferentes do que via no inicio', points: 8 },
+      { label: 'Sim, so consigo me satisfazer com conteudos muito mais extremos', points: 10 },
     ],
   },
   {
@@ -126,10 +126,10 @@ export const quizQuestions: QuizQuestion[] = [
     factor: 'Comprometimento financeiro',
     answers: [
       { label: 'Nunca', points: 0 },
-      { label: 'Ja gastei uma vez (valor pequeno)', points: 1 },
-      { label: 'As vezes (pequenos gastos)', points: 2 },
+      { label: 'Ja gastei uma vez, em valor pequeno', points: 1 },
+      { label: 'As vezes, com pequenos gastos', points: 2 },
       { label: 'Gasto com certa regularidade', points: 4 },
-      { label: 'Ja trouxe prejuizo (divida, esconder gastos)', points: 5 },
+      { label: 'Ja me trouxe prejuizo, como divida ou gastos escondidos', points: 5 },
     ],
   },
   {
@@ -139,9 +139,9 @@ export const quizQuestions: QuizQuestion[] = [
     answers: [
       { label: 'Nunca tentei (nao senti necessidade)', points: 0 },
       { label: 'Tentei e foi facil', points: 2 },
-      { label: 'Tentei 1-2x, mas voltei', points: 5 },
-      { label: 'Tentei varias vezes, recai rapido', points: 8 },
-      { label: 'Tento sempre e nao consigo sustentar', points: 10 },
+      { label: 'Tentei 1 ou 2 vezes, mas voltei', points: 5 },
+      { label: 'Tentei varias vezes, mas recaio rapido', points: 8 },
+      { label: 'Tento com frequencia, mas nao consigo sustentar', points: 10 },
     ],
   },
   {
