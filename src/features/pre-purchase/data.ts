@@ -176,57 +176,53 @@ export const symptomOptions: SymptomOption[] = [
 
 export const painSlides = [
   {
-    title: 'Quando o consumo ganha frequencia, ele deixa de ser episodio e vira padrao.',
-    body: 'A repeticao cria um circuito automatico entre gatilho, busca de alivio e culpa. O risco maior nao e so o conteudo, e a falta de governanca sobre a rotina.',
+    title: 'Foco e energia',
+    body: 'Quando esse padrao entra na rotina, ele costuma roubar presenca mental. O dia fica mais disperso, a energia cai e tarefas simples podem parecer mais pesadas.',
   },
   {
-    title: 'A escalada costuma ser silenciosa: mais tempo, mais intensidade, menos controle.',
-    body: 'O padrao vai pedindo mais estimulo para gerar o mesmo efeito. Isso amplia o desgaste emocional e enfraquece a capacidade de interromper no momento certo.',
+    title: 'Autoestima',
+    body: 'Muita gente entra no mesmo ciclo: impulso, alivio rapido e peso depois. A repeticao disso desgasta a forma como voce se ve e faz parecer que nada muda de verdade.',
   },
   {
-    title: 'O impacto raramente fica isolado. Ele se espalha para foco, energia, sexualidade e relacoes.',
-    body: 'Quando o comportamento comeca a interferir em areas do dia a dia, o custo deixa de ser privado e passa a ser funcional.',
-  },
-  {
-    title: 'Sem sistema, a motivacao vira tentativa curta e recaida rapida.',
-    body: 'O problema nao e faltar vontade. E tentar resolver algo automatico sem plano, sem medicao e sem resposta clara para o gatilho.',
+    title: 'Conexao',
+    body: 'Com o tempo, isso tambem pode aparecer nas relacoes. Fica mais dificil estar presente, se conectar de verdade e sustentar proximidade sem distancia emocional.',
   },
 ]
 
 export const solutionSlides = [
   {
-    title: 'Primeiro, diagnostico objetivo.',
-    body: 'O quiz mede intensidade, precocidade, escalada, impacto sexual, impacto emocional e perda de controle para sair do achismo.',
+    title: 'Nao e so falta de vontade',
+    body: 'Quando esse ciclo ja ficou automatico, tentar segurar so no impulso costuma falhar. O problema nao e fraqueza. E o jeito como o padrao se repete.',
   },
   {
-    title: 'Depois, personalizacao por sintomas.',
-    body: 'Os sintomas marcados ajudam a ajustar a conversa para foco mental, vitalidade fisica, reconexao social e motivacoes mais profundas.',
+    title: 'Medir para entender',
+    body: 'O check-in diario te ajuda a perceber como voce esta, o que pesa mais no dia e quando o risco sobe. Nao e julgamento. E clareza.',
   },
   {
-    title: 'Em seguida, plano com rotina e protecao.',
-    body: 'O app organiza streak, check-in, journal, SOS e bloqueador em volta do mesmo objetivo: reduzir recaidas e reconstruir previsibilidade.',
+    title: 'Proteger o ambiente',
+    body: 'O bloqueador cria uma camada real de protecao nos momentos em que confiar so na disciplina nao basta. Nao e punicao. E apoio pratico.',
   },
   {
-    title: 'Por fim, acompanhamento visivel.',
-    body: 'Seu progresso deixa de depender de sensacao. Ele passa a aparecer em metas, historico e proximos passos concretos.',
+    title: 'Agir na hora certa',
+    body: 'Quando o momento apertar, o SOS e o Jornal ajudam voce a atravessar a vulnerabilidade com mais presenca, em vez de cair no piloto automatico.',
   },
 ]
 
 export const testimonials: Testimonial[] = [
   {
     name: 'Rafael',
-    role: '22 dias de consistencia',
-    quote: 'Pela primeira vez eu senti que tinha um sistema e nao so forca de vontade.',
+    role: 'voltou a dormir sem culpa toda noite',
+    quote: 'O maior alivio foi parar de acordar me sentindo mal no dia seguinte.',
   },
   {
     name: 'Joao',
-    role: 'Rotina noturna reconstruida',
-    quote: 'O maior ganho foi clareza. Passei a perceber meus gatilhos antes de explodir.',
+    role: 'entendeu melhor os gatilhos da noite',
+    quote: 'Eu achava que era so falta de controle. Depois percebi que eu repetia o mesmo gatilho quase todo dia.',
   },
   {
     name: 'Mateus',
-    role: 'Recomeco com menos culpa',
-    quote: 'Quando eu recaia, antes eu sumia. Com um plano, eu voltava no mesmo dia.',
+    role: 'conseguiu recomecar mais rapido depois de cair',
+    quote: 'Antes eu sumia quando errava. Com uma rotina, eu consegui voltar sem me abandonar por dias.',
   },
 ]
 
@@ -235,12 +231,12 @@ export const planOptions: PlanOption[] = [
     id: 'annual',
     title: 'Plano anual',
     price: '12x de R$ 19,90',
-    description: 'Melhor custo para quem quer reconstruir a rotina com acompanhamento continuo.',
+    description: 'Melhor escolha para quem quer constancia, acompanhamento e mais tempo para consolidar a rotina.',
   },
   {
     id: 'lifetime',
     title: 'Acesso vitalicio',
     price: 'R$ 297 a vista',
-    description: 'Uma compra so para liberar a base completa e futuras evolucoes.',
+    description: 'Para quem prefere liberar o acesso completo de uma vez e seguir no proprio ritmo.',
   },
 ]

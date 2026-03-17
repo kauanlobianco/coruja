@@ -7,39 +7,50 @@ import { getPrePurchaseAge, getPrePurchaseName } from '../pre-purchase/storage'
 const goalOptions = [
   {
     days: 5,
-    title: 'Primeiro passo',
-    description: 'Entrar no ritmo e provar para si mesmo que voce consegue.',
+    title: 'Ganhar tracao',
+    description: 'Uma meta curta para sair do automatico e comecar com firmeza.',
   },
   {
     days: 10,
-    title: 'Construir o habito',
-    description: 'Ganhar consistencia e criar mais distancia do impulso.',
+    title: 'Criar consistencia',
+    description: 'Tempo suficiente para firmar rotina e abrir mais distancia do impulso.',
   },
   {
     days: 15,
-    title: 'Desafio real',
-    description: 'Comecar uma virada mais forte com estrutura diaria.',
+    title: 'Recomeco mais firme',
+    description: 'Uma meta mais forte para quem quer virar a chave com mais estrutura.',
+  },
+  {
+    days: 30,
+    title: 'Marco maior',
+    description: 'Um compromisso mais longo para quem quer buscar um primeiro grande marco.',
   },
 ]
 
 const defaultMotivations = [
-  'Ter mais clareza mental',
-  'Recuperar meu foco',
-  'Dormir melhor',
-  'Ter mais controle sobre mim',
-  'Melhorar meus relacionamentos',
-  'Parar de perder tempo',
+  'Quero ter mais clareza mental',
+  'Quero voltar a sentir controle sobre mim',
+  'Quero melhorar meus relacionamentos',
+  'Quero parar de perder tempo com isso',
+  'Quero dormir melhor',
+  'Quero me sentir mais presente na minha vida',
 ]
 
 const defaultTriggers = [
-  'Ansiedade',
-  'Estresse',
-  'Tedio',
-  'Solidao',
-  'Celular a noite',
+  'Sozinho no quarto',
+  'Celular na cama',
+  'Madrugada',
   'Redes sociais',
-  'Insônia',
-  'Conflitos',
+  'Depois de um dia estressante',
+  'Depois de um conflito',
+  'Quando fico sem rumo',
+  'Quando estou enrolando tarefas',
+  'Depois de beber',
+  'Banho demorado',
+  'Apos acordar',
+  'Fim de semana sem rotina',
+  'Cansaco no fim do dia',
+  'Quando fico sozinho em casa',
 ]
 
 function toggleValue(
@@ -59,6 +70,7 @@ export function OnboardingPage() {
   const { state, completeOnboarding } = useAppState()
   const [name, setName] = useState(state.profile.name || getPrePurchaseName())
   const [goalDays, setGoalDays] = useState(state.profile.goalDays || 5)
+  const [customMotivation, setCustomMotivation] = useState('')
   const [motivations, setMotivations] = useState<string[]>(
     state.profile.motivations.length > 0
       ? state.profile.motivations
@@ -72,13 +84,18 @@ export function OnboardingPage() {
     event.preventDefault()
 
     const prePurchaseAge = getPrePurchaseAge()
-    const resolvedAge = state.profile.age ?? (prePurchaseAge.trim() ? Number(prePurchaseAge) : null)
+    const resolvedAge =
+      state.profile.age ?? (prePurchaseAge.trim() ? Number(prePurchaseAge) : null)
+    const resolvedCustomMotivation = customMotivation.trim()
+    const resolvedMotivations = resolvedCustomMotivation
+      ? Array.from(new Set([...motivations, resolvedCustomMotivation]))
+      : motivations
 
     await completeOnboarding({
       name: name.trim() || 'Usuario',
       age: resolvedAge,
       goalDays,
-      motivations,
+      motivations: resolvedMotivations,
       triggers,
     })
 
@@ -90,17 +107,17 @@ export function OnboardingPage() {
 
   return (
     <AppShell
-      title="Feche sua base antes de entrar no app"
+      title="Vamos montar a base da sua jornada"
       eyebrow="Onboarding"
       shellMode="entry"
     >
       <form className="panel-stack" onSubmit={handleSubmit}>
         <section className="info-card highlight-card">
           <span className="section-label">Identidade</span>
-          <h2>Como quer ser chamado dentro do app?</h2>
+          <h2>Como voce quer ser chamado aqui dentro?</h2>
           <p>
-            Este nome vai aparecer na home, no streak e nos momentos de suporte
-            como SOS e bloqueador.
+            Esse nome vai aparecer na sua Home e nos momentos em que o app
+            estiver te apoiando mais de perto.
           </p>
           <div className="field">
             <label htmlFor="name">Nome</label>
@@ -108,17 +125,17 @@ export function OnboardingPage() {
               id="name"
               value={name}
               onChange={(event) => setName(event.target.value)}
-              placeholder="Como quer ser chamado?"
+              placeholder="Como voce quer ser chamado?"
             />
           </div>
         </section>
 
         <section className="info-card">
           <span className="section-label">Meta inicial</span>
-          <h2>Qual e sua primeira meta?</h2>
+          <h2>Qual vai ser a sua primeira meta?</h2>
           <p>
-            Como no app antigo, a meta inicial organiza o streak e o senso de
-            progresso desde o primeiro dia.
+            Nao precisa provar tudo agora. Escolha uma meta que pareca seria,
+            mas possivel de sustentar.
           </p>
           <div className="pricing-grid">
             {goalOptions.map((option) => (
@@ -139,11 +156,12 @@ export function OnboardingPage() {
         </section>
 
         <section className="info-card">
-          <span className="section-label">Seus motivos</span>
-          <h2>Escolha as ancoras que vao te puxar de volta</h2>
+          <span className="section-label">Motivos</span>
+          <h2>Por que isso importa para voce?</h2>
           <p>
-            Estes motivos abastecem a home, o SOS e as mensagens de apoio em
-            momentos mais delicados.
+            Escolha os motivos que mais combinam com o que voce quer recuperar
+            na sua vida. Eles vao reaparecer quando voce precisar lembrar por
+            que comecou.
           </p>
           <div className="chip-row">
             {defaultMotivations.map((item) => (
@@ -157,14 +175,24 @@ export function OnboardingPage() {
               </button>
             ))}
           </div>
+          <div className="field">
+            <label htmlFor="custom-motivation">Outro motivo importante para voce</label>
+            <input
+              id="custom-motivation"
+              value={customMotivation}
+              onChange={(event) => setCustomMotivation(event.target.value)}
+              placeholder="Escreva um motivo com as suas palavras"
+              maxLength={80}
+            />
+          </div>
         </section>
 
         <section className="info-card">
-          <span className="section-label">Mapa de risco</span>
-          <h2>Quais gatilhos merecem atencao logo no comeco?</h2>
+          <span className="section-label">Gatilhos</span>
+          <h2>Em que momentos voce costuma ficar mais vulneravel?</h2>
           <p>
-            Eles nao ficam presos a nomes fixos. Servem para orientar check-ins,
-            analytics e futuras acoes preventivas.
+            Aqui a ideia e mapear situacoes do seu dia a dia. Isso ajuda o app a
+            entender melhor seu contexto e a te orientar com mais clareza depois.
           </p>
           <div className="chip-row">
             {defaultTriggers.map((item) => (
@@ -182,7 +210,7 @@ export function OnboardingPage() {
 
         <section className="info-card">
           <span className="section-label">Resumo</span>
-          <h2>O que vai nascer quando voce terminar este passo</h2>
+          <h2>O que fica pronto quando voce entrar no app</h2>
           <dl className="home-stats-grid">
             <div>
               <dt>Meta ativa</dt>
@@ -190,7 +218,7 @@ export function OnboardingPage() {
             </div>
             <div>
               <dt>Motivos escolhidos</dt>
-              <dd>{motivations.length}</dd>
+              <dd>{motivations.length + (customMotivation.trim() ? 1 : 0)}</dd>
             </div>
             <div>
               <dt>Gatilhos mapeados</dt>
@@ -202,10 +230,14 @@ export function OnboardingPage() {
             </div>
           </dl>
           <p>
-            Ao salvar, esta configuracao vira a base do seu streak, da home
-            principal e do suporte rapido.
+            Ao continuar, essa base vai organizar sua Home, seu streak, seus
+            check-ins e os momentos de suporte como SOS.
           </p>
-          <button className="button button-primary" type="submit">
+          <button
+            className="button button-primary"
+            type="submit"
+            disabled={!name.trim() || motivations.length === 0}
+          >
             Entrar no app
           </button>
         </section>

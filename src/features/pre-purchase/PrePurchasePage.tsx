@@ -54,71 +54,71 @@ const initialState: PrePurchaseState = {
 const markerRules = [
   {
     id: 'perda-controle',
-    title: 'Perda de controle',
+    title: 'Perda de controle em momentos-chave',
     matches: (answers: Map<number, number>) =>
       answers.get(13) === 1 || answers.get(6) === 4,
     copy:
-      'Suas respostas indicam episodios de perda de controle, com dificuldade de interromper ou regular o comportamento.',
+      'Suas respostas mostram momentos em que interromper ou regular esse comportamento tem ficado dificil demais.',
   },
   {
     id: 'interferencia-vida',
-    title: 'Interferencia na vida',
+    title: 'Impacto no dia a dia',
     matches: (answers: Map<number, number>) => {
       const answer = answers.get(6)
       return answer === 3 || answer === 4
     },
     copy:
-      'O comportamento ja apresenta interferencia em areas do dia a dia, o que aumenta significativamente o nivel de risco.',
+      'Isso ja esta encostando em areas importantes da sua rotina, e por isso merece ser tratado com seriedade agora.',
   },
   {
     id: 'tentativas-frustradas',
-    title: 'Tentativas frustradas',
+    title: 'Dificuldade para sustentar tentativas',
     matches: (answers: Map<number, number>) => {
       const answer = answers.get(12)
       return answer === 3 || answer === 4
     },
     copy:
-      'Voce relatou tentativas de reduzir ou parar que nao se mantiveram, o que sugere falha de regulacao do comportamento.',
+      'Voce ja tentou reduzir ou parar, mas nao conseguiu manter isso por muito tempo sozinho.',
   },
   {
     id: 'impacto-sexual',
-    title: 'Impacto sexual',
+    title: 'Impacto na vida sexual',
     matches: (answers: Map<number, number>) => {
       const answer = answers.get(8)
       return answer !== undefined && answer >= 2
     },
     copy:
-      'Existe impacto sexual associado ao padrao, o que indica prejuizo funcional especifico.',
+      'Esse padrao tambem esta aparecendo na sua vida sexual, o que mostra que o problema nao ficou isolado.',
   },
   {
     id: 'escalada',
-    title: 'Escalada e tolerancia',
+    title: 'Escalada do padrao',
     matches: (answers: Map<number, number>) => {
       const answer = answers.get(10)
       return answer !== undefined && answer >= 2
     },
     copy:
-      'Ha sinais de escalada: necessidade de estimulos mais intensos para obter o mesmo efeito.',
+      'Ha sinais de que o que antes bastava ja nao tem o mesmo efeito, e a busca por estimulo tem aumentado.',
   },
   {
     id: 'impacto-emocional',
-    title: 'Impacto emocional',
+    title: 'Peso emocional depois do consumo',
     matches: (answers: Map<number, number>) => {
       const answer = answers.get(9)
       return answer !== undefined && answer >= 2
     },
     copy:
-      'Sua resposta indica um ciclo emocional apos o consumo, com culpa, vazio ou ansiedade que podem sustentar repeticao por reforco negativo.',
+      'O que acontece depois tambem importa: culpa, vazio ou ansiedade costumam alimentar o retorno ao mesmo ciclo.',
   },
   {
     id: 'gasto-financeiro',
-    title: 'Gasto financeiro',
+    title: 'Impacto financeiro',
     matches: (answers: Map<number, number>) => {
       const answer = answers.get(11)
       return answer === 3 || answer === 4
     },
     copy:
-      'Houve indicacao de impacto financeiro, que e um marcador objetivo de gravidade.',
+      'Voce tambem sinalizou impacto no dinheiro, o que mostra que esse padrao ja esta cobrando um preco concreto.',
   },
 ]
 
@@ -143,28 +143,28 @@ function getPlanDate() {
 function getRiskBand(score: number) {
   if (score >= 78) {
     return {
-      label: 'Risco critico',
-      short: 'Perda recorrente de controle, impacto funcional severo e ciclo de reforco negativo.',
+      label: 'Nivel em que esse padrao ja esta pesando em partes importantes da sua rotina',
+      short: 'O que voce respondeu mostra um ciclo mais entranhado, com impacto real e dificuldade de interromper em alguns momentos.',
     }
   }
 
   if (score >= 56) {
     return {
-      label: 'Risco alto',
-      short: 'Dificuldade crescente de controle, escalada gradual e tentativas frustradas.',
+      label: 'Nivel em que esse padrao ja comeca a tomar espaco demais no seu dia',
+      short: 'Suas respostas mostram dificuldade crescente de controle, desgaste e tentativas que nao se sustentaram.',
     }
   }
 
   if (score >= 16) {
     return {
-      label: 'Risco moderado',
-      short: 'Indicios de automatizacao e inicio de impacto emocional.',
+      label: 'Nivel que merece atencao antes que esse padrao ganhe mais forca',
+      short: 'Ja existem sinais de repeticao automatica e impacto emocional, mesmo que isso ainda pareca administravel em alguns dias.',
     }
   }
 
   return {
-    label: 'Referencia saudavel',
-    short: 'Baixo risco. Consumo nao dominante e governanca preservada.',
+    label: 'Nivel com poucos sinais de peso agora, mas que ainda merece cuidado',
+    short: 'Seu resultado nao mostra um padrao dominante neste momento, mas vale proteger sua rotina para isso nao ganhar espaco.',
   }
 }
 
@@ -188,19 +188,19 @@ function getSymptomPriorityCopies(selectedSymptoms: string[]) {
   const copies: string[] = []
 
   if (map.has('Fisico')) {
-    copies.push('Seus sintomas fisicos sugerem priorizar recuperacao de vitalidade, energia e funcao sexual.')
+    copies.push('Seu plano precisa cuidar de energia, vitalidade e da parte fisica que esse padrao pode estar desgastando.')
   }
 
   if (map.has('Mental')) {
-    copies.push('Os sintomas mentais apontam para foco, dopamina e clareza cognitiva como frente principal de recuperacao.')
+    copies.push('Seu plano precisa comecar por foco, clareza e estabilidade mental no dia a dia.')
   }
 
   if (map.has('Social')) {
-    copies.push('Os sintomas sociais mostram que reconexao, autoestima e relacionamentos merecem entrar no plano desde o inicio.')
+    copies.push('Seu plano tambem precisa olhar para autoestima, reconexao e relacoes desde o inicio.')
   }
 
   if (map.has('Fe')) {
-    copies.push('Tambem existe uma camada espiritual importante para este usuario, que pode ser usada como ancora de recomeco.')
+    copies.push('Tambem existe uma camada espiritual importante para voce, que pode servir de apoio nos momentos mais vulneraveis.')
   }
 
   return copies
@@ -211,23 +211,21 @@ function getDiagnosisReport(score: number, quizAnswers: QuizAnswer[], symptoms: 
   const answersByQuestion = new Map<number, number>(
     quizAnswers.map((answer) => [answer.questionId, answer.answerIndex]),
   )
-  const markers = markerRules.filter((rule) => rule.matches(answersByQuestion))
+  const markers = markerRules.filter((rule) => rule.matches(answersByQuestion)).slice(0, 3)
   const symptomPriorityCopies = getSymptomPriorityCopies(symptoms)
-  const healthyDistance = Math.max(0, score - 15)
 
   return {
     band,
     markers,
     symptomPriorityCopies,
-    healthyDistance,
   }
 }
 
 function getLandingChecks() {
   return [
-    'Quiz psicometrico com 13 perguntas',
-    'Score de risco real entre 0 e 100%',
-    'Diagnostico com marcadores clinicos',
+    'Quiz com 13 perguntas',
+    'Leitura personalizada do seu momento',
+    'Plano inicial construindo a partir das suas respostas',
   ]
 }
 
@@ -381,10 +379,10 @@ export function PrePurchasePage() {
             {state.step === 'landing' ? (
               <section className="funnel-panel funnel-hero">
                 <span className="section-label">Landing</span>
-                <h2>Descubra seu score de risco e o que esta sustentando esse padrao.</h2>
+                <h2>Bem-vindo!</h2>
                 <p>
-                  Este pre-compra agora segue a mesma estrutura mobile do produto e usa a
-                  logica real de quiz e sintomas dos PRDs.
+                  Responda algumas perguntas e descubra como a pornografia esta afetando sua
+                  vida e qual e o proximo passo real.
                 </p>
                 {appState.backup.status === 'conflict' && appState.backup.lastError ? (
                   <p className="warning-banner">{appState.backup.lastError}</p>
@@ -396,7 +394,7 @@ export function PrePurchasePage() {
                 </div>
                 <div className="hero-actions">
                   <button className="button button-primary" onClick={() => goTo('quiz')}>
-                    Iniciar avaliacao
+                    Comecar Quiz
                   </button>
                   <button
                     className="button button-secondary"
@@ -458,10 +456,9 @@ export function PrePurchasePage() {
             {state.step === 'loading' ? (
               <section className="funnel-panel loading-panel">
                 <span className="section-label">Loading</span>
-                <h2>Calculando seu score de risco</h2>
+                <h2>Montando sua leitura</h2>
                 <p>
-                  Cruzando intensidade, escalada, impacto emocional, sexual e perda de
-                  controle para montar seu diagnostico.
+                  Cruzando suas respostas para mostrar onde esse padrao esta mais forte hoje.
                 </p>
                 <div className="loading-ring" />
               </section>
@@ -508,8 +505,7 @@ export function PrePurchasePage() {
                 <span className="section-label">Sintomas</span>
                 <h2>Quais dores mais combinam com o seu momento?</h2>
                 <p>
-                  Estes sintomas nao alteram o score. Eles personalizam a leitura final por
-                  foco mental, vitalidade fisica, reconexao social e fe.
+                  Isso ajuda a deixar a leitura final mais fiel ao que voce esta vivendo agora.
                 </p>
                 <div className="panel-stack">
                   {symptomCategories.map((category) => (
@@ -545,27 +541,33 @@ export function PrePurchasePage() {
 
             {state.step === 'diagnosis' ? (
               <section className="funnel-panel highlight-panel">
-                <span className="section-label">Diagnostico</span>
-                <h2>{diagnosis.band.label}</h2>
-                <p>{diagnosis.band.short}</p>
+                <span className="section-label">Seu resultado</span>
+                <h2>
+                  {state.name ? `${state.name}, com base no que voce nos contou` : 'Com base no que voce nos contou'}
+                </h2>
+                <p>{diagnosis.band.label}</p>
                 <div className="diagnosis-metrics">
                   <div className="metric-card">
-                    <strong>{state.score}%</strong>
-                    <span>score de risco</span>
-                  </div>
-                  <div className="metric-card">
-                    <strong>{diagnosis.healthyDistance}%</strong>
-                    <span>acima do limite saudavel</span>
+                    <strong>{state.score}</strong>
+                    <span>ponto de partida</span>
                   </div>
                   <div className="metric-card">
                     <strong>{diagnosis.markers.length}</strong>
-                    <span>marcadores clinicos</span>
+                    <span>sinais que apareceram</span>
                   </div>
                   <div className="metric-card">
                     <strong>{state.symptoms.length}</strong>
-                    <span>sintomas marcados</span>
+                    <span>sintomas do seu momento</span>
                   </div>
                 </div>
+                <p>
+                  {diagnosis.band.short}
+                </p>
+                <p>
+                  Esse resultado foi montado a partir das suas respostas sobre frequencia,
+                  impacto, escalada e perda de controle. Ele nao e uma sentenca. E um ponto de
+                  partida para entender o que esta acontecendo hoje.
+                </p>
                 {diagnosis.markers.length > 0 ? (
                   <div className="timeline-list">
                     {diagnosis.markers.map((marker) => (
@@ -576,18 +578,23 @@ export function PrePurchasePage() {
                     ))}
                   </div>
                 ) : null}
+                <p>
+                  Quando esse padrao ja ficou automatico demais, so forca de vontade costuma nao
+                  bastar. O que ajuda e ter estrutura para reconhecer o gatilho, agir antes e
+                  acompanhar o progresso com clareza.
+                </p>
                 {diagnosis.symptomPriorityCopies.length > 0 ? (
                   <div className="timeline-list">
                     {diagnosis.symptomPriorityCopies.map((copy) => (
                       <div key={copy} className="timeline-item">
-                        <strong>Prioridade do plano</strong>
+                        <strong>O que seu plano precisa priorizar</strong>
                         <p>{copy}</p>
                       </div>
                     ))}
                   </div>
                 ) : null}
                 <button className="button button-primary" onClick={() => goTo('pain-carousel')}>
-                  Entender o padrao
+                  Entender o que isso significa
                 </button>
               </section>
             ) : null}
@@ -606,7 +613,7 @@ export function PrePurchasePage() {
                   ))}
                 </div>
                 <button className="button button-primary" onClick={nextPainSlide}>
-                  {state.painSlide === painSlides.length - 1 ? 'Ver solucao' : 'Proximo'}
+                  {state.painSlide === painSlides.length - 1 ? 'Ver a saida' : 'Continuar'}
                 </button>
               </section>
             ) : null}
@@ -626,16 +633,30 @@ export function PrePurchasePage() {
                 </div>
                 <button className="button button-primary" onClick={nextSolutionSlide}>
                   {state.solutionSlide === solutionSlides.length - 1
-                    ? 'Ver prova social'
-                    : 'Proximo'}
+                    ? 'Ver como o Coruja ajuda'
+                    : 'Continuar'}
                 </button>
               </section>
             ) : null}
 
             {state.step === 'social-proof' ? (
               <section className="funnel-panel">
-                <span className="section-label">Feedbacks</span>
-                <h2>Voce nao precisa recomecar sozinho</h2>
+                <span className="section-label">Relatos e comparacao</span>
+                <h2>Quem ja usou conta o que mudou</h2>
+                <div className="timeline-list">
+                  <div className="timeline-item">
+                    <strong>Sozinho</strong>
+                    <p>Normalmente falta continuidade quando o impulso sobe e os gatilhos aparecem de novo.</p>
+                  </div>
+                  <div className="timeline-item">
+                    <strong>Bloqueador isolado</strong>
+                    <p>Ajuda a cortar acesso, mas nao cuida sozinho do que acontece antes, durante e depois do gatilho.</p>
+                  </div>
+                  <div className="timeline-item">
+                    <strong>Com Coruja</strong>
+                    <p>Voce junta rotina, protecao, resposta imediata e historico para nao depender so de tentativa solta.</p>
+                  </div>
+                </div>
                 <div className="testimonial-grid">
                   {testimonials.map((item) => (
                     <article key={item.name} className="testimonial-card">
@@ -655,14 +676,28 @@ export function PrePurchasePage() {
               <section className="funnel-panel highlight-panel">
                 <span className="section-label">Preview do plano</span>
                 <h2>
-                  {state.name || 'Voce'} em {getPlanDate()}
+                  Com base no que voce respondeu, tracamos um horizonte ate {getPlanDate()}
                 </h2>
                 <p>
-                  Se nada mudar, o padrao tende a ganhar automatismo. Com plano, medicao e
-                  protecao, o objetivo vira reduzir recaidas e recuperar governanca.
+                  Esse marco foi definido a partir do seu momento hoje. Nao e promessa de
+                  resultado. E uma referencia para voce enxergar a direcao do seu plano.
                 </p>
+                <div className="timeline-list">
+                  <div className="timeline-item">
+                    <strong>Mais presenca no dia</strong>
+                    <p>Entender melhor seus gatilhos e reduzir o piloto automatico nos horarios mais vulneraveis.</p>
+                  </div>
+                  <div className="timeline-item">
+                    <strong>Menos peso depois de cair</strong>
+                    <p>Ter um caminho claro para recomecar com mais rapidez, em vez de sumir por culpa ou cansaco.</p>
+                  </div>
+                  <div className="timeline-item">
+                    <strong>Rotina mais protegida</strong>
+                    <p>Usar apoio diario, resposta imediata e protecao do ambiente para ganhar mais consistencia.</p>
+                  </div>
+                </div>
                 <button className="button button-primary" onClick={() => goTo('custom-plan')}>
-                  Ver plano personalizado
+                  Revelar meu plano
                 </button>
               </section>
             ) : null}
@@ -670,23 +705,46 @@ export function PrePurchasePage() {
             {state.step === 'custom-plan' ? (
               <section className="funnel-panel">
                 <span className="section-label">Plano personalizado</span>
-                <h2>Seu primeiro mapa de execucao</h2>
+                <h2>
+                  {state.name ? `${state.name}, seu plano foi montado a partir do que voce nos contou` : 'Seu plano foi montado a partir do que voce nos contou'}
+                </h2>
+                <p>
+                  O Coruja organiza sua rotina em torno do que mais pesa hoje, do que te deixa
+                  vulneravel e do que voce quer proteger daqui para frente.
+                </p>
                 <div className="timeline-list">
                   <div className="timeline-item">
-                    <strong>Fase 1</strong>
-                    <p>Reduzir exposicao, mapear gatilhos e interromper o piloto automatico.</p>
+                    <strong>Check-in diario</strong>
+                    <p>Para voce perceber como esta, identificar seus gatilhos e nao deixar o dia correr no automatico.</p>
                   </div>
                   <div className="timeline-item">
-                    <strong>Fase 2</strong>
-                    <p>Ganhar rotina com check-in, SOS, journal e visualizacao real do progresso.</p>
+                    <strong>SOS</strong>
+                    <p>Para ter uma resposta imediata quando a vontade subir e atravessar o momento sem agir no impulso.</p>
                   </div>
                   <div className="timeline-item">
-                    <strong>Fase 3</strong>
-                    <p>Consolidar consistencia, proteger horarios criticos e enfraquecer a escalada.</p>
+                    <strong>Bloqueador</strong>
+                    <p>Para proteger o ambiente nos momentos em que confiar so na disciplina nao basta.</p>
+                  </div>
+                  <div className="timeline-item">
+                    <strong>Jornal</strong>
+                    <p>Para registrar o que aconteceu, entender padroes e recomecar com mais clareza quando precisar.</p>
+                  </div>
+                  <div className="timeline-item">
+                    <strong>Analytics</strong>
+                    <p>Para enxergar seu historico, perceber evolucao e entender o que mais pesa na sua rotina.</p>
+                  </div>
+                  <div className="timeline-item">
+                    <strong>Metas</strong>
+                    <p>Para transformar o processo em direcao concreta, com marcos visiveis e progresso acompanhado de perto.</p>
                   </div>
                 </div>
+                <p>
+                  O app acompanha sua evolucao ao longo do caminho. Ele nao serve so para
+                  registrar o que aconteceu, mas para te ajudar a ajustar a rota enquanto voce
+                  avanca.
+                </p>
                 <button className="button button-primary" onClick={() => goTo('paywall')}>
-                  Escolher plano
+                  Escolher meu plano
                 </button>
               </section>
             ) : null}
@@ -694,7 +752,11 @@ export function PrePurchasePage() {
             {state.step === 'paywall' ? (
               <section className="funnel-panel">
                 <span className="section-label">Paywall</span>
-                <h2>Escolha o formato do seu reboot</h2>
+                <h2>Escolha como quer comecar</h2>
+                <p>
+                  Seu plano ja esta pronto. Agora e so decidir o formato que faz mais sentido
+                  para seguir com acompanhamento, protecao e progresso visivel.
+                </p>
                 <div className="pricing-grid">
                   {planOptions.map((plan) => (
                     <button
@@ -715,10 +777,12 @@ export function PrePurchasePage() {
                   ))}
                 </div>
                 <button className="button button-primary" onClick={continueToOnboarding}>
-                  Continuar com {state.selectedPlan === 'annual' ? 'Plano anual' : 'Acesso vitalicio'}
+                  {state.selectedPlan === 'annual'
+                    ? 'Continuar com o plano anual'
+                    : 'Continuar com acesso vitalicio'}
                 </button>
                 <button className="text-link" onClick={continueToOnboarding}>
-                  Seguir para cadastro nesta fase do prototipo
+                  Ver cadastro e liberar meu acesso
                 </button>
               </section>
             ) : null}

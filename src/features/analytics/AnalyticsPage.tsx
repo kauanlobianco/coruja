@@ -42,10 +42,10 @@ export function AnalyticsPage() {
         : 'info-card analytics-trend-card'
 
   return (
-    <AppShell title="Analytics" eyebrow="Leitura do progresso">
+    <AppShell title="Analytics" eyebrow="Historico e evolucao">
       <section className="form-card">
         <span className="section-label">Periodo</span>
-        <h2>Janela de analise</h2>
+        <h2>Veja sua evolucao no tempo</h2>
         <div className="chip-row">
           {rangeOptions.map((option) => (
             <button
@@ -62,7 +62,7 @@ export function AnalyticsPage() {
 
       <section className="panel-stack">
         <article className={trendClassName}>
-          <span className="section-label">Evolucao</span>
+          <span className="section-label">Visao geral</span>
           <h2>{report.trendHeadline}</h2>
           <p>{report.trendBody}</p>
           <div className="analytics-hero-grid">
@@ -72,53 +72,50 @@ export function AnalyticsPage() {
             </div>
             <div className="metric-card">
               <strong>{formatSignedDelta(report.recoveryDelta)}</strong>
-              <span>vs periodo anterior</span>
+              <span>vs antes</span>
             </div>
             <div className="metric-card">
               <strong>{formatSignedDelta(report.cravingDelta, '/10')}</strong>
-              <span>queda de fissura</span>
+              <span>mudanca na vontade</span>
             </div>
             <div className="metric-card">
               <strong>{report.consistencyScore}%</strong>
-              <span>consistencia da rotina</span>
+              <span>consistencia</span>
             </div>
           </div>
         </article>
 
         <div className="card-grid">
           <article className="info-card">
-            <span className="section-label">Historico recente</span>
+            <span className="section-label">Historico</span>
             <h2>{report.periodCheckIns.length} check-ins</h2>
             <p>Ultimo registro: {formatPtDateTime(report.lastCheckInAt)}</p>
-            <p>Janela anterior: {report.previousPeriodCheckIns.length} check-ins.</p>
+            <p>Antes: {report.previousPeriodCheckIns.length} check-ins.</p>
           </article>
 
           <article className="info-card">
-            <span className="section-label">Consistencia</span>
-            <h2>{report.uniqueCheckInDays} dias ativos</h2>
-            <p>De {report.periodDays} dias observados no periodo atual.</p>
-            <p>Periodo anterior: {report.previousUniqueCheckInDays} dias ativos.</p>
+            <span className="section-label">Dias ativos</span>
+            <h2>{report.uniqueCheckInDays} dias</h2>
+            <p>De {report.periodDays} dias no periodo atual.</p>
+            <p>Antes: {report.previousUniqueCheckInDays} dias.</p>
           </article>
 
           <article className="info-card">
-            <span className="section-label">Fissura media</span>
+            <span className="section-label">Vontade media</span>
             <h2>{report.averageCraving.toFixed(1)}/10</h2>
-            <p>Periodo anterior: {report.previousAverageCraving.toFixed(1)}/10.</p>
-            <p>Recaidas no periodo: {report.periodRelapses.length}</p>
+            <p>Antes: {report.previousAverageCraving.toFixed(1)}/10.</p>
+            <p>Recaidas: {report.periodRelapses.length}</p>
           </article>
         </div>
 
         {!hasEnoughData ? (
           <article className="info-card">
-            <span className="section-label">Dados insuficientes</span>
-            <h2>Analytics completa bloqueada por enquanto</h2>
-            <p>
-              Mantive a regra do legado: e preciso ter pelo menos 3 dias unicos de check-in
-              para considerar o painel mais confiavel.
-            </p>
+            <span className="section-label">Ainda nao liberado</span>
+            <h2>Seu painel vai ficar melhor com mais alguns registros</h2>
+            <p>Faca check-ins em pelo menos 3 dias diferentes para liberar uma leitura mais confiavel.</p>
             <div className="toolbar">
               <Link className="button button-secondary" to="/app">
-                Voltar para home
+                Voltar para a Home
               </Link>
               <Link className="button button-primary" to="/check-in">
                 Fazer check-in
@@ -131,28 +128,25 @@ export function AnalyticsPage() {
           <div className="section-header analytics-section-head">
             <div>
               <span className="section-label">Linha do tempo</span>
-              <h2>Seu historico visivel</h2>
+              <h2>Seus registros recentes</h2>
             </div>
             <span className="status-pill">{report.recentCheckIns.length} registro(s)</span>
           </div>
           {report.recentCheckIns.length === 0 ? (
-            <p>
-              Assim que voce registrar check-ins, esta linha do tempo vai mostrar a evolucao
-              recente.
-            </p>
+            <p>Seus registros mais recentes vao aparecer aqui.</p>
           ) : (
             <div className="analytics-timeline">
               {report.recentCheckIns.map((entry) => (
                 <article key={entry.id} className="analytics-timeline-item">
                   <div className="analytics-timeline-head">
                     <strong>{formatPtDateTime(entry.createdAt)}</strong>
-                    <span className="status-pill">fissura {entry.craving}/10</span>
+                    <span className="status-pill">vontade {entry.craving}/10</span>
                   </div>
                   <p>Estado: {entry.mentalState}</p>
                   <p>
                     {entry.triggers.length > 0
                       ? `Gatilhos: ${entry.triggers.join(', ')}.`
-                      : 'Sem gatilhos registrados neste check-in.'}
+                      : 'Sem gatilhos registrados.'}
                   </p>
                   {entry.notes ? <p>Anotacao: {entry.notes}</p> : null}
                 </article>
@@ -163,10 +157,10 @@ export function AnalyticsPage() {
 
         <div className="card-grid">
           <article className="info-card">
-            <span className="section-label">Estados mentais</span>
-            <h2>Frequencia no periodo</h2>
+            <span className="section-label">Estados</span>
+            <h2>O que mais aparece</h2>
             {report.dominantMentalStates.length === 0 ? (
-              <p>Nenhum estado mental salvo no periodo.</p>
+              <p>Nenhum estado registrado neste periodo.</p>
             ) : (
               <div className="bar-list">
                 {report.dominantMentalStates.slice(0, 5).map((item) => (
@@ -191,9 +185,9 @@ export function AnalyticsPage() {
 
           <article className="info-card">
             <span className="section-label">Gatilhos</span>
-            <h2>Ranking por frequencia</h2>
+            <h2>O que mais pesa</h2>
             {report.dominantTriggers.length === 0 ? (
-              <p>Nenhum gatilho salvo no periodo.</p>
+              <p>Nenhum gatilho registrado neste periodo.</p>
             ) : (
               <div className="bar-list">
                 {report.dominantTriggers.slice(0, 5).map((item) => (
@@ -218,8 +212,8 @@ export function AnalyticsPage() {
         </div>
 
         <article className="info-card">
-          <span className="section-label">Serie de fissura</span>
-          <h2>Media diaria do periodo</h2>
+          <span className="section-label">Serie do periodo</span>
+          <h2>Como sua vontade vem mudando</h2>
           {report.cravingSeries.length === 0 ? (
             <p>Nenhum check-in no periodo selecionado.</p>
           ) : (

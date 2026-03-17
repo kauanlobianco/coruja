@@ -6,28 +6,33 @@ import { buildCheckInStrategy, hasCheckInToday } from '../../core/domain/check-i
 import { appRoutes } from '../../core/config/routes'
 
 const mentalStates = [
-  { id: 'calmo', label: 'Calmo', note: 'Sem muita pressao percebida agora.' },
+  { id: 'calmo', label: 'Mais estavel', note: 'Sem muita pressao percebida neste momento.' },
   { id: 'ansioso', label: 'Ansioso', note: 'Mente acelerada e mais vulneravel ao impulso.' },
-  { id: 'cansado', label: 'Cansado', note: 'Pouca energia costuma reduzir o autocontrole.' },
+  { id: 'cansado', label: 'Cansado', note: 'Pouca energia costuma reduzir sua margem de controle.' },
   { id: 'frustrado', label: 'Frustrado', note: 'Atrito emocional pode empurrar decisoes impulsivas.' },
 ]
 
-const fallbackTriggers = ['Ansiedade', 'Celular a noite', 'Tedio', 'Estresse']
+const fallbackTriggers = [
+  'Redes sociais',
+  'Celular na cama',
+  'Tedio',
+  'Depois de um dia estressante',
+]
 
 function getCravingLabel(craving: number) {
   if (craving >= 8) {
-    return 'Muito alta. Nao vale enfrentar isso sozinho.'
+    return 'Muito alta. Este e um momento de protecao imediata.'
   }
 
   if (craving >= 5) {
-    return 'Moderada. Vale intervir antes que cresca.'
+    return 'Media. Vale agir agora, antes que isso cresca.'
   }
 
   if (craving >= 2) {
     return 'Baixa, mas ainda pede atencao.'
   }
 
-  return 'Tranquila. Bom momento para consolidar rotina.'
+  return 'Baixa. Bom momento para sustentar o ritmo do dia.'
 }
 
 export function CheckInPage() {
@@ -110,30 +115,30 @@ export function CheckInPage() {
     !alreadyCheckedIn && showStrategy && strategy ? (
       <section className="checkin-modal-backdrop">
         <article className="info-card highlight-card checkin-modal-card">
-          <span className="section-label">Estrategia do dia</span>
+          <span className="section-label">Seu proximo passo</span>
           <h2>
             {suggestSos
-              ? 'Intervencao imediata'
+              ? 'Proteja este momento agora'
               : suggestLibrary
-                ? 'Desacelerar agora'
-                : 'Proximo passo do dia'}
+                ? 'Hora de desacelerar'
+                : 'Siga com o seu dia de forma mais segura'}
           </h2>
           <p>{strategy}</p>
           {selectedMentalState ? (
             <p>
-              Estado lido: <strong>{selectedMentalState.label}</strong>
+              Estado registrado: <strong>{selectedMentalState.label}</strong>
             </p>
           ) : null}
           {suggestSos ? (
             <p className="warning-banner">
-              A fissura esta alta. O caminho mais seguro agora e salvar este check-in e ir para
-              Panico.
+              Sua vontade esta alta. O caminho mais seguro agora e salvar este check-in e ir para
+              o SOS.
             </p>
           ) : null}
           {suggestLibrary ? (
             <p className="warning-banner">
-              A fissura esta media. Vale salvar este momento e entrar em um conteudo de relaxamento
-              na Biblioteca.
+              Sua vontade esta em um nivel medio. Vale salvar este momento e entrar em um conteudo
+              de relaxamento na Biblioteca.
             </p>
           ) : null}
           <div className="hero-actions">
@@ -141,14 +146,14 @@ export function CheckInPage() {
               className="button button-secondary"
               onClick={() => void handleStrategyAction('home')}
             >
-              Continuar para home
+              Continuar para a Home
             </button>
             {suggestLibrary ? (
               <button
                 className="button button-secondary"
                 onClick={() => void handleStrategyAction('library')}
               >
-                Relaxar agora
+                Ir para a Biblioteca
               </button>
             ) : null}
             {suggestSos ? (
@@ -156,7 +161,7 @@ export function CheckInPage() {
                 className="button button-primary"
                 onClick={() => void handleStrategyAction('sos')}
               >
-                Ir para Panico
+                Ir para o SOS
               </button>
             ) : null}
           </div>
@@ -169,18 +174,18 @@ export function CheckInPage() {
       <section className="panel-stack">
         {alreadyCheckedIn ? (
           <article className="info-card highlight-card">
-            <span className="section-label">Ja concluido hoje</span>
-            <h2>Seu check-in de hoje ja foi registrado</h2>
+            <span className="section-label">Registrado hoje</span>
+            <h2>Seu check-in de hoje ja foi feito</h2>
             <p>
-              Mantivemos a regra mais importante do legado: um check-in por dia,
-              para proteger streak, analytics e historico sem duplicacao.
+              Para manter seu historico limpo e a leitura da sua evolucao mais confiavel, o app
+              libera um check-in por dia.
             </p>
             <div className="hero-actions">
               <button className="button button-secondary" onClick={() => navigate('/app')}>
-                Voltar para a home
+                Voltar para a Home
               </button>
               <button className="button button-primary" onClick={() => navigate('/sos')}>
-                Ir para SOS
+                Ir para o SOS
               </button>
             </div>
           </article>
@@ -188,10 +193,10 @@ export function CheckInPage() {
           <>
             <article className="info-card highlight-card">
               <span className="section-label">Compromisso de hoje</span>
-              <h2>Qual e sua decisao para este dia?</h2>
+              <h2>Confirme a intencao que vai guiar o seu dia</h2>
               <p>
-                Antes de medir fissura e contexto, marque o compromisso do dia com sua
-                recuperacao. Isso deixa o check-in mais intencional e menos automatico.
+                Este primeiro passo existe para te tirar do automatico. Antes de medir o momento,
+                confirme a direcao de hoje.
               </p>
               <button
                 className={pledgeConfirmed ? 'button button-primary' : 'button button-secondary'}
@@ -200,23 +205,21 @@ export function CheckInPage() {
               >
                 {pledgeConfirmed
                   ? 'Compromisso confirmado para hoje'
-                  : 'Hoje eu vou proteger meu dia e evitar recaida'}
+                  : 'Hoje eu escolho proteger meu dia'}
               </button>
             </article>
 
             <article className="info-card highlight-card">
               <span className="section-label">Leitura do momento</span>
-              <h2>Como esta sua fissura agora?</h2>
+              <h2>Como esta sua vontade agora?</h2>
               <p>
-                O objetivo aqui nao e julgar. E medir o momento para gerar uma
-                resposta pratica e mais segura.
+                Nao e para se julgar. E para entender o momento com honestidade e responder melhor
+                a ele.
               </p>
               <div className="section-header">
                 <div>
                   <dt>Intensidade</dt>
-                  <dd>
-                    {craving} / 10
-                  </dd>
+                  <dd>{craving} / 10</dd>
                 </div>
                 <span className="status-pill">{getCravingLabel(craving)}</span>
               </div>
@@ -232,11 +235,11 @@ export function CheckInPage() {
             </article>
 
             <article className="info-card">
-              <span className="section-label">Estado mental</span>
-              <h2>Qual e seu estado agora?</h2>
+              <span className="section-label">Seu estado agora</span>
+              <h2>Como voce se percebe neste momento?</h2>
               <p>
-                Como no app antigo, este passo muda a estrategia recomendada e
-                ajuda a qualificar o contexto do dia.
+                Escolher bem esse estado ajuda o app a sugerir uma resposta mais coerente com o
+                seu contexto real.
               </p>
               <div className="pricing-grid">
                 {mentalStates.map((item) => (
@@ -258,10 +261,10 @@ export function CheckInPage() {
 
             <article className="info-card">
               <span className="section-label">Gatilhos do momento</span>
-              <h2>O que esta contribuindo para esse estado?</h2>
+              <h2>O que pode estar contribuindo para isso?</h2>
               <p>
-                Esses gatilhos entram no registro do dia e alimentam analytics,
-                estrategia e futuras prevencoes.
+                Escolha os gatilhos que mais combinam com o seu dia. Eles ajudam a identificar
+                padroes e deixam sua estrategia mais util.
               </p>
               <div className="chip-row">
                 {availableTriggers.map((item) => (
@@ -280,11 +283,11 @@ export function CheckInPage() {
             </article>
 
             <article className="info-card">
-              <span className="section-label">Observacao rapida</span>
-              <h2>Algo importante para registrar?</h2>
+              <span className="section-label">Observacao opcional</span>
+              <h2>Quer registrar algo importante sobre este momento?</h2>
               <p>
-                Este campo ajuda a contextualizar recaidas, journal e leitura de
-                padroes depois.
+                Se fizer sentido, deixe uma anotacao curta. Isso pode te ajudar a entender melhor
+                seus padroes depois.
               </p>
               <textarea
                 id="notes"
@@ -292,18 +295,17 @@ export function CheckInPage() {
                 value={notes}
                 disabled={!pledgeConfirmed}
                 onChange={(event) => setNotes(event.target.value)}
-                placeholder="O que esta acontecendo agora?"
+                placeholder="O que esta pesando mais agora?"
               />
             </article>
 
             {!showStrategy ? (
               <article className="info-card">
                 <span className="section-label">Fechamento</span>
-                <h2>Gerar a estrategia do dia</h2>
+                <h2>Gerar meu proximo passo</h2>
                 <p>
-                  Quando voce gerar a estrategia, o app consolida esse momento em
-                  uma resposta pratica e decide com mais clareza se o SOS deve
-                  entrar agora.
+                  Quando voce continuar, o app transforma esse registro em uma orientacao pratica
+                  para agora.
                 </p>
                 <button
                   className="button button-primary"
@@ -318,7 +320,6 @@ export function CheckInPage() {
           </>
         )}
       </section>
-
     </AppShell>
   )
 }

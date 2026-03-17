@@ -60,6 +60,9 @@ Documentos que passam a orientar as proximas fases:
 - [migration-roadmap.md](C:/vibecode/coruja/docs/migration-roadmap.md)
 - [qa-matrix.md](C:/vibecode/coruja/docs/qa-matrix.md)
 - [error-empty-states.md](C:/vibecode/coruja/docs/error-empty-states.md)
+- [copy-roadmap.md](C:/vibecode/coruja/docs/copy-roadmap.md)
+- [copy-glossary.md](C:/vibecode/coruja/docs/copy-glossary.md)
+- [copy-onboarding-strategy.md](C:/vibecode/coruja/docs/copy-onboarding-strategy.md)
 
 ## Referencias em codigo
 

@@ -20,9 +20,7 @@ function getPrimaryAction(state: ReturnType<typeof useAppState>['state'], now: D
   if (!hasCheckInToday(state.checkIns, now)) {
     return {
       key: 'check-in',
-      label: 'Fazer check-in de hoje',
-      description: 'Seu check-in diario ainda esta pendente e deve abrir a rotina principal.',
-      path: appRoutes.checkIn,
+      description: 'Seu primeiro passo de hoje e registrar como voce esta.',
     }
   }
 
@@ -30,26 +28,20 @@ function getPrimaryAction(state: ReturnType<typeof useAppState>['state'], now: D
   if (lastCheckIn && lastCheckIn.craving >= 7) {
     return {
       key: 'sos',
-      label: 'Ir para Panico agora',
-      description: `Sua ultima fissura foi ${lastCheckIn.craving}/10. Vale reforcar a protecao antes que ela cresca.`,
-      path: appRoutes.sos,
+      description: 'Seu ultimo registro pediu mais cuidado. O melhor agora e se proteger.',
     }
   }
 
   if (!state.blocker.isEnabled) {
     return {
       key: 'blocker',
-      label: 'Ativar bloqueador',
-      description: 'A camada de protecao ainda esta desligada para este dispositivo.',
-      path: appRoutes.blocker,
+      description: 'A protecao ainda esta desligada neste aparelho.',
     }
   }
 
   return {
     key: 'journal',
-    label: 'Escrever no journal',
-    description: 'O basico do dia esta coberto. Registre contexto para consolidar a rotina.',
-    path: appRoutes.journal,
+    description: 'Seu dia basico esta coberto. Vale registrar contexto ou aprendizados.',
   }
 }
 
@@ -58,18 +50,18 @@ function getTodaySummary(state: ReturnType<typeof useAppState>['state'], now: Da
   const lastCheckIn = state.checkIns.at(-1) ?? null
 
   if (!checkInDone) {
-    return 'Hoje ainda nao foi registrado. O primeiro passo do dia e medir como voce esta.'
+    return 'Hoje ainda nao foi registrado. Comece entendendo como voce esta agora.'
   }
 
   if (lastCheckIn && lastCheckIn.craving >= 7) {
-    return 'Seu ultimo check-in indicou alta vulnerabilidade. O foco agora e reduzir risco, nao testar autocontrole.'
+    return 'Seu ultimo check-in mostrou um momento delicado. O foco agora e reduzir risco.'
   }
 
   if (state.blocker.isEnabled) {
-    return 'Seu check-in foi feito e a protecao esta ligada. O objetivo agora e sustentar consistencia.'
+    return 'Seu check-in foi feito e sua protecao esta ligada. Agora e sustentar o dia.'
   }
 
-  return 'Seu check-in foi feito. O proximo passo inteligente e ligar a protecao ou registrar contexto no journal.'
+  return 'Seu check-in foi feito. O proximo passo inteligente e ligar a protecao ou escrever no Jornal.'
 }
 
 export function HomePage() {
@@ -98,12 +90,18 @@ export function HomePage() {
             <div className="home-list-head">
               <div>
                 <span className="section-label">Check-in</span>
-                <h2>Check-in do dia</h2>
+                <h2>Registrar como voce esta</h2>
               </div>
               <div className="home-card-status">
-                {primaryAction.key === 'check-in' ? <span className="status-pill status-next">Recomendado</span> : null}
-                <span className={hasCheckInDoneToday ? 'status-pill status-ready' : 'status-pill status-next'}>
-                  {hasCheckInDoneToday ? 'Concluido' : 'Pendente'}
+                {primaryAction.key === 'check-in' ? (
+                  <span className="status-pill status-next">Recomendado</span>
+                ) : null}
+                <span
+                  className={
+                    hasCheckInDoneToday ? 'status-pill status-ready' : 'status-pill status-next'
+                  }
+                >
+                  {hasCheckInDoneToday ? 'Feito' : 'Pendente'}
                 </span>
               </div>
             </div>
@@ -111,12 +109,12 @@ export function HomePage() {
               <div className="home-item-body">
                 <p>Ultimo registro em {formatPtDate(lastCheckIn.createdAt)}</p>
                 <p>
-                  Fissura {lastCheckIn.craving}/10, estado {lastCheckIn.mentalState} e{' '}
-                  {lastCheckIn.triggers.length} gatilho(s) mapeado(s).
+                  Vontade {lastCheckIn.craving}/10, estado {lastCheckIn.mentalState} e{' '}
+                  {lastCheckIn.triggers.length} gatilho(s) marcado(s).
                 </p>
               </div>
             ) : (
-              <p>Sem registro hoje. Esta e a primeira acao importante da sua rotina.</p>
+              <p>Sem registro hoje. Este e o primeiro passo importante do seu dia.</p>
             )}
             {primaryAction.key === 'check-in' ? <p>{todaySummary}</p> : null}
             <span className="text-link">Abrir check-in</span>
@@ -133,11 +131,13 @@ export function HomePage() {
           >
             <div className="home-list-head">
               <div>
-                <span className="section-label">Journal</span>
-                <h2>Reflexao e contexto</h2>
+                <span className="section-label">Jornal</span>
+                <h2>Clarear o momento</h2>
               </div>
               <div className="home-card-status">
-                {primaryAction.key === 'journal' ? <span className="status-pill status-next">Recomendado</span> : null}
+                {primaryAction.key === 'journal' ? (
+                  <span className="status-pill status-next">Recomendado</span>
+                ) : null}
                 <span className="status-pill">{state.journalEntries.length} entrada(s)</span>
               </div>
             </div>
@@ -147,10 +147,10 @@ export function HomePage() {
                 <p>{lastJournalEntry.title}</p>
               </div>
             ) : (
-              <p>Escreva para clarear o momento e guardar aprendizados da jornada.</p>
+              <p>Use o Jornal para registrar contexto, aprendizados e o que esta pesando no dia.</p>
             )}
             {primaryAction.key === 'journal' ? <p>{todaySummary}</p> : null}
-            <span className="text-link">Abrir journal</span>
+            <span className="text-link">Abrir Jornal</span>
           </article>
         ),
       },
@@ -165,34 +165,38 @@ export function HomePage() {
             <div className="home-list-head">
               <div>
                 <span className="section-label">Bloqueador</span>
-                <h2>Protecao de sites</h2>
+                <h2>Proteger seu ambiente</h2>
               </div>
               <div className="home-card-status">
-                {primaryAction.key === 'blocker' ? <span className="status-pill status-next">Recomendado</span> : null}
+                {primaryAction.key === 'blocker' ? (
+                  <span className="status-pill status-next">Recomendado</span>
+                ) : null}
                 <span
                   className={
-                    state.blocker.isEnabled ? 'status-pill status-ready' : 'status-pill status-later'
+                    state.blocker.isEnabled
+                      ? 'status-pill status-ready'
+                      : 'status-pill status-later'
                   }
                 >
-                  {state.blocker.isEnabled ? 'Ativo' : 'Inativo'}
+                  {state.blocker.isEnabled ? 'Ativo' : 'Desligado'}
                 </span>
               </div>
             </div>
             <div className="home-item-body">
               <p>
                 {state.blocker.isEnabled
-                  ? `${state.blocker.blockedDomains.length || 11} dominios protegidos e ${state.blocker.blockedAttempts.length} tentativa(s) bloqueada(s).`
+                  ? `${state.blocker.blockedDomains.length || 11} dominios protegidos e ${state.blocker.blockedAttempts.length} tentativa(s) interrompida(s).`
                   : 'Ative a protecao para reduzir exposicao em momentos vulneraveis.'}
               </p>
               {state.blocker.blockedAttempts.length > 0 ? (
                 <p>
-                  Ultimo bloqueio em{' '}
+                  Ultima interrupcao em{' '}
                   {formatPtDate(state.blocker.blockedAttempts.at(-1)?.createdAt ?? null)}.
                 </p>
               ) : null}
             </div>
             {primaryAction.key === 'blocker' ? <p>{todaySummary}</p> : null}
-            <span className="text-link">Abrir bloqueador</span>
+            <span className="text-link">Abrir Bloqueador</span>
           </article>
         ),
       },
@@ -231,13 +235,14 @@ export function HomePage() {
         <article className="info-card highlight-card home-hero-card">
           <div className="home-list-head">
             <div>
-              <span className="section-label">Streak</span>
+              <span className="section-label">Seu streak</span>
               <h2>{state.streak.current} dias</h2>
             </div>
             <span className="status-pill">{goalProgress}% da meta</span>
           </div>
           <p>
-            Meta atual de {state.profile.goalDays} dias. Melhor marca: {state.streak.best} dias.
+            Meta atual de {state.profile.goalDays} dias. Sua melhor marca ate aqui foi de{' '}
+            {state.streak.best} dias.
           </p>
           <div className="progress-track">
             <div className="progress-fill" style={{ width: `${goalProgress}%` }} />
@@ -248,27 +253,60 @@ export function HomePage() {
               <span>check-in de hoje</span>
             </div>
             <div className="metric-card">
-              <strong>{state.blocker.isEnabled ? 'ativa' : 'inativa'}</strong>
-              <span>protecao deste device</span>
+              <strong>{state.blocker.isEnabled ? 'ativa' : 'desligada'}</strong>
+              <span>protecao do aparelho</span>
             </div>
             <div className="metric-card">
               <strong>{state.relapses.length}</strong>
-              <span>recaidas registradas</span>
+              <span>recaida(s) registradas</span>
             </div>
             <div className="metric-card">
               <strong>{state.sos.totalSessions}</strong>
-              <span>sessoes de panico</span>
+              <span>uso(s) do SOS</span>
             </div>
           </div>
         </article>
 
+        <article className="info-card">
+          <span className="section-label">Hoje</span>
+          <h2>{todaySummary}</h2>
+          <p>{primaryAction.description}</p>
+        </article>
+
         {orderedCards.map((card) => card.element)}
+
+        <article
+          className="info-card home-list-card"
+          onClick={() => navigate(appRoutes.relapse)}
+        >
+          <div className="home-list-head">
+            <div>
+              <span className="section-label">Recaida</span>
+              <h2>Registrar um recomeco</h2>
+            </div>
+            <div className="home-card-status">
+              <span className="status-pill">{state.relapses.length} registro(s)</span>
+            </div>
+          </div>
+          <div className="home-item-body">
+            <p>
+              Se voce teve um deslize, registre esse momento com clareza para recomecar sem
+              abandonar a jornada.
+            </p>
+            {state.relapses.length > 0 ? (
+              <p>
+                Ultimo registro em {formatPtDate(state.relapses.at(-1)?.createdAt ?? null)}.
+              </p>
+            ) : null}
+          </div>
+          <span className="text-link">Abrir recaida</span>
+        </article>
 
         <section className="panel-stack">
           <div className="section-header">
             <div>
               <span className="section-label">Motivos</span>
-              <h2>Suas ancoras</h2>
+              <h2>O que voce quer proteger</h2>
             </div>
           </div>
 

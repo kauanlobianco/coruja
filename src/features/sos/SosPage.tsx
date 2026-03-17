@@ -6,9 +6,9 @@ import { useAppState } from '../../app/state/use-app-state'
 const breathingSteps = ['Inspire', 'Segure', 'Expire', 'Pause']
 const defaultMotivations = ['Seu proximo passo ainda importa.']
 const panicSupportMessages = [
-  'Voce nao precisa vencer o dia inteiro agora. So os proximos minutos.',
-  'A fissura sobe e desce. O seu trabalho aqui e nao obedecer no pico.',
-  'Esperar tambem e uma acao. Continue no plano por mais um ciclo.',
+  'Fique so nos proximos minutos.',
+  'Nao siga o impulso no pico.',
+  'Esperar tambem e agir.',
 ]
 
 function formatCountdown(totalSeconds: number) {
@@ -84,19 +84,16 @@ export function SosPage() {
   const activeMotivation = motivations[motivationIndex % motivations.length]
   const timerDone = secondsLeft === 0
   const supportMessage = timerDone
-    ? 'O pico ja passou. Volte para a home ou registre como ficou seu estado.'
+    ? 'O pico passou. Escolha seu proximo passo.'
     : panicSupportMessages[Math.min(cycleCount, panicSupportMessages.length - 1)]
 
   return (
-    <AppShell title="Modo SOS" eyebrow="Suporte imediato">
+    <AppShell title="SOS" eyebrow="Suporte imediato">
       <section className="panel-stack">
         <article className="info-card highlight-card">
-          <span className="section-label">Lembre-se do motivo</span>
+          <span className="section-label">Foque no seu motivo</span>
           <h2>{activeMotivation}</h2>
-          <p>
-            Este bloco herda a ideia central do app antigo: colocar sua ancora na
-            frente do impulso antes de qualquer outra decisao.
-          </p>
+          <p>Fique com isso antes de fazer qualquer outra coisa.</p>
           <div className="carousel-dots" aria-hidden="true">
             {motivations.map((motivation, index) => (
               <span
@@ -111,19 +108,16 @@ export function SosPage() {
               type="button"
               onClick={() => setMotivationIndex((current) => (current + 1) % motivations.length)}
             >
-              Proximo motivo
+              Ver outro motivo
             </button>
           ) : null}
         </article>
 
         <div className="card-grid">
           <article className="info-card">
-            <span className="section-label">Respiracao guiada</span>
+            <span className="section-label">Respire</span>
             <h2>{breathingSteps[stepIndex]}</h2>
-            <p>
-              Ciclos curtos para tirar o usuario do modo automatico e criar
-              alguns minutos de distancia do gatilho.
-            </p>
+            <p>Siga o ritmo e ganhe alguns minutos de distancia.</p>
             <div className="sos-breathing">{breathingSteps[stepIndex]}</div>
             <p>{cycleCount} ciclo(s) completo(s)</p>
           </article>
@@ -143,7 +137,7 @@ export function SosPage() {
                   }
                 }}
               >
-                {timerStarted && !timerDone ? 'Contagem em andamento' : 'Iniciar contagem'}
+                {timerStarted && !timerDone ? 'Contagem em andamento' : 'Comecar agora'}
               </button>
               <button
                 className="button button-secondary"
@@ -161,21 +155,17 @@ export function SosPage() {
       </section>
 
       <section className="info-card">
-        <span className="section-label">Proximo passo</span>
-        <h2>Saia daqui com uma acao definida</h2>
-        <p>
-          O SOS nao e um fim em si. Ele prepara o usuario para voltar ao check-in
-          ou retornar a home sem seguir o impulso.
-        </p>
+        <span className="section-label">Quando estiver pronto</span>
+        <h2>Escolha seu proximo passo</h2>
         <div className="hero-actions">
           <button className="button button-secondary" onClick={() => navigate('/check-in')}>
             Voltar ao check-in
           </button>
           <button className="button button-secondary" onClick={() => navigate('/journal')}>
-            Ir para o jornal
+            Ir para o Jornal
           </button>
           <button className="button button-primary" onClick={() => navigate('/app')}>
-            Voltar para a home
+            Voltar para a Home
           </button>
         </div>
       </section>

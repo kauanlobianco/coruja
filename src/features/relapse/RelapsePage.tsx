@@ -6,18 +6,23 @@ import { useAppState } from '../../app/state/use-app-state'
 const goalOptions = [
   {
     days: 5,
-    title: 'Primeiro passo',
-    description: 'Retomar com uma meta simples e executavel.',
+    title: 'Ganhar tracao',
+    description: 'Retomar com uma meta curta e mais facil de sustentar.',
   },
   {
     days: 10,
-    title: 'Construir o habito',
-    description: 'Recomecar com mais consistencia e estrutura.',
+    title: 'Criar consistencia',
+    description: 'Recomecar com mais estrutura e alguns dias de distancia do impulso.',
   },
   {
     days: 15,
-    title: 'Desafio real',
-    description: 'Voltar ao plano com um compromisso mais firme.',
+    title: 'Recomeco mais firme',
+    description: 'Assumir um novo compromisso com mais clareza.',
+  },
+  {
+    days: 30,
+    title: 'Marco maior',
+    description: 'Buscar um primeiro marco mais longo depois desse recomeco.',
   },
 ]
 
@@ -44,25 +49,21 @@ export function RelapsePage() {
       : 0
 
   return (
-    <AppShell title="Recaida" eyebrow="Recomeco guiado">
+    <AppShell title="Recaida" eyebrow="Recomeco">
       <section className="panel-stack">
         <article className="info-card highlight-card">
           <span className="section-label">Primeiro passo</span>
-          <h2>Nao transforme um deslize em abandono</h2>
+          <h2>Um deslize nao precisa virar abandono</h2>
           <p>
-            Mantive a logica mais importante do app antigo: a recaida reinicia a
-            baseline do streak, preserva o historico e abre caminho para um
-            recomeço organizado.
+            Registre este momento com honestidade. O objetivo aqui nao e te punir, e te ajudar a
+            recomecar com mais clareza.
           </p>
         </article>
 
         <article className="info-card">
-          <span className="section-label">Resumo da tentativa atual</span>
-          <h2>Voce nao volta para zero em aprendizado</h2>
-          <p>
-            Esta tela serve para registrar o que aconteceu e escolher a proxima
-            meta com mais clareza.
-          </p>
+          <span className="section-label">O que continua com voce</span>
+          <h2>Voce nao perde o que aprendeu</h2>
+          <p>Seu historico continua aqui. Agora a ideia e transformar isso em um novo passo.</p>
           <dl className="home-stats-grid">
             <div>
               <dt>Streak atual</dt>
@@ -85,7 +86,7 @@ export function RelapsePage() {
 
         <article className="info-card">
           <span className="section-label">Nova meta</span>
-          <h2>Defina como voce quer recomecar</h2>
+          <h2>Como voce quer recomecar a partir daqui?</h2>
           <div className="pricing-grid">
             {goalOptions.map((option) => (
               <button
@@ -106,42 +107,39 @@ export function RelapsePage() {
 
         <article className="info-card">
           <span className="section-label">Contexto</span>
-          <h2>O que puxou esse momento?</h2>
+          <h2>O que mais pesou neste momento?</h2>
           <div className="field">
-            <label htmlFor="relapse-cause">Causa principal</label>
+            <label htmlFor="relapse-cause">O que aconteceu</label>
             <input
               id="relapse-cause"
               value={cause}
               onChange={(event) => setCause(event.target.value)}
-              placeholder="Ex.: ansiedade + celular na madrugada"
+              placeholder="Ex.: celular na madrugada depois de um dia pesado"
             />
           </div>
           <div className="field">
-            <label htmlFor="relapse-reflection">Reflexao opcional</label>
+            <label htmlFor="relapse-reflection">O que voce quer lembrar depois</label>
             <textarea
               id="relapse-reflection"
               className="textarea"
               value={reflection}
               onChange={(event) => setReflection(event.target.value)}
-              placeholder="Se quiser, registre o que voce aprendeu com esse momento."
+              placeholder="Se fizer sentido, escreva o que voce aprendeu ou o que quer fazer diferente."
             />
           </div>
-          <p>
-            Se voce escrever uma reflexao, ela tambem entra no Jornal para ficar
-            acessivel depois.
-          </p>
+          <p>Se voce escrever essa reflexao, ela tambem fica salva no Jornal.</p>
         </article>
 
         <article className="info-card">
           <span className="section-label">Confirmacao</span>
-          <h2>Fechar este ciclo e recomecar</h2>
+          <h2>Fechar este momento e recomecar</h2>
           <p>
-            Ao confirmar, o app registra a recaida, reseta a data de inicio do
-            streak e aplica sua nova meta imediatamente.
+            Ao confirmar, o app registra a recaida, reinicia seu marco de inicio e aplica a nova
+            meta que voce escolheu.
           </p>
           <div className="hero-actions">
             <button className="button button-secondary" onClick={() => navigate('/app')}>
-              Cancelar
+              Voltar
             </button>
             <button className="button button-primary" onClick={() => void handleConfirm()}>
               Confirmar e recomecar
