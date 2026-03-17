@@ -6,7 +6,11 @@ export function AccountRequiredPage() {
   const navigate = useNavigate()
 
   return (
-    <AppShell title="Conta obrigatoria antes do onboarding" eyebrow="Conta e backup">
+    <AppShell
+      title="Conta obrigatoria antes do onboarding"
+      eyebrow="Conta e backup"
+      shellMode="entry"
+    >
       <section className="info-card highlight-card">
         <span className="section-label">Nova regra do produto</span>
         <h2>Seu cadastro vem antes do app principal</h2>

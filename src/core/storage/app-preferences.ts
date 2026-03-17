@@ -5,6 +5,7 @@ import { defaultAppModel } from '../domain/models'
 import { normalizeAppModel } from '../domain/streak'
 
 const APP_STATE_KEY = 'coruja.app.state'
+const DEMO_CLOCK_OFFSET_KEY = 'coruja.demo.clock.offset'
 
 const appStateSchema = z.object({
   hasCompletedOnboarding: z.boolean(),
@@ -147,5 +148,26 @@ export async function savePersistedAppState(state: AppModel) {
   await Preferences.set({
     key: APP_STATE_KEY,
     value: JSON.stringify(state),
+  })
+}
+
+export async function loadDemoClockOffsetDays() {
+  try {
+    const { value } = await Preferences.get({ key: DEMO_CLOCK_OFFSET_KEY })
+    if (!value) {
+      return 0
+    }
+
+    const parsed = Number(value)
+    return Number.isFinite(parsed) ? parsed : 0
+  } catch {
+    return 0
+  }
+}
+
+export async function saveDemoClockOffsetDays(offsetDays: number) {
+  await Preferences.set({
+    key: DEMO_CLOCK_OFFSET_KEY,
+    value: String(offsetDays),
   })
 }

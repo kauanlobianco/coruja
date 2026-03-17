@@ -6,6 +6,7 @@ import {
   planOptions,
   quizQuestions,
   solutionSlides,
+  symptomCategories,
   symptomOptions,
   testimonials,
 } from './data'
@@ -14,7 +15,12 @@ import {
   loadPrePurchaseState,
   savePrePurchaseState,
 } from './storage'
-import type { FunnelStep, PrePurchaseState } from './types'
+import type {
+  FunnelStep,
+  PrePurchaseState,
+  QuizAnswer,
+  SymptomCategory,
+} from './types'
 
 const steps: FunnelStep[] = [
   'landing',
@@ -44,25 +50,79 @@ const initialState: PrePurchaseState = {
   solutionSlide: 0,
 }
 
-function getDiagnosisCopy(score: number) {
-  if (score >= 40) {
-    return {
-      title: 'Padrão de alto risco detectado',
-      body: 'Seu resultado sugere um ciclo já bem consolidado entre gatilho, impulso e culpa. A prioridade aqui é reduzir recaídas rápidas e reconstruir previsibilidade.',
-    }
-  }
+const markerRules = [
+  {
+    id: 'perda-controle',
+    title: 'Perda de controle',
+    matches: (answers: Map<number, number>) =>
+      answers.get(13) === 1 || answers.get(6) === 4,
+    copy:
+      'Suas respostas indicam episodios de perda de controle, com dificuldade de interromper ou regular o comportamento.',
+  },
+  {
+    id: 'interferencia-vida',
+    title: 'Interferencia na vida',
+    matches: (answers: Map<number, number>) => {
+      const answer = answers.get(6)
+      return answer === 3 || answer === 4
+    },
+    copy:
+      'O comportamento ja apresenta interferencia em areas do dia a dia, o que aumenta significativamente o nivel de risco.',
+  },
+  {
+    id: 'tentativas-frustradas',
+    title: 'Tentativas frustradas',
+    matches: (answers: Map<number, number>) => {
+      const answer = answers.get(12)
+      return answer === 3 || answer === 4
+    },
+    copy:
+      'Voce relatou tentativas de reduzir ou parar que nao se mantiveram, o que sugere falha de regulacao do comportamento.',
+  },
+  {
+    id: 'impacto-sexual',
+    title: 'Impacto sexual',
+    matches: (answers: Map<number, number>) => {
+      const answer = answers.get(8)
+      return answer !== undefined && answer >= 2
+    },
+    copy:
+      'Existe impacto sexual associado ao padrao, o que indica prejuizo funcional especifico.',
+  },
+  {
+    id: 'escalada',
+    title: 'Escalada e tolerancia',
+    matches: (answers: Map<number, number>) => {
+      const answer = answers.get(10)
+      return answer !== undefined && answer >= 2
+    },
+    copy:
+      'Ha sinais de escalada: necessidade de estimulos mais intensos para obter o mesmo efeito.',
+  },
+  {
+    id: 'impacto-emocional',
+    title: 'Impacto emocional',
+    matches: (answers: Map<number, number>) => {
+      const answer = answers.get(9)
+      return answer !== undefined && answer >= 2
+    },
+    copy:
+      'Sua resposta indica um ciclo emocional apos o consumo, com culpa, vazio ou ansiedade que podem sustentar repeticao por reforco negativo.',
+  },
+  {
+    id: 'gasto-financeiro',
+    title: 'Gasto financeiro',
+    matches: (answers: Map<number, number>) => {
+      const answer = answers.get(11)
+      return answer === 3 || answer === 4
+    },
+    copy:
+      'Houve indicacao de impacto financeiro, que e um marcador objetivo de gravidade.',
+  },
+]
 
-  if (score >= 28) {
-    return {
-      title: 'Padrão moderado com sinais de escalada',
-      body: 'Seu diagnóstico aponta repetição relevante e impacto claro em foco, sono e disciplina. Ainda é um ótimo momento para reorganizar a rotina.',
-    }
-  }
-
-  return {
-    title: 'Padrão inicial, mas já com impacto real',
-    body: 'Mesmo num estágio mais leve, seu resultado mostra que já existe um ciclo se formando. O melhor momento para estruturar um plano é antes da escalada.',
-  }
+function getProgress(step: FunnelStep) {
+  return ((steps.indexOf(step) + 1) / steps.length) * 100
 }
 
 function getPlanDate() {
@@ -75,8 +135,95 @@ function getPlanDate() {
   })
 }
 
-function getProgress(step: FunnelStep) {
-  return ((steps.indexOf(step) + 1) / steps.length) * 100
+function getRiskBand(score: number) {
+  if (score >= 78) {
+    return {
+      label: 'Risco critico',
+      short: 'Perda recorrente de controle, impacto funcional severo e ciclo de reforco negativo.',
+    }
+  }
+
+  if (score >= 56) {
+    return {
+      label: 'Risco alto',
+      short: 'Dificuldade crescente de controle, escalada gradual e tentativas frustradas.',
+    }
+  }
+
+  if (score >= 16) {
+    return {
+      label: 'Risco moderado',
+      short: 'Indicios de automatizacao e inicio de impacto emocional.',
+    }
+  }
+
+  return {
+    label: 'Referencia saudavel',
+    short: 'Baixo risco. Consumo nao dominante e governanca preservada.',
+  }
+}
+
+function getSymptomCategoryMap(selectedSymptoms: string[]) {
+  const map = new Map<SymptomCategory, string[]>()
+
+  for (const option of symptomOptions) {
+    if (!selectedSymptoms.includes(option.label)) {
+      continue
+    }
+
+    const current = map.get(option.category) ?? []
+    map.set(option.category, [...current, option.label])
+  }
+
+  return map
+}
+
+function getSymptomPriorityCopies(selectedSymptoms: string[]) {
+  const map = getSymptomCategoryMap(selectedSymptoms)
+  const copies: string[] = []
+
+  if (map.has('Fisico')) {
+    copies.push('Seus sintomas fisicos sugerem priorizar recuperacao de vitalidade, energia e funcao sexual.')
+  }
+
+  if (map.has('Mental')) {
+    copies.push('Os sintomas mentais apontam para foco, dopamina e clareza cognitiva como frente principal de recuperacao.')
+  }
+
+  if (map.has('Social')) {
+    copies.push('Os sintomas sociais mostram que reconexao, autoestima e relacionamentos merecem entrar no plano desde o inicio.')
+  }
+
+  if (map.has('Fe')) {
+    copies.push('Tambem existe uma camada espiritual importante para este usuario, que pode ser usada como ancora de recomeco.')
+  }
+
+  return copies
+}
+
+function getDiagnosisReport(score: number, quizAnswers: QuizAnswer[], symptoms: string[]) {
+  const band = getRiskBand(score)
+  const answersByQuestion = new Map<number, number>(
+    quizAnswers.map((answer) => [answer.questionId, answer.answerIndex]),
+  )
+  const markers = markerRules.filter((rule) => rule.matches(answersByQuestion))
+  const symptomPriorityCopies = getSymptomPriorityCopies(symptoms)
+  const healthyDistance = Math.max(0, score - 15)
+
+  return {
+    band,
+    markers,
+    symptomPriorityCopies,
+    healthyDistance,
+  }
+}
+
+function getLandingChecks() {
+  return [
+    'Quiz psicometrico com 13 perguntas',
+    'Score de risco real entre 0 e 100%',
+    'Diagnostico com marcadores clinicos',
+  ]
 }
 
 export function PrePurchasePage() {
@@ -101,16 +248,26 @@ export function PrePurchasePage() {
   }, [state.step])
 
   const currentQuestion = quizQuestions[state.quizIndex]
-  const diagnosis = useMemo(() => getDiagnosisCopy(state.score), [state.score])
+  const diagnosis = useMemo(
+    () => getDiagnosisReport(state.score, state.quizAnswers, state.symptoms),
+    [state.quizAnswers, state.score, state.symptoms],
+  )
 
   function goTo(step: FunnelStep) {
     setState((current) => ({ ...current, step }))
   }
 
-  function answerQuiz(points: number) {
+  function answerQuiz(questionId: number, answerIndex: number, points: number) {
     setState((current) => {
-      const quizAnswers = [...current.quizAnswers, points]
-      const score = quizAnswers.reduce((sum, value) => sum + value, 0)
+      const quizAnswers = [
+        ...current.quizAnswers,
+        {
+          questionId,
+          answerIndex,
+          points,
+        },
+      ]
+      const score = quizAnswers.reduce((sum, value) => sum + value.points, 0)
       const isLast = current.quizIndex === quizQuestions.length - 1
 
       if (isLast) {
@@ -168,299 +325,349 @@ export function PrePurchasePage() {
   }
 
   return (
-    <div className="funnel-shell">
-      <div className="funnel-frame">
-        <header className="funnel-header">
-          <div>
-            <span className="eyebrow">Pre-compra React</span>
-            <h1>Coruja</h1>
-          </div>
-          <div className="funnel-progress">
-            <span>{Math.round(getProgress(state.step))}%</span>
-            <div className="progress-track">
-              <div
-                className="progress-fill"
-                style={{ width: `${getProgress(state.step)}%` }}
-              />
-            </div>
-          </div>
-        </header>
+    <div className="app-shell">
+      <div className="phone-shell">
+        <div className="phone-frame">
+          <div className="phone-notch" aria-hidden="true" />
 
-        {state.step === 'landing' ? (
-          <section className="funnel-panel funnel-hero">
-            <span className="section-label">Landing</span>
-            <h2>Recomece com clareza, não no improviso</h2>
-            <p>
-              Um fluxo guiado para entender seu padrão, diagnosticar seus
-              gatilhos e montar um plano mais estável antes de entrar no app.
-            </p>
-            {appState.backup.status === 'conflict' && appState.backup.lastError ? (
-              <p className="warning-banner">{appState.backup.lastError}</p>
+          <div className="funnel-frame funnel-phone-frame">
+            <header className="funnel-header">
+              <div>
+                <span className="eyebrow">Pre-compra</span>
+                <h1>Coruja</h1>
+              </div>
+              <div className="funnel-progress">
+                <span>{Math.round(getProgress(state.step))}%</span>
+                <div className="progress-track">
+                  <div
+                    className="progress-fill"
+                    style={{ width: `${getProgress(state.step)}%` }}
+                  />
+                </div>
+              </div>
+            </header>
+
+            {state.step === 'landing' ? (
+              <section className="funnel-panel funnel-hero">
+                <span className="section-label">Landing</span>
+                <h2>Descubra seu score de risco e o que esta sustentando esse padrao.</h2>
+                <p>
+                  Este pre-compra agora segue a mesma estrutura mobile do produto e usa a
+                  logica real de quiz e sintomas dos PRDs.
+                </p>
+                {appState.backup.status === 'conflict' && appState.backup.lastError ? (
+                  <p className="warning-banner">{appState.backup.lastError}</p>
+                ) : null}
+                <div className="hero-checks">
+                  {getLandingChecks().map((item) => (
+                    <span key={item}>{item}</span>
+                  ))}
+                </div>
+                <div className="hero-actions">
+                  <button className="button button-primary" onClick={() => goTo('quiz')}>
+                    Iniciar avaliacao
+                  </button>
+                  <button
+                    className="button button-secondary"
+                    onClick={() => navigate('/account/auth?mode=login&loginOnly=1')}
+                  >
+                    Ja tenho conta
+                  </button>
+                </div>
+              </section>
             ) : null}
-            <div className="hero-checks">
-              <span>Quiz com 13 perguntas</span>
-              <span>Sintomas e diagnóstico</span>
-              <span>Plano e paywall desacoplados</span>
-            </div>
-            <div className="hero-actions">
-              <button className="button button-primary" onClick={() => goTo('quiz')}>
-                Iniciar avaliação
-              </button>
-              <button
-                className="button button-secondary"
-                onClick={() => navigate('/account/auth?mode=login&loginOnly=1')}
-              >
-                Ja tenho conta
-              </button>
-            </div>
-          </section>
-        ) : null}
 
-        {state.step === 'quiz' ? (
-          <section className="funnel-panel">
-            <span className="section-label">Quiz</span>
-            <h2>
-              Pergunta {state.quizIndex + 1} de {quizQuestions.length}
-            </h2>
-            <p>{currentQuestion.prompt}</p>
-            <div className="answer-grid">
-              {currentQuestion.answers.map((answer) => (
+            {state.step === 'quiz' ? (
+              <section className="funnel-panel">
+                <span className="section-label">Quiz</span>
+                <h2>
+                  Pergunta {state.quizIndex + 1} de {quizQuestions.length}
+                </h2>
+                <p>{currentQuestion.prompt}</p>
+                <p>Fator: {currentQuestion.factor}</p>
+                <div className="answer-grid">
+                  {currentQuestion.answers.map((answer, answerIndex) => (
+                    <button
+                      key={answer.label}
+                      className="answer-card"
+                      onClick={() => answerQuiz(currentQuestion.id, answerIndex, answer.points)}
+                    >
+                      <strong>{answer.label}</strong>
+                    </button>
+                  ))}
+                </div>
+              </section>
+            ) : null}
+
+            {state.step === 'loading' ? (
+              <section className="funnel-panel loading-panel">
+                <span className="section-label">Loading</span>
+                <h2>Calculando seu score de risco</h2>
+                <p>
+                  Cruzando intensidade, escalada, impacto emocional, sexual e perda de
+                  controle para montar seu diagnostico.
+                </p>
+                <div className="loading-ring" />
+              </section>
+            ) : null}
+
+            {state.step === 'identity' ? (
+              <section className="funnel-panel form-card">
+                <span className="section-label">Identidade</span>
+                <h2>Quem esta comecando esse reboot?</h2>
+                <div className="field">
+                  <label htmlFor="funnel-name">Nome</label>
+                  <input
+                    id="funnel-name"
+                    value={state.name}
+                    onChange={(event) =>
+                      setState((current) => ({ ...current, name: event.target.value }))
+                    }
+                    placeholder="Seu primeiro nome"
+                  />
+                </div>
+                <div className="field">
+                  <label htmlFor="funnel-age">Idade</label>
+                  <input
+                    id="funnel-age"
+                    value={state.age}
+                    onChange={(event) =>
+                      setState((current) => ({ ...current, age: event.target.value }))
+                    }
+                    placeholder="Sua idade"
+                  />
+                </div>
                 <button
-                  key={answer.label}
-                  className="answer-card"
-                  onClick={() => answerQuiz(answer.points)}
+                  className="button button-primary"
+                  disabled={!state.name.trim() || !state.age.trim()}
+                  onClick={() => goTo('symptoms')}
                 >
-                  {answer.label}
+                  Continuar
                 </button>
-              ))}
-            </div>
-          </section>
-        ) : null}
+              </section>
+            ) : null}
 
-        {state.step === 'loading' ? (
-          <section className="funnel-panel loading-panel">
-            <span className="section-label">Loading</span>
-            <h2>Gerando sua leitura personalizada</h2>
-            <p>
-              Cruzando padrão de impulso, impacto emocional e comportamento da
-              rotina para montar a próxima etapa.
-            </p>
-            <div className="loading-ring" />
-          </section>
-        ) : null}
-
-        {state.step === 'identity' ? (
-          <section className="funnel-panel form-card">
-            <span className="section-label">Identidade</span>
-            <h2>Quem está começando esse reboot?</h2>
-            <div className="field">
-              <label htmlFor="funnel-name">Nome</label>
-              <input
-                id="funnel-name"
-                value={state.name}
-                onChange={(event) =>
-                  setState((current) => ({ ...current, name: event.target.value }))
-                }
-                placeholder="Seu primeiro nome"
-              />
-            </div>
-            <div className="field">
-              <label htmlFor="funnel-age">Idade</label>
-              <input
-                id="funnel-age"
-                value={state.age}
-                onChange={(event) =>
-                  setState((current) => ({ ...current, age: event.target.value }))
-                }
-                placeholder="Sua idade"
-              />
-            </div>
-            <button
-              className="button button-primary"
-              disabled={!state.name.trim() || !state.age.trim()}
-              onClick={() => goTo('symptoms')}
-            >
-              Continuar
-            </button>
-          </section>
-        ) : null}
-
-        {state.step === 'symptoms' ? (
-          <section className="funnel-panel">
-            <span className="section-label">Sintomas</span>
-            <h2>Quais sinais mais combinam com o seu momento?</h2>
-            <div className="chip-row">
-              {symptomOptions.map((symptom) => (
+            {state.step === 'symptoms' ? (
+              <section className="funnel-panel">
+                <span className="section-label">Sintomas</span>
+                <h2>Quais dores mais combinam com o seu momento?</h2>
+                <p>
+                  Estes sintomas nao alteram o score. Eles personalizam a leitura final por
+                  foco mental, vitalidade fisica, reconexao social e fe.
+                </p>
+                <div className="panel-stack">
+                  {symptomCategories.map((category) => (
+                    <article key={category} className="info-card inline-card">
+                      <span className="section-label">{category}</span>
+                      <div className="chip-row">
+                        {symptomOptions
+                          .filter((option) => option.category === category)
+                          .map((option) => (
+                            <button
+                              key={option.label}
+                              className={
+                                state.symptoms.includes(option.label) ? 'chip active' : 'chip'
+                              }
+                              onClick={() => toggleSymptom(option.label)}
+                            >
+                              {option.label}
+                            </button>
+                          ))}
+                      </div>
+                    </article>
+                  ))}
+                </div>
                 <button
-                  key={symptom}
-                  className={state.symptoms.includes(symptom) ? 'chip active' : 'chip'}
-                  onClick={() => toggleSymptom(symptom)}
+                  className="button button-primary"
+                  disabled={state.symptoms.length === 0}
+                  onClick={() => goTo('diagnosis')}
                 >
-                  {symptom}
+                  Ver diagnostico
                 </button>
-              ))}
-            </div>
-            <button
-              className="button button-primary"
-              disabled={state.symptoms.length === 0}
-              onClick={() => goTo('diagnosis')}
-            >
-              Ver diagnóstico
-            </button>
-          </section>
-        ) : null}
+              </section>
+            ) : null}
 
-        {state.step === 'diagnosis' ? (
-          <section className="funnel-panel highlight-panel">
-            <span className="section-label">Diagnóstico</span>
-            <h2>{diagnosis.title}</h2>
-            <p>{diagnosis.body}</p>
-            <div className="diagnosis-metrics">
-              <div className="metric-card">
-                <strong>{state.score}</strong>
-                <span>Pontuação total</span>
-              </div>
-              <div className="metric-card">
-                <strong>{state.symptoms.length}</strong>
-                <span>Sintomas marcados</span>
-              </div>
-            </div>
-            <button className="button button-primary" onClick={() => goTo('pain-carousel')}>
-              Entender o padrão
-            </button>
-          </section>
-        ) : null}
-
-        {state.step === 'pain-carousel' ? (
-          <section className="funnel-panel">
-            <span className="section-label">Carrossel de dor</span>
-            <h2>{painSlides[state.painSlide].title}</h2>
-            <p>{painSlides[state.painSlide].body}</p>
-            <div className="carousel-dots">
-              {painSlides.map((item, index) => (
-                <span
-                  key={item.title}
-                  className={index === state.painSlide ? 'dot active' : 'dot'}
-                />
-              ))}
-            </div>
-            <button className="button button-primary" onClick={nextPainSlide}>
-              {state.painSlide === painSlides.length - 1 ? 'Ver solução' : 'Próximo'}
-            </button>
-          </section>
-        ) : null}
-
-        {state.step === 'solution-carousel' ? (
-          <section className="funnel-panel">
-            <span className="section-label">Carrossel de solução</span>
-            <h2>{solutionSlides[state.solutionSlide].title}</h2>
-            <p>{solutionSlides[state.solutionSlide].body}</p>
-            <div className="carousel-dots">
-              {solutionSlides.map((item, index) => (
-                <span
-                  key={item.title}
-                  className={index === state.solutionSlide ? 'dot active' : 'dot'}
-                />
-              ))}
-            </div>
-            <button className="button button-primary" onClick={nextSolutionSlide}>
-              {state.solutionSlide === solutionSlides.length - 1
-                ? 'Ver prova social'
-                : 'Próximo'}
-            </button>
-          </section>
-        ) : null}
-
-        {state.step === 'social-proof' ? (
-          <section className="funnel-panel">
-            <span className="section-label">Feedbacks</span>
-            <h2>Você não precisa recomeçar sozinho</h2>
-            <div className="testimonial-grid">
-              {testimonials.map((item) => (
-                <article key={item.name} className="testimonial-card">
-                  <p>"{item.quote}"</p>
-                  <strong>{item.name}</strong>
-                  <span>{item.role}</span>
-                </article>
-              ))}
-            </div>
-            <button className="button button-primary" onClick={() => goTo('plan-preview')}>
-              Ver meu plano
-            </button>
-          </section>
-        ) : null}
-
-        {state.step === 'plan-preview' ? (
-          <section className="funnel-panel highlight-panel">
-            <span className="section-label">Preview do plano</span>
-            <h2>
-              {state.name || 'Você'} em {getPlanDate()}
-            </h2>
-            <p>
-              Com um fluxo mais consistente, o foco é reduzir impulsos, recuperar
-              previsibilidade e construir um histórico visível de progresso.
-            </p>
-            <button className="button button-primary" onClick={() => goTo('custom-plan')}>
-              Ver plano personalizado
-            </button>
-          </section>
-        ) : null}
-
-        {state.step === 'custom-plan' ? (
-          <section className="funnel-panel">
-            <span className="section-label">Plano personalizado</span>
-            <h2>Seu primeiro mapa de execução</h2>
-            <div className="timeline-list">
-              <div className="timeline-item">
-                <strong>Semana 1</strong>
-                <p>Mapear gatilhos, ajustar rotina e reduzir exposição aos horários críticos.</p>
-              </div>
-              <div className="timeline-item">
-                <strong>Semana 2</strong>
-                <p>Consolidar check-in e respostas rápidas para ansiedade, tédio e estresse.</p>
-              </div>
-              <div className="timeline-item">
-                <strong>Semana 3+</strong>
-                <p>Ganhar consistência e visualizar progresso com metas e intervenções mais precisas.</p>
-              </div>
-            </div>
-            <button className="button button-primary" onClick={() => goTo('paywall')}>
-              Escolher plano
-            </button>
-          </section>
-        ) : null}
-
-        {state.step === 'paywall' ? (
-          <section className="funnel-panel">
-            <span className="section-label">Paywall</span>
-            <h2>Escolha o formato do seu reboot</h2>
-            <div className="pricing-grid">
-              {planOptions.map((plan) => (
-                <button
-                  key={plan.id}
-                  className={
-                    state.selectedPlan === plan.id
-                      ? 'plan-card plan-card-active'
-                      : 'plan-card'
-                  }
-                  onClick={() =>
-                    setState((current) => ({ ...current, selectedPlan: plan.id }))
-                  }
-                >
-                  <strong>{plan.title}</strong>
-                  <span>{plan.price}</span>
-                  <p>{plan.description}</p>
+            {state.step === 'diagnosis' ? (
+              <section className="funnel-panel highlight-panel">
+                <span className="section-label">Diagnostico</span>
+                <h2>{diagnosis.band.label}</h2>
+                <p>{diagnosis.band.short}</p>
+                <div className="diagnosis-metrics">
+                  <div className="metric-card">
+                    <strong>{state.score}%</strong>
+                    <span>score de risco</span>
+                  </div>
+                  <div className="metric-card">
+                    <strong>{diagnosis.healthyDistance}%</strong>
+                    <span>acima do limite saudavel</span>
+                  </div>
+                  <div className="metric-card">
+                    <strong>{diagnosis.markers.length}</strong>
+                    <span>marcadores clinicos</span>
+                  </div>
+                  <div className="metric-card">
+                    <strong>{state.symptoms.length}</strong>
+                    <span>sintomas marcados</span>
+                  </div>
+                </div>
+                {diagnosis.markers.length > 0 ? (
+                  <div className="timeline-list">
+                    {diagnosis.markers.map((marker) => (
+                      <div key={marker.id} className="timeline-item">
+                        <strong>{marker.title}</strong>
+                        <p>{marker.copy}</p>
+                      </div>
+                    ))}
+                  </div>
+                ) : null}
+                {diagnosis.symptomPriorityCopies.length > 0 ? (
+                  <div className="timeline-list">
+                    {diagnosis.symptomPriorityCopies.map((copy) => (
+                      <div key={copy} className="timeline-item">
+                        <strong>Prioridade do plano</strong>
+                        <p>{copy}</p>
+                      </div>
+                    ))}
+                  </div>
+                ) : null}
+                <button className="button button-primary" onClick={() => goTo('pain-carousel')}>
+                  Entender o padrao
                 </button>
-              ))}
-            </div>
-            <button className="button button-primary" onClick={continueToOnboarding}>
-              Continuar com {state.selectedPlan === 'annual' ? 'Plano anual' : 'Acesso vitalício'}
-            </button>
-            <button className="text-link" onClick={continueToOnboarding}>
-              Seguir para onboarding nesta fase do protótipo
-            </button>
-          </section>
-        ) : null}
+              </section>
+            ) : null}
+
+            {state.step === 'pain-carousel' ? (
+              <section className="funnel-panel">
+                <span className="section-label">Carrossel de dor</span>
+                <h2>{painSlides[state.painSlide].title}</h2>
+                <p>{painSlides[state.painSlide].body}</p>
+                <div className="carousel-dots">
+                  {painSlides.map((item, index) => (
+                    <span
+                      key={item.title}
+                      className={index === state.painSlide ? 'dot active' : 'dot'}
+                    />
+                  ))}
+                </div>
+                <button className="button button-primary" onClick={nextPainSlide}>
+                  {state.painSlide === painSlides.length - 1 ? 'Ver solucao' : 'Proximo'}
+                </button>
+              </section>
+            ) : null}
+
+            {state.step === 'solution-carousel' ? (
+              <section className="funnel-panel">
+                <span className="section-label">Carrossel de solucao</span>
+                <h2>{solutionSlides[state.solutionSlide].title}</h2>
+                <p>{solutionSlides[state.solutionSlide].body}</p>
+                <div className="carousel-dots">
+                  {solutionSlides.map((item, index) => (
+                    <span
+                      key={item.title}
+                      className={index === state.solutionSlide ? 'dot active' : 'dot'}
+                    />
+                  ))}
+                </div>
+                <button className="button button-primary" onClick={nextSolutionSlide}>
+                  {state.solutionSlide === solutionSlides.length - 1
+                    ? 'Ver prova social'
+                    : 'Proximo'}
+                </button>
+              </section>
+            ) : null}
+
+            {state.step === 'social-proof' ? (
+              <section className="funnel-panel">
+                <span className="section-label">Feedbacks</span>
+                <h2>Voce nao precisa recomecar sozinho</h2>
+                <div className="testimonial-grid">
+                  {testimonials.map((item) => (
+                    <article key={item.name} className="testimonial-card">
+                      <p>"{item.quote}"</p>
+                      <strong>{item.name}</strong>
+                      <span>{item.role}</span>
+                    </article>
+                  ))}
+                </div>
+                <button className="button button-primary" onClick={() => goTo('plan-preview')}>
+                  Ver meu plano
+                </button>
+              </section>
+            ) : null}
+
+            {state.step === 'plan-preview' ? (
+              <section className="funnel-panel highlight-panel">
+                <span className="section-label">Preview do plano</span>
+                <h2>
+                  {state.name || 'Voce'} em {getPlanDate()}
+                </h2>
+                <p>
+                  Se nada mudar, o padrao tende a ganhar automatismo. Com plano, medicao e
+                  protecao, o objetivo vira reduzir recaidas e recuperar governanca.
+                </p>
+                <button className="button button-primary" onClick={() => goTo('custom-plan')}>
+                  Ver plano personalizado
+                </button>
+              </section>
+            ) : null}
+
+            {state.step === 'custom-plan' ? (
+              <section className="funnel-panel">
+                <span className="section-label">Plano personalizado</span>
+                <h2>Seu primeiro mapa de execucao</h2>
+                <div className="timeline-list">
+                  <div className="timeline-item">
+                    <strong>Fase 1</strong>
+                    <p>Reduzir exposicao, mapear gatilhos e interromper o piloto automatico.</p>
+                  </div>
+                  <div className="timeline-item">
+                    <strong>Fase 2</strong>
+                    <p>Ganhar rotina com check-in, SOS, journal e visualizacao real do progresso.</p>
+                  </div>
+                  <div className="timeline-item">
+                    <strong>Fase 3</strong>
+                    <p>Consolidar consistencia, proteger horarios criticos e enfraquecer a escalada.</p>
+                  </div>
+                </div>
+                <button className="button button-primary" onClick={() => goTo('paywall')}>
+                  Escolher plano
+                </button>
+              </section>
+            ) : null}
+
+            {state.step === 'paywall' ? (
+              <section className="funnel-panel">
+                <span className="section-label">Paywall</span>
+                <h2>Escolha o formato do seu reboot</h2>
+                <div className="pricing-grid">
+                  {planOptions.map((plan) => (
+                    <button
+                      key={plan.id}
+                      className={
+                        state.selectedPlan === plan.id
+                          ? 'plan-card plan-card-active'
+                          : 'plan-card'
+                      }
+                      onClick={() =>
+                        setState((current) => ({ ...current, selectedPlan: plan.id }))
+                      }
+                    >
+                      <strong>{plan.title}</strong>
+                      <span>{plan.price}</span>
+                      <p>{plan.description}</p>
+                    </button>
+                  ))}
+                </div>
+                <button className="button button-primary" onClick={continueToOnboarding}>
+                  Continuar com {state.selectedPlan === 'annual' ? 'Plano anual' : 'Acesso vitalicio'}
+                </button>
+                <button className="text-link" onClick={continueToOnboarding}>
+                  Seguir para cadastro nesta fase do prototipo
+                </button>
+              </section>
+            ) : null}
+          </div>
+        </div>
       </div>
     </div>
   )

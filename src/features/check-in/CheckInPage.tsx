@@ -5,33 +5,54 @@ import { useAppState } from '../../app/state/use-app-state'
 import { buildCheckInStrategy, hasCheckInToday } from '../../core/domain/check-in'
 
 const mentalStates = [
-  { id: 'calmo', label: 'Calmo' },
-  { id: 'ansioso', label: 'Ansioso' },
-  { id: 'cansado', label: 'Cansado' },
-  { id: 'frustrado', label: 'Frustrado' },
+  { id: 'calmo', label: 'Calmo', note: 'Sem muita pressao percebida agora.' },
+  { id: 'ansioso', label: 'Ansioso', note: 'Mente acelerada e mais vulneravel ao impulso.' },
+  { id: 'cansado', label: 'Cansado', note: 'Pouca energia costuma reduzir o autocontrole.' },
+  { id: 'frustrado', label: 'Frustrado', note: 'Atrito emocional pode empurrar decisoes impulsivas.' },
 ]
 
 const fallbackTriggers = ['Ansiedade', 'Celular a noite', 'Tedio', 'Estresse']
 
+function getCravingLabel(craving: number) {
+  if (craving >= 8) {
+    return 'Muito alta. Nao vale enfrentar isso sozinho.'
+  }
+
+  if (craving >= 5) {
+    return 'Moderada. Vale intervir antes que cresca.'
+  }
+
+  if (craving >= 2) {
+    return 'Baixa, mas ainda pede atencao.'
+  }
+
+  return 'Tranquila. Bom momento para consolidar rotina.'
+}
+
 export function CheckInPage() {
   const navigate = useNavigate()
-  const { state, saveCheckIn } = useAppState()
-  const [craving, setCraving] = useState(5)
-  const [mentalState, setMentalState] = useState('calmo')
+  const { state, saveCheckIn, demoNow } = useAppState()
+  const [craving, setCraving] = useState(0)
+  const [mentalState, setMentalState] = useState<string | null>(null)
   const [selectedTriggers, setSelectedTriggers] = useState<string[]>([])
   const [notes, setNotes] = useState('')
   const [showStrategy, setShowStrategy] = useState(false)
 
-  const alreadyCheckedIn = useMemo(() => hasCheckInToday(state.checkIns), [state.checkIns])
-
+  const alreadyCheckedIn = useMemo(
+    () => hasCheckInToday(state.checkIns, demoNow),
+    [demoNow, state.checkIns],
+  )
   const availableTriggers =
     state.profile.triggers.length > 0 ? state.profile.triggers : fallbackTriggers
 
-  const strategy = buildCheckInStrategy({
-    craving,
-    mentalState,
-    triggers: selectedTriggers,
-  })
+  const strategy =
+    mentalState === null
+      ? null
+      : buildCheckInStrategy({
+          craving,
+          mentalState,
+          triggers: selectedTriggers,
+        })
 
   function toggleTrigger(trigger: string) {
     setSelectedTriggers((current) =>
@@ -42,6 +63,10 @@ export function CheckInPage() {
   }
 
   async function handleSave(escalatedToSos: boolean) {
+    if (!mentalState || !strategy) {
+      return
+    }
+
     const result = await saveCheckIn({
       craving,
       mentalState,
@@ -58,37 +83,47 @@ export function CheckInPage() {
     navigate(escalatedToSos ? '/sos' : '/app', { replace: true })
   }
 
-  return (
-    <AppShell title="Check-in diário" eyebrow="Check-in">
-      <section className="form-card">
-        <span className="section-label">Rotina diária</span>
-        <h2>Registrar como você está hoje</h2>
-        <p>
-          Este fluxo já respeita a regra do legado: apenas um check-in por dia
-          calendário.
-        </p>
+  const selectedMentalState = mentalStates.find((item) => item.id === mentalState) ?? null
+  const suggestSos = craving >= 7
 
+  return (
+    <AppShell title="Check-in do dia" eyebrow="Rotina diaria">
+      <section className="panel-stack">
         {alreadyCheckedIn ? (
-          <div className="info-card inline-card">
-            <span className="section-label">Hoje já foi salvo</span>
-            <h2>Check-in diário concluído</h2>
+          <article className="info-card highlight-card">
+            <span className="section-label">Ja concluido hoje</span>
+            <h2>Seu check-in de hoje ja foi registrado</h2>
             <p>
-              Para manter a regra crítica consistente, um segundo check-in hoje
-              não é permitido.
+              Mantivemos a regra mais importante do legado: um check-in por dia,
+              para proteger streak, analytics e historico sem duplicacao.
             </p>
             <div className="hero-actions">
               <button className="button button-secondary" onClick={() => navigate('/app')}>
-                Voltar ao app
+                Voltar para a home
               </button>
               <button className="button button-primary" onClick={() => navigate('/sos')}>
-                Abrir SOS
+                Ir para SOS
               </button>
             </div>
-          </div>
+          </article>
         ) : (
           <>
-            <div className="field">
-              <label htmlFor="craving">Nível de fissura: {craving}/10</label>
+            <article className="info-card highlight-card">
+              <span className="section-label">Leitura do momento</span>
+              <h2>Como esta sua fissura agora?</h2>
+              <p>
+                O objetivo aqui nao e julgar. E medir o momento para gerar uma
+                resposta pratica e mais segura.
+              </p>
+              <div className="section-header">
+                <div>
+                  <dt>Intensidade</dt>
+                  <dd>
+                    {craving} / 10
+                  </dd>
+                </div>
+                <span className="status-pill">{getCravingLabel(craving)}</span>
+              </div>
               <input
                 id="craving"
                 type="range"
@@ -97,26 +132,39 @@ export function CheckInPage() {
                 value={craving}
                 onChange={(event) => setCraving(Number(event.target.value))}
               />
-            </div>
+            </article>
 
-            <div className="field">
-              <span>Estado mental</span>
-              <div className="chip-row">
+            <article className="info-card">
+              <span className="section-label">Estado mental</span>
+              <h2>Qual e seu estado agora?</h2>
+              <p>
+                Como no app antigo, este passo muda a estrategia recomendada e
+                ajuda a qualificar o contexto do dia.
+              </p>
+              <div className="pricing-grid">
                 {mentalStates.map((item) => (
                   <button
                     key={item.id}
-                    className={mentalState === item.id ? 'chip active' : 'chip'}
+                    className={
+                      mentalState === item.id ? 'plan-card plan-card-active' : 'plan-card'
+                    }
                     type="button"
                     onClick={() => setMentalState(item.id)}
                   >
-                    {item.label}
+                    <strong>{item.label}</strong>
+                    <p>{item.note}</p>
                   </button>
                 ))}
               </div>
-            </div>
+            </article>
 
-            <div className="field">
-              <span>Gatilhos do momento</span>
+            <article className="info-card">
+              <span className="section-label">Gatilhos do momento</span>
+              <h2>O que esta contribuindo para esse estado?</h2>
+              <p>
+                Esses gatilhos entram no registro do dia e alimentam analytics,
+                estrategia e futuras prevencoes.
+              </p>
               <div className="chip-row">
                 {availableTriggers.map((item) => (
                   <button
@@ -129,49 +177,77 @@ export function CheckInPage() {
                   </button>
                 ))}
               </div>
-            </div>
+              <p>{selectedTriggers.length} gatilho(s) selecionado(s)</p>
+            </article>
 
-            <div className="field">
-              <label htmlFor="notes">Notas rápidas</label>
+            <article className="info-card">
+              <span className="section-label">Observacao rapida</span>
+              <h2>Algo importante para registrar?</h2>
+              <p>
+                Este campo ajuda a contextualizar recaidas, journal e leitura de
+                padroes depois.
+              </p>
               <textarea
                 id="notes"
                 className="textarea"
                 value={notes}
                 onChange={(event) => setNotes(event.target.value)}
-                placeholder="O que está acontecendo agora?"
+                placeholder="O que esta acontecendo agora?"
               />
-            </div>
+            </article>
 
             {!showStrategy ? (
-              <button className="button button-primary" onClick={() => setShowStrategy(true)}>
-                Gerar estratégia
-              </button>
+              <article className="info-card">
+                <span className="section-label">Fechamento</span>
+                <h2>Gerar a estrategia do dia</h2>
+                <p>
+                  Quando voce gerar a estrategia, o app consolida esse momento em
+                  uma resposta pratica e decide com mais clareza se o SOS deve
+                  entrar agora.
+                </p>
+                <button
+                  className="button button-primary"
+                  type="button"
+                  disabled={!mentalState}
+                  onClick={() => setShowStrategy(true)}
+                >
+                  Gerar minha estrategia
+                </button>
+              </article>
             ) : (
-              <div className="info-card inline-card">
-                <span className="section-label">Estratégia recomendada</span>
-                <h2>Próximo passo prático</h2>
+              <article className="info-card highlight-card">
+                <span className="section-label">Estrategia recomendada</span>
+                <h2>{suggestSos ? 'Intervencao imediata' : 'Proximo passo do dia'}</h2>
                 <p>{strategy}</p>
+                {selectedMentalState ? (
+                  <p>
+                    Estado lido: <strong>{selectedMentalState.label}</strong>
+                  </p>
+                ) : null}
+                {suggestSos ? (
+                  <p className="warning-banner">
+                    A fissura esta alta. O caminho mais seguro agora e salvar este
+                    check-in e seguir direto para o SOS.
+                  </p>
+                ) : null}
                 <div className="hero-actions">
-                  <button className="button button-secondary" onClick={() => void handleSave(false)}>
-                    Salvar e voltar
+                  <button className="button button-secondary" onClick={() => setShowStrategy(false)}>
+                    Revisar respostas
+                  </button>
+                  <button
+                    className="button button-secondary"
+                    onClick={() => void handleSave(false)}
+                  >
+                    Salvar e voltar para a home
                   </button>
                   <button className="button button-primary" onClick={() => void handleSave(true)}>
                     Salvar e ir para SOS
                   </button>
                 </div>
-              </div>
+              </article>
             )}
           </>
         )}
-      </section>
-
-      <section className="info-card">
-        <span className="section-label">Invariante portada</span>
-        <h2>Um check-in por dia</h2>
-        <p>
-          Essa regra é importante para manter streak, analytics e consistência
-          do histórico sem ruído de duplicação.
-        </p>
       </section>
     </AppShell>
   )

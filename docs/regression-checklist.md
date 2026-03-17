@@ -13,6 +13,11 @@ Use este checklist sempre que mexermos em:
 
 O objetivo aqui nao e testar design. E validar se a logica central do app continua integra.
 
+Referencias de fase 2:
+
+- `docs/master-flows.md`
+- `docs/navigation-contract.md`
+
 ## 1. Novo usuario
 
 1. abrir o app limpo

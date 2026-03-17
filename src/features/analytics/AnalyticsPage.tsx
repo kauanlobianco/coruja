@@ -4,28 +4,52 @@ import { buildAnalyticsReport } from '../../core/domain/analytics'
 
 const rangeOptions = [7, 14, 30]
 
+function formatPtDateTime(value: string | null) {
+  if (!value) {
+    return 'ainda sem registro'
+  }
+
+  return new Intl.DateTimeFormat('pt-BR', {
+    dateStyle: 'short',
+    timeStyle: 'short',
+  }).format(new Date(value))
+}
+
+function formatSignedDelta(value: number, suffix = '') {
+  if (value === 0) {
+    return `0${suffix}`
+  }
+
+  return `${value > 0 ? '+' : ''}${value}${suffix}`
+}
+
 export function AnalyticsPage() {
-  const { state, setAnalyticsRange } = useAppState()
+  const { state, setAnalyticsRange, demoNow } = useAppState()
   const report = buildAnalyticsReport({
     checkIns: state.checkIns,
     relapses: state.relapses,
     analytics: state.analytics,
+    now: demoNow,
   })
 
   const hasEnoughData = report.uniqueCheckInDays >= 3
+  const trendClassName =
+    report.trendLabel === 'improving'
+      ? 'info-card highlight-card analytics-trend-card trend-positive'
+      : report.trendLabel === 'attention'
+        ? 'info-card analytics-trend-card trend-warning'
+        : 'info-card analytics-trend-card'
 
   return (
     <AppShell title="Analytics" eyebrow="Leitura do progresso">
       <section className="form-card">
         <span className="section-label">Periodo</span>
-        <h2>Janela de análise</h2>
+        <h2>Janela de analise</h2>
         <div className="chip-row">
           {rangeOptions.map((option) => (
             <button
               key={option}
-              className={
-                state.analytics.selectedRangeDays === option ? 'chip active' : 'chip'
-              }
+              className={state.analytics.selectedRangeDays === option ? 'chip active' : 'chip'}
               type="button"
               onClick={() => void setAnalyticsRange(option)}
             >
@@ -36,30 +60,50 @@ export function AnalyticsPage() {
       </section>
 
       <section className="panel-stack">
+        <article className={trendClassName}>
+          <span className="section-label">Evolucao</span>
+          <h2>{report.trendHeadline}</h2>
+          <p>{report.trendBody}</p>
+          <div className="analytics-hero-grid">
+            <div className="metric-card">
+              <strong>{report.recoveryScore}</strong>
+              <span>score atual</span>
+            </div>
+            <div className="metric-card">
+              <strong>{formatSignedDelta(report.recoveryDelta)}</strong>
+              <span>vs periodo anterior</span>
+            </div>
+            <div className="metric-card">
+              <strong>{formatSignedDelta(report.cravingDelta, '/10')}</strong>
+              <span>queda de fissura</span>
+            </div>
+            <div className="metric-card">
+              <strong>{report.consistencyScore}%</strong>
+              <span>consistencia da rotina</span>
+            </div>
+          </div>
+        </article>
+
         <div className="card-grid">
-          <article className="info-card highlight-card">
-            <span className="section-label">Recovery score</span>
-            <h2>{report.recoveryScore}</h2>
-            <p>
-              Score derivado dos check-ins recentes e das recaídas no período,
-              sem depender do nome das categorias.
-            </p>
-          </article>
-
           <article className="info-card">
-            <span className="section-label">Base de dados</span>
+            <span className="section-label">Historico recente</span>
             <h2>{report.periodCheckIns.length} check-ins</h2>
-            <p>Dias únicos: {report.uniqueCheckInDays}</p>
-            <p>Recaídas no período: {report.periodRelapses.length}</p>
+            <p>Ultimo registro: {formatPtDateTime(report.lastCheckInAt)}</p>
+            <p>Janela anterior: {report.previousPeriodCheckIns.length} check-ins.</p>
           </article>
 
           <article className="info-card">
-            <span className="section-label">Craving media</span>
+            <span className="section-label">Consistencia</span>
+            <h2>{report.uniqueCheckInDays} dias ativos</h2>
+            <p>De {report.periodDays} dias observados no periodo atual.</p>
+            <p>Periodo anterior: {report.previousUniqueCheckInDays} dias ativos.</p>
+          </article>
+
+          <article className="info-card">
+            <span className="section-label">Fissura media</span>
             <h2>{report.averageCraving.toFixed(1)}/10</h2>
-            <p>
-              Média simples da fissura salva nos check-ins do período
-              selecionado.
-            </p>
+            <p>Periodo anterior: {report.previousAverageCraving.toFixed(1)}/10.</p>
+            <p>Recaidas no periodo: {report.periodRelapses.length}</p>
           </article>
         </div>
 
@@ -68,18 +112,52 @@ export function AnalyticsPage() {
             <span className="section-label">Dados insuficientes</span>
             <h2>Analytics completa bloqueada por enquanto</h2>
             <p>
-              Mantive a regra do legado: é preciso ter pelo menos 3 dias únicos
-              de check-in para considerar o painel mais confiável.
+              Mantive a regra do legado: e preciso ter pelo menos 3 dias unicos de check-in
+              para considerar o painel mais confiavel.
             </p>
           </article>
         ) : null}
 
+        <article className="info-card">
+          <div className="section-header analytics-section-head">
+            <div>
+              <span className="section-label">Linha do tempo</span>
+              <h2>Seu historico visivel</h2>
+            </div>
+            <span className="status-pill">{report.recentCheckIns.length} registro(s)</span>
+          </div>
+          {report.recentCheckIns.length === 0 ? (
+            <p>
+              Assim que voce registrar check-ins, esta linha do tempo vai mostrar a evolucao
+              recente.
+            </p>
+          ) : (
+            <div className="analytics-timeline">
+              {report.recentCheckIns.map((entry) => (
+                <article key={entry.id} className="analytics-timeline-item">
+                  <div className="analytics-timeline-head">
+                    <strong>{formatPtDateTime(entry.createdAt)}</strong>
+                    <span className="status-pill">fissura {entry.craving}/10</span>
+                  </div>
+                  <p>Estado: {entry.mentalState}</p>
+                  <p>
+                    {entry.triggers.length > 0
+                      ? `Gatilhos: ${entry.triggers.join(', ')}.`
+                      : 'Sem gatilhos registrados neste check-in.'}
+                  </p>
+                  {entry.notes ? <p>Anotacao: {entry.notes}</p> : null}
+                </article>
+              ))}
+            </div>
+          )}
+        </article>
+
         <div className="card-grid">
           <article className="info-card">
             <span className="section-label">Estados mentais</span>
-            <h2>Distribuição por ocorrência</h2>
+            <h2>Frequencia no periodo</h2>
             {report.dominantMentalStates.length === 0 ? (
-              <p>Nenhum estado mental salvo no período.</p>
+              <p>Nenhum estado mental salvo no periodo.</p>
             ) : (
               <div className="bar-list">
                 {report.dominantMentalStates.slice(0, 5).map((item) => (
@@ -104,9 +182,9 @@ export function AnalyticsPage() {
 
           <article className="info-card">
             <span className="section-label">Gatilhos</span>
-            <h2>Ranking por frequência</h2>
+            <h2>Ranking por frequencia</h2>
             {report.dominantTriggers.length === 0 ? (
-              <p>Nenhum gatilho salvo no período.</p>
+              <p>Nenhum gatilho salvo no periodo.</p>
             ) : (
               <div className="bar-list">
                 {report.dominantTriggers.slice(0, 5).map((item) => (
@@ -132,9 +210,9 @@ export function AnalyticsPage() {
 
         <article className="info-card">
           <span className="section-label">Serie de fissura</span>
-          <h2>Media diária no período</h2>
+          <h2>Media diaria do periodo</h2>
           {report.cravingSeries.length === 0 ? (
-            <p>Nenhum check-in no período selecionado.</p>
+            <p>Nenhum check-in no periodo selecionado.</p>
           ) : (
             <div className="bar-list">
               {report.cravingSeries.map((item) => (

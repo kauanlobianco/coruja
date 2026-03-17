@@ -3,7 +3,23 @@ import { useNavigate } from 'react-router-dom'
 import { AppShell } from '../../shared/layout/AppShell'
 import { useAppState } from '../../app/state/use-app-state'
 
-const goalOptions = [5, 10, 15, 30]
+const goalOptions = [
+  {
+    days: 5,
+    title: 'Primeiro passo',
+    description: 'Retomar com uma meta simples e executavel.',
+  },
+  {
+    days: 10,
+    title: 'Construir o habito',
+    description: 'Recomecar com mais consistencia e estrutura.',
+  },
+  {
+    days: 15,
+    title: 'Desafio real',
+    description: 'Voltar ao plano com um compromisso mais firme.',
+  },
+]
 
 export function RelapsePage() {
   const navigate = useNavigate()
@@ -22,78 +38,116 @@ export function RelapsePage() {
     navigate('/app', { replace: true })
   }
 
+  const progressPercent =
+    state.profile.goalDays > 0
+      ? Math.min(100, Math.round((state.streak.current / state.profile.goalDays) * 100))
+      : 0
+
   return (
-    <AppShell title="Recaida" eyebrow="Recomeco">
-      <section className="form-card">
-        <span className="section-label">Etapa 1</span>
-        <h2>Registrar sem perder clareza</h2>
-        <p>
-          No legado, a recaida reseta a baseline do streak antes mesmo da
-          reflexao. Esse comportamento foi mantido aqui.
-        </p>
+    <AppShell title="Recaida" eyebrow="Recomeco guiado">
+      <section className="panel-stack">
+        <article className="info-card highlight-card">
+          <span className="section-label">Primeiro passo</span>
+          <h2>Nao transforme um deslize em abandono</h2>
+          <p>
+            Mantive a logica mais importante do app antigo: a recaida reinicia a
+            baseline do streak, preserva o historico e abre caminho para um
+            recomeço organizado.
+          </p>
+        </article>
 
-        <div className="card-grid">
-          <article className="info-card">
-            <span className="section-label">Streak atual</span>
-            <h2>{state.streak.current} dias</h2>
-            <p>Meta atual: {state.profile.goalDays} dias</p>
-          </article>
-
-          <article className="info-card">
-            <span className="section-label">Novo objetivo</span>
-            <div className="chip-row">
-              {goalOptions.map((option) => (
-                <button
-                  key={option}
-                  className={nextGoalDays === option ? 'chip active' : 'chip'}
-                  type="button"
-                  onClick={() => setNextGoalDays(option)}
-                >
-                  {option} dias
-                </button>
-              ))}
+        <article className="info-card">
+          <span className="section-label">Resumo da tentativa atual</span>
+          <h2>Voce nao volta para zero em aprendizado</h2>
+          <p>
+            Esta tela serve para registrar o que aconteceu e escolher a proxima
+            meta com mais clareza.
+          </p>
+          <dl className="home-stats-grid">
+            <div>
+              <dt>Streak atual</dt>
+              <dd>{state.streak.current} dias</dd>
             </div>
-          </article>
-        </div>
+            <div>
+              <dt>Meta anterior</dt>
+              <dd>{state.profile.goalDays} dias</dd>
+            </div>
+            <div>
+              <dt>Progresso atingido</dt>
+              <dd>{progressPercent}%</dd>
+            </div>
+            <div>
+              <dt>Melhor streak</dt>
+              <dd>{state.streak.best} dias</dd>
+            </div>
+          </dl>
+        </article>
 
-        <div className="field">
-          <label htmlFor="relapse-cause">O que puxou essa recaida?</label>
-          <input
-            id="relapse-cause"
-            value={cause}
-            onChange={(event) => setCause(event.target.value)}
-            placeholder="Ex.: ansiedade + celular na madrugada"
-          />
-        </div>
+        <article className="info-card">
+          <span className="section-label">Nova meta</span>
+          <h2>Defina como voce quer recomecar</h2>
+          <div className="pricing-grid">
+            {goalOptions.map((option) => (
+              <button
+                key={option.days}
+                className={
+                  nextGoalDays === option.days ? 'plan-card plan-card-active' : 'plan-card'
+                }
+                type="button"
+                onClick={() => setNextGoalDays(option.days)}
+              >
+                <span className="section-label">{option.days} dias</span>
+                <strong>{option.title}</strong>
+                <p>{option.description}</p>
+              </button>
+            ))}
+          </div>
+        </article>
 
-        <div className="field">
-          <label htmlFor="relapse-reflection">Reflexao opcional</label>
-          <textarea
-            id="relapse-reflection"
-            className="textarea"
-            value={reflection}
-            onChange={(event) => setReflection(event.target.value)}
-            placeholder="Se quiser, registre o que aprendeu com esse momento."
-          />
-        </div>
+        <article className="info-card">
+          <span className="section-label">Contexto</span>
+          <h2>O que puxou esse momento?</h2>
+          <div className="field">
+            <label htmlFor="relapse-cause">Causa principal</label>
+            <input
+              id="relapse-cause"
+              value={cause}
+              onChange={(event) => setCause(event.target.value)}
+              placeholder="Ex.: ansiedade + celular na madrugada"
+            />
+          </div>
+          <div className="field">
+            <label htmlFor="relapse-reflection">Reflexao opcional</label>
+            <textarea
+              id="relapse-reflection"
+              className="textarea"
+              value={reflection}
+              onChange={(event) => setReflection(event.target.value)}
+              placeholder="Se quiser, registre o que voce aprendeu com esse momento."
+            />
+          </div>
+          <p>
+            Se voce escrever uma reflexao, ela tambem entra no Jornal para ficar
+            acessivel depois.
+          </p>
+        </article>
 
-        <div className="hero-actions">
-          <button className="button button-secondary" onClick={() => navigate('/app')}>
-            Cancelar
-          </button>
-          <button className="button button-primary" onClick={() => void handleConfirm()}>
-            Confirmar e recomecar
-          </button>
-        </div>
-      </section>
-
-      <section className="info-card">
-        <span className="section-label">Invariante portada</span>
-        <h2>Reset com historico preservado</h2>
-        <p>
-          A recaida cria um registro em historico, reseta a data de inicio do
-          streak e pode gerar automaticamente uma entrada no jornal.
-        </p>
+        <article className="info-card">
+          <span className="section-label">Confirmacao</span>
+          <h2>Fechar este ciclo e recomecar</h2>
+          <p>
+            Ao confirmar, o app registra a recaida, reseta a data de inicio do
+            streak e aplica sua nova meta imediatamente.
+          </p>
+          <div className="hero-actions">
+            <button className="button button-secondary" onClick={() => navigate('/app')}>
+              Cancelar
+            </button>
+            <button className="button button-primary" onClick={() => void handleConfirm()}>
+              Confirmar e recomecar
+            </button>
+          </div>
+        </article>
       </section>
     </AppShell>
   )

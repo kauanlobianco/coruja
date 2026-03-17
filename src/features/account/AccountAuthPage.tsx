@@ -112,10 +112,16 @@ export function AccountAuthPage() {
         return
       }
 
-      await setBackupStatus('idle', null)
+      if (restored.reason === 'remote-error') {
+        await setBackupStatus('error', restored.error ?? 'Falha ao restaurar o backup remoto.')
+        setLoading(false)
+        setError('Nao foi possivel restaurar seu backup agora. Tente novamente em instantes.')
+        return
+      }
+
+      await setBackupStatus('error', 'Nenhum backup remoto foi localizado para esta conta.')
       setLoading(false)
-      setMessage('Conta encontrada, mas nenhum backup remoto foi localizado ainda.')
-      navigate('/pre-purchase', { replace: true })
+      setError('Conta encontrada, mas nenhum backup remoto foi localizado para este login.')
       return
     }
 
@@ -161,7 +167,7 @@ export function AccountAuthPage() {
   }
 
   return (
-    <AppShell title="Conta e backup" eyebrow="Auth">
+    <AppShell title="Conta e backup" eyebrow="Auth" shellMode="entry">
       <form className="form-card" onSubmit={handleSubmit}>
         <span className="section-label">Acesso</span>
         <h2>{mode === 'signup' ? 'Criar conta obrigatoria' : 'Entrar para restaurar backup'}</h2>

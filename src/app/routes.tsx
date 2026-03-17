@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react'
 import { Navigate, Route, Routes } from 'react-router-dom'
 import { useAppState } from './state/use-app-state'
+import { appRoutes } from '../core/config/routes'
 import { HomePage } from '../features/home/HomePage'
 import { IntroPage } from '../features/intro/IntroPage'
 import { OnboardingPage } from '../features/onboarding/OnboardingPage'
@@ -16,6 +17,19 @@ import { AccountRequiredPage } from '../features/account/AccountRequiredPage'
 import { AccountAuthPage } from '../features/account/AccountAuthPage'
 import { BlockerPage } from '../features/blocker/BlockerPage'
 import { BlockedPage } from '../features/blocker/BlockedPage'
+import { LibraryPage } from '../features/library/LibraryPage'
+
+function resolveFlowDestination(state: ReturnType<typeof useAppState>['state']) {
+  if (!state.account) {
+    return state.hasCompletedOnboarding ? appRoutes.accountRequired : appRoutes.prePurchase
+  }
+
+  if (!state.hasCompletedOnboarding) {
+    return appRoutes.onboarding
+  }
+
+  return appRoutes.home
+}
 
 function RootRedirect() {
   const { ready, state } = useAppState()
@@ -24,19 +38,43 @@ function RootRedirect() {
     return <IntroPage />
   }
 
-  if (!state.account) {
-    if (!state.hasCompletedOnboarding) {
-      return <Navigate to="/pre-purchase" replace />
-    }
+  return <Navigate to={resolveFlowDestination(state)} replace />
+}
 
-    return <Navigate to="/account/required" replace />
+function RequireEntryFlow({ children }: { children: ReactNode }) {
+  const { ready, state } = useAppState()
+
+  if (!ready) {
+    return <IntroPage />
   }
 
-  if (!state.hasCompletedOnboarding) {
-    return <Navigate to="/onboarding" replace />
+  if (state.account || state.hasCompletedOnboarding) {
+    return <Navigate to={resolveFlowDestination(state)} replace />
   }
 
-  return <Navigate to="/app" replace />
+  return <>{children}</>
+}
+
+function RequireAccountLink({ children }: { children: ReactNode }) {
+  const { ready, state } = useAppState()
+
+  if (!ready) {
+    return <IntroPage />
+  }
+
+  if (!state.account && !state.hasCompletedOnboarding) {
+    return <Navigate to={appRoutes.prePurchase} replace />
+  }
+
+  if (state.account && !state.hasCompletedOnboarding) {
+    return <Navigate to={appRoutes.onboarding} replace />
+  }
+
+  if (state.account && state.hasCompletedOnboarding) {
+    return <Navigate to={appRoutes.home} replace />
+  }
+
+  return <>{children}</>
 }
 
 function RequireOnboarding({ children }: { children: ReactNode }) {
@@ -47,17 +85,17 @@ function RequireOnboarding({ children }: { children: ReactNode }) {
   }
 
   if (!state.account) {
-    return <Navigate to="/pre-purchase" replace />
+    return <Navigate to={resolveFlowDestination(state)} replace />
   }
 
   if (state.hasCompletedOnboarding) {
-    return <Navigate to="/app" replace />
+    return <Navigate to={appRoutes.home} replace />
   }
 
   return <>{children}</>
 }
 
-function RequireMissingAccount({ children }: { children: ReactNode }) {
+function RequireAccountAuthEntry({ children }: { children: ReactNode }) {
   const { ready, state } = useAppState()
 
   if (!ready) {
@@ -65,11 +103,7 @@ function RequireMissingAccount({ children }: { children: ReactNode }) {
   }
 
   if (state.account) {
-    if (state.hasCompletedOnboarding) {
-      return <Navigate to="/app" replace />
-    }
-
-    return <Navigate to="/onboarding" replace />
+    return <Navigate to={resolveFlowDestination(state)} replace />
   }
 
   return <>{children}</>
@@ -82,12 +116,8 @@ function RequireAppAccess({ children }: { children: ReactNode }) {
     return <IntroPage />
   }
 
-  if (!state.account) {
-    return <Navigate to="/account/required" replace />
-  }
-
-  if (!state.hasCompletedOnboarding) {
-    return <Navigate to="/onboarding" replace />
+  if (!state.account || !state.hasCompletedOnboarding) {
+    return <Navigate to={resolveFlowDestination(state)} replace />
   }
 
   return <>{children}</>
@@ -96,28 +126,49 @@ function RequireAppAccess({ children }: { children: ReactNode }) {
 export function AppRoutes() {
   return (
     <Routes>
-      <Route path="/" element={<RootRedirect />} />
-      <Route path="/pre-purchase" element={<PrePurchasePage />} />
+      <Route path={appRoutes.root} element={<RootRedirect />} />
       <Route
-        path="/onboarding"
+        path={appRoutes.prePurchase}
+        element={
+          <RequireEntryFlow>
+            <PrePurchasePage />
+          </RequireEntryFlow>
+        }
+      />
+      <Route
+        path={appRoutes.paywall}
+        element={
+          <RequireEntryFlow>
+            <PaywallPage />
+          </RequireEntryFlow>
+        }
+      />
+      <Route
+        path={appRoutes.accountRequired}
+        element={
+          <RequireAccountLink>
+            <AccountRequiredPage />
+          </RequireAccountLink>
+        }
+      />
+      <Route
+        path={appRoutes.accountAuth}
+        element={
+          <RequireAccountAuthEntry>
+            <AccountAuthPage />
+          </RequireAccountAuthEntry>
+        }
+      />
+      <Route
+        path={appRoutes.onboarding}
         element={
           <RequireOnboarding>
             <OnboardingPage />
           </RequireOnboarding>
         }
       />
-      <Route path="/paywall" element={<PaywallPage />} />
       <Route
-        path="/account/required"
-        element={
-          <RequireMissingAccount>
-            <AccountRequiredPage />
-          </RequireMissingAccount>
-        }
-      />
-      <Route path="/account/auth" element={<AccountAuthPage />} />
-      <Route
-        path="/app"
+        path={appRoutes.home}
         element={
           <RequireAppAccess>
             <HomePage />
@@ -125,39 +176,7 @@ export function AppRoutes() {
         }
       />
       <Route
-        path="/check-in"
-        element={
-          <RequireAppAccess>
-            <CheckInPage />
-          </RequireAppAccess>
-        }
-      />
-      <Route
-        path="/sos"
-        element={
-          <RequireAppAccess>
-            <SosPage />
-          </RequireAppAccess>
-        }
-      />
-      <Route
-        path="/journal"
-        element={
-          <RequireAppAccess>
-            <JournalPage />
-          </RequireAppAccess>
-        }
-      />
-      <Route
-        path="/relapse"
-        element={
-          <RequireAppAccess>
-            <RelapsePage />
-          </RequireAppAccess>
-        }
-      />
-      <Route
-        path="/analytics"
+        path={appRoutes.analytics}
         element={
           <RequireAppAccess>
             <AnalyticsPage />
@@ -165,7 +184,23 @@ export function AppRoutes() {
         }
       />
       <Route
-        path="/settings"
+        path={appRoutes.sos}
+        element={
+          <RequireAppAccess>
+            <SosPage />
+          </RequireAppAccess>
+        }
+      />
+      <Route
+        path={appRoutes.library}
+        element={
+          <RequireAppAccess>
+            <LibraryPage />
+          </RequireAppAccess>
+        }
+      />
+      <Route
+        path={appRoutes.settings}
         element={
           <RequireAppAccess>
             <SettingsPage />
@@ -173,7 +208,31 @@ export function AppRoutes() {
         }
       />
       <Route
-        path="/blocker"
+        path={appRoutes.checkIn}
+        element={
+          <RequireAppAccess>
+            <CheckInPage />
+          </RequireAppAccess>
+        }
+      />
+      <Route
+        path={appRoutes.journal}
+        element={
+          <RequireAppAccess>
+            <JournalPage />
+          </RequireAppAccess>
+        }
+      />
+      <Route
+        path={appRoutes.relapse}
+        element={
+          <RequireAppAccess>
+            <RelapsePage />
+          </RequireAppAccess>
+        }
+      />
+      <Route
+        path={appRoutes.blocker}
         element={
           <RequireAppAccess>
             <BlockerPage />
@@ -181,14 +240,14 @@ export function AppRoutes() {
         }
       />
       <Route
-        path="/blocked"
+        path={appRoutes.blocked}
         element={
           <RequireAppAccess>
             <BlockedPage />
           </RequireAppAccess>
         }
       />
-      <Route path="*" element={<Navigate to="/" replace />} />
+      <Route path="*" element={<Navigate to={appRoutes.root} replace />} />
     </Routes>
   )
 }

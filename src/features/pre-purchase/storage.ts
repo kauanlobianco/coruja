@@ -15,7 +15,28 @@ export function loadPrePurchaseState() {
   }
 
   try {
-    return JSON.parse(raw) as PrePurchaseState
+    const parsed = JSON.parse(raw) as PrePurchaseState & {
+      quizAnswers?: Array<number | { questionId: number; answerIndex: number; points: number }>
+    }
+
+    return {
+      ...parsed,
+      quizAnswers: Array.isArray(parsed.quizAnswers)
+        ? parsed.quizAnswers
+            .map((answer, index) => {
+              if (typeof answer === 'number') {
+                return {
+                  questionId: index + 1,
+                  answerIndex: 0,
+                  points: answer,
+                }
+              }
+
+              return answer
+            })
+            .filter(Boolean)
+        : [],
+    }
   } catch {
     return null
   }

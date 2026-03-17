@@ -18,7 +18,7 @@ export function BlockedPage() {
   }, [blockedSite, registerBlockedAttempt])
 
   return (
-    <AppShell title="Acesso bloqueado" eyebrow="Protecao ativa">
+    <AppShell title="Acesso bloqueado" eyebrow="Protecao ativa" shellMode="system">
       <section className="info-card highlight-card">
         <span className="section-label">Bloqueador Android</span>
         <h2>{blockedSite}</h2>

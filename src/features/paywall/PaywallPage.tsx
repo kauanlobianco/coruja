@@ -5,7 +5,7 @@ export function PaywallPage() {
   const { state, setProAccess } = useAppState()
 
   return (
-    <AppShell title="Monetizacao desacoplada" eyebrow="Paywall">
+    <AppShell title="Monetizacao desacoplada" eyebrow="Paywall" shellMode="entry">
       <section className="pricing-grid">
         <article className="info-card">
           <span className="section-label">Free</span>

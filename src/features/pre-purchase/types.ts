@@ -12,13 +12,27 @@ export type FunnelStep =
   | 'custom-plan'
   | 'paywall'
 
+export type SymptomCategory = 'Mental' | 'Fisico' | 'Social' | 'Fe'
+
 export interface QuizQuestion {
   id: number
   prompt: string
+  factor: string
   answers: Array<{
     label: string
     points: number
   }>
+}
+
+export interface QuizAnswer {
+  questionId: number
+  answerIndex: number
+  points: number
+}
+
+export interface SymptomOption {
+  category: SymptomCategory
+  label: string
 }
 
 export interface Testimonial {
@@ -37,7 +51,7 @@ export interface PlanOption {
 export interface PrePurchaseState {
   step: FunnelStep
   quizIndex: number
-  quizAnswers: number[]
+  quizAnswers: QuizAnswer[]
   score: number
   name: string
   age: string

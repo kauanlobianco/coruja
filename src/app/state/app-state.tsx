@@ -1,7 +1,9 @@
 import type { PropsWithChildren } from 'react'
 import { startTransition, useEffect, useRef, useState } from 'react'
 import {
+  loadDemoClockOffsetDays,
   loadPersistedAppState,
+  saveDemoClockOffsetDays,
   savePersistedAppState,
 } from '../../core/storage/app-preferences'
 import { AppStateContext } from './context'
@@ -27,6 +29,7 @@ import {
   getBlockerVpnStatus,
   isBlockerVpnRunning,
   startBlockerVpn,
+  stopBlockerVpn,
 } from '../../features/blocker/blocker-native'
 import { DEFAULT_BLOCKED_DOMAINS } from '../../features/blocker/blocked-domains'
 
@@ -53,9 +56,22 @@ function isRecentIsoDate(value: string | null, thresholdMs: number) {
   return Date.now() - parsed < thresholdMs
 }
 
+function getBackupErrorMessage(input: {
+  reason: 'missing-env' | 'remote-error'
+  error?: string
+}) {
+  if (input.reason === 'remote-error') {
+    return input.error ?? 'Erro remoto ao sincronizar.'
+  }
+
+  return 'Supabase nao configurado.'
+}
+
 export interface AppStateContextValue {
   ready: boolean
   state: AppModel
+  demoNow: Date
+  demoOffsetDays: number
   completeOnboarding: (
     payload: Pick<UserProfile, 'name' | 'goalDays' | 'motivations' | 'triggers'>,
   ) => Promise<void>
@@ -104,6 +120,8 @@ export interface AppStateContextValue {
     status: AppModel['backup']['status'],
     lastError: string | null,
   ) => Promise<void>
+  shiftDemoDays: (deltaDays: number) => Promise<void>
+  resetDemoClock: () => Promise<void>
   logoutAccount: (reason?: string | null) => Promise<void>
   resetApp: () => Promise<void>
 }
@@ -111,25 +129,45 @@ export interface AppStateContextValue {
 export function AppStateProvider({ children }: PropsWithChildren) {
   const [ready, setReady] = useState(false)
   const [state, setState] = useState<AppModel>(initialState)
+  const [demoOffsetDays, setDemoOffsetDays] = useState(0)
+  const demoOffsetDaysRef = useRef(0)
   const stateRef = useRef<AppModel>(initialState)
   const syncInFlightRef = useRef(false)
+  const queuedSyncRef = useRef<AppModel | null>(null)
   const sessionCheckInFlightRef = useRef(false)
   const blockerSyncRef = useRef<string | null>(null)
+
+  function getDemoNow(offset = demoOffsetDaysRef.current) {
+    return new Date(Date.now() + offset * 24 * 60 * 60 * 1000)
+  }
+
+  function getDemoNowIso(offset = demoOffsetDaysRef.current) {
+    return getDemoNow(offset).toISOString()
+  }
 
   useEffect(() => {
     let active = true
 
-    void loadPersistedAppState().then((stored) => {
-      if (!active) {
-        return
-      }
+    void Promise.all([loadPersistedAppState(), loadDemoClockOffsetDays()]).then(
+      ([stored, storedOffset]) => {
+        if (!active) {
+          return
+        }
 
-      startTransition(() => {
-        setState(stored)
-        stateRef.current = stored
-        setReady(true)
-      })
-    })
+        const normalized = normalizeAppModel(
+          stored,
+          new Date(Date.now() + storedOffset * 24 * 60 * 60 * 1000),
+        )
+
+        startTransition(() => {
+          demoOffsetDaysRef.current = storedOffset
+          setDemoOffsetDays(storedOffset)
+          setState(normalized)
+          stateRef.current = normalized
+          setReady(true)
+        })
+      },
+    )
 
     return () => {
       active = false
@@ -137,9 +175,10 @@ export function AppStateProvider({ children }: PropsWithChildren) {
   }, [])
 
   async function commitState(next: AppModel) {
-    stateRef.current = next
-    setState(next)
-    await savePersistedAppState(next)
+    const normalized = normalizeAppModel(next, getDemoNow())
+    stateRef.current = normalized
+    setState(normalized)
+    await savePersistedAppState(normalized)
   }
 
   async function logoutAccount(reason?: string | null) {
@@ -161,69 +200,82 @@ export function AppStateProvider({ children }: PropsWithChildren) {
           lastError: reason ?? null,
           hasRemoteBackup: false,
         },
-      }),
+      }, getDemoNow()),
     )
   }
 
   async function syncRemoteBackup(model: AppModel) {
     const account = model.account
 
-    if (!account || syncInFlightRef.current) {
+    if (!account) {
+      return
+    }
+
+    queuedSyncRef.current = model
+
+    if (syncInFlightRef.current) {
       return
     }
 
     syncInFlightRef.current = true
 
     try {
-      const syncingModel = normalizeAppModel({
-        ...model,
-        backup: {
-          ...model.backup,
-          status: 'uploading',
-          lastError: null,
-        },
-      })
+      while (queuedSyncRef.current) {
+        const nextModel = queuedSyncRef.current
+        queuedSyncRef.current = null
 
-      await commitState(syncingModel)
+        if (!nextModel.account) {
+          continue
+        }
 
-      const uploaded = await uploadBackupForAccount({
-        userId: account.userId,
-        email: account.email,
-        model: syncingModel,
-      })
-
-      if (!uploaded.success) {
-        const failedModel = normalizeAppModel({
-          ...syncingModel,
+        const syncingModel = normalizeAppModel({
+          ...nextModel,
           backup: {
-            ...syncingModel.backup,
-            status: 'error',
-            lastError:
-              uploaded.reason === 'remote-error'
-                ? uploaded.error ?? 'Erro remoto ao sincronizar.'
-                : 'Supabase nao configurado.',
+            ...nextModel.backup,
+            status: 'uploading',
+            lastError: null,
           },
+        }, getDemoNow())
+
+        await commitState(syncingModel)
+
+        const uploaded = await uploadBackupForAccount({
+          userId: nextModel.account.userId,
+          email: nextModel.account.email,
+          model: syncingModel,
         })
 
-        await commitState(failedModel)
-        return
+        if (!uploaded.success) {
+          const failedModel = normalizeAppModel({
+            ...syncingModel,
+            backup: {
+              ...syncingModel.backup,
+              status: 'error',
+              lastError: getBackupErrorMessage(uploaded),
+            },
+          }, getDemoNow())
+
+          await commitState(failedModel)
+          queuedSyncRef.current = null
+          return
+        }
+
+        const syncedModel = normalizeAppModel({
+          ...syncingModel,
+          account: {
+            ...nextModel.account,
+            lastBackupAt: uploaded.lastBackupAt,
+          },
+          backup: {
+            ...syncingModel.backup,
+            status: 'idle',
+            lastError: null,
+            hasRemoteBackup: true,
+          },
+        }, getDemoNow())
+
+        await commitState(syncedModel)
       }
-
-      const syncedModel = normalizeAppModel({
-        ...syncingModel,
-        account: {
-          ...account,
-          lastBackupAt: uploaded.lastBackupAt,
-        },
-        backup: {
-          ...syncingModel.backup,
-          status: 'idle',
-          lastError: null,
-          hasRemoteBackup: true,
-        },
-      })
-
-      await commitState(syncedModel)
     } finally {
       syncInFlightRef.current = false
     }
@@ -233,12 +285,25 @@ export function AppStateProvider({ children }: PropsWithChildren) {
     recipe: (current: AppModel) => AppModel,
     options?: { syncRemote?: boolean },
   ) {
-    const next = normalizeAppModel(recipe(stateRef.current))
+    const next = normalizeAppModel(recipe(stateRef.current), getDemoNow())
     await commitState(next)
 
     if (options?.syncRemote) {
       await syncRemoteBackup(next)
     }
+  }
+
+  async function applyDemoOffset(nextOffsetDays: number) {
+    const nextNow = getDemoNow(nextOffsetDays)
+    const nextState = normalizeAppModel(stateRef.current, nextNow)
+
+    stateRef.current = nextState
+    demoOffsetDaysRef.current = nextOffsetDays
+    setDemoOffsetDays(nextOffsetDays)
+    setState(nextState)
+
+    await saveDemoClockOffsetDays(nextOffsetDays)
+    await savePersistedAppState(nextState)
   }
 
   const accountUserId = state.account?.userId
@@ -320,6 +385,36 @@ export function AppStateProvider({ children }: PropsWithChildren) {
   }, [ready, accountUserId])
 
   useEffect(() => {
+    if (!ready || !state.account) {
+      return
+    }
+
+    function retrySyncIfNeeded() {
+      if (document.visibilityState === 'hidden') {
+        return
+      }
+
+      const current = stateRef.current
+      if (!current.account) {
+        return
+      }
+
+      if (current.backup.status === 'error' || current.backup.status === 'conflict') {
+        void syncRemoteBackup(current)
+      }
+    }
+
+    window.addEventListener('online', retrySyncIfNeeded)
+    document.addEventListener('visibilitychange', retrySyncIfNeeded)
+
+    return () => {
+      window.removeEventListener('online', retrySyncIfNeeded)
+      document.removeEventListener('visibilitychange', retrySyncIfNeeded)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [ready, state.account])
+
+  useEffect(() => {
     if (!ready) {
       return
     }
@@ -378,22 +473,51 @@ export function AppStateProvider({ children }: PropsWithChildren) {
         }
 
         if (nativeActive) {
+          await stopBlockerVpn()
+
+          if (!active) {
+            return
+          }
+
+          const [nextStatus, nextRunning] = await Promise.all([
+            getBlockerVpnStatus(),
+            isBlockerVpnRunning(),
+          ])
+
+          if (!active) {
+            return
+          }
+
+          if (nextStatus.active || nextRunning.running) {
+            blockerSyncRef.current = signature
+            return
+          }
+
           await updateState(
             (current) => ({
               ...current,
               blocker: {
                 ...current.blocker,
-                isEnabled: true,
-                blockedDomains:
-                  current.blocker.blockedDomains.length > 0
-                    ? current.blocker.blockedDomains
-                    : desiredDomains,
+                isEnabled: false,
               },
             }),
             { syncRemote: true },
           )
-          blockerSyncRef.current = `true:${desiredDomains.join('|')}`
+          blockerSyncRef.current = signature
           return
+        }
+
+        if (stateRef.current.blocker.blockedDomains.length === 0) {
+          await updateState(
+            (current) => ({
+              ...current,
+              blocker: {
+                ...current.blocker,
+                blockedDomains: desiredDomains,
+              },
+            }),
+            { syncRemote: true },
+          )
         }
 
         blockerSyncRef.current = signature
@@ -417,9 +541,11 @@ export function AppStateProvider({ children }: PropsWithChildren) {
 
   const value: AppStateContextValue = {
     ready,
+    demoNow: getDemoNow(),
+    demoOffsetDays,
     state,
     completeOnboarding: async (profile) => {
-      const now = new Date().toISOString()
+      const now = getDemoNowIso()
 
       await updateState(
         (current) => ({
@@ -494,7 +620,7 @@ export function AppStateProvider({ children }: PropsWithChildren) {
               {
                 id: createId(),
                 url: domain,
-                createdAt: new Date().toISOString(),
+                createdAt: getDemoNowIso(),
               },
             ],
           },
@@ -518,13 +644,13 @@ export function AppStateProvider({ children }: PropsWithChildren) {
       await syncRemoteBackup(stateRef.current)
     },
     saveCheckIn: async (payload) => {
-      if (hasCheckInToday(stateRef.current.checkIns)) {
+      if (hasCheckInToday(stateRef.current.checkIns, getDemoNow())) {
         return { saved: false, reason: 'already-checked-in' }
       }
 
       const entry: CheckInEntry = {
         id: createId(),
-        createdAt: new Date().toISOString(),
+        createdAt: getDemoNowIso(),
         craving: payload.craving,
         mentalState: payload.mentalState,
         triggers: payload.triggers,
@@ -544,7 +670,7 @@ export function AppStateProvider({ children }: PropsWithChildren) {
       return { saved: true }
     },
     openSosSession: async () => {
-      const now = new Date().toISOString()
+      const now = getDemoNowIso()
 
       if (isRecentIsoDate(stateRef.current.sos.lastOpenedAt, 5000)) {
         return
@@ -564,7 +690,7 @@ export function AppStateProvider({ children }: PropsWithChildren) {
     saveJournalEntry: async (payload) => {
       const entry: JournalEntry = {
         id: createId(),
-        createdAt: new Date().toISOString(),
+        createdAt: getDemoNowIso(),
         title: payload.title,
         content: payload.content,
         type: payload.type,
@@ -594,6 +720,7 @@ export function AppStateProvider({ children }: PropsWithChildren) {
         cause: payload.cause,
         reflection: payload.reflection,
         createId,
+        now: getDemoNowIso(),
       })
 
       await updateState(() => result.nextModel, { syncRemote: true })
@@ -604,7 +731,7 @@ export function AppStateProvider({ children }: PropsWithChildren) {
         analytics: {
           ...current.analytics,
           selectedRangeDays: days,
-          lastComputedAt: new Date().toISOString(),
+          lastComputedAt: getDemoNowIso(),
         },
       }))
     },
@@ -628,7 +755,7 @@ export function AppStateProvider({ children }: PropsWithChildren) {
           userId: account.userId,
           email: account.email,
           lastBackupAt: account.lastBackupAt ?? null,
-          lastRestoreAt: new Date().toISOString(),
+          lastRestoreAt: getDemoNowIso(),
           lastLeaseRefreshAt:
             account.lastLeaseRefreshAt ?? model.account?.lastLeaseRefreshAt ?? null,
         },
@@ -638,7 +765,7 @@ export function AppStateProvider({ children }: PropsWithChildren) {
           lastError: null,
           hasRemoteBackup: true,
         },
-      })
+      }, getDemoNow())
 
       await commitState(merged)
     },
@@ -651,6 +778,12 @@ export function AppStateProvider({ children }: PropsWithChildren) {
           lastError,
         },
       }))
+    },
+    shiftDemoDays: async (deltaDays) => {
+      await applyDemoOffset(demoOffsetDaysRef.current + deltaDays)
+    },
+    resetDemoClock: async () => {
+      await applyDemoOffset(0)
     },
     logoutAccount,
     resetApp: async () => {

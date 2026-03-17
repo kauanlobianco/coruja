@@ -21,7 +21,19 @@ export async function restoreBackupForAccount(userId: string) {
     .eq('id', userId)
     .single<ProfileRow>()
 
-  if (error || !data?.backup_state) {
+  if (error) {
+    if (error.code === 'PGRST116') {
+      return { restored: false as const, reason: 'missing-backup' as const }
+    }
+
+    return {
+      restored: false as const,
+      reason: 'remote-error' as const,
+      error: error.message,
+    }
+  }
+
+  if (!data?.backup_state) {
     return { restored: false as const, reason: 'missing-backup' as const }
   }
 

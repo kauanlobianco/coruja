@@ -1,24 +1,24 @@
 # Coruja
 
-Base nova para recomeçar o app mobile em React + Capacitor, com foco em Android e iOS e sem repetir a arquitetura híbrida do projeto anterior.
+Base nova do app mobile em React + Capacitor, com foco em Android e iOS, sem repetir a arquitetura hibrida do projeto anterior.
 
-## O que já está pronto
+## O que ja esta pronto
 
 - React + Vite + TypeScript
 - Capacitor configurado com `android/` e `ios/`
-- React Router para fluxo único
-- React Query preparado para serviços remotos
-- Persistência local centralizada com `@capacitor/preferences`
-- Estrutura pensada por domínio, não por páginas soltas
+- Router React para fluxo unico
+- persistencia local centralizada com `@capacitor/preferences`
+- auth, backup e takeover com Supabase
+- base de produto portada por dominios
 
-## Estrutura inicial
+## Estrutura do projeto
 
 ```text
 src/
   app/                 bootstrap, providers, rotas e estado global
-  core/                integração nativa, config e storage
-  features/            telas e fluxos por domínio
-  shared/              layout e componentes reaproveitáveis
+  core/                dominio, config, platform, remote e storage
+  features/            telas e fluxos por dominio
+  shared/              layout e componentes reaproveitaveis
 ```
 
 ## Comandos
@@ -44,17 +44,31 @@ Para validar os fluxos criticos do app sem depender de memoria:
 
 - siga [regression-checklist.md](C:/vibecode/coruja/docs/regression-checklist.md)
 
-## Decisões de arquitetura
+## Arquitetura congelada
 
-- Um único runtime React.
-- Uma única fonte de verdade persistida.
-- Paywall, sync, blocker e compras tratados como módulos independentes.
-- Features nativas isoladas em `src/core/platform`.
-- Nada de HTMLs gigantes em `public/` controlando a navegação do produto.
+Documentos que passam a orientar as proximas fases:
 
-## Próximos passos sugeridos
+- [new-architecture.md](C:/vibecode/coruja/docs/new-architecture.md)
+- [state-contract.md](C:/vibecode/coruja/docs/state-contract.md)
+- [architecture-freeze-phase-1.md](C:/vibecode/coruja/docs/architecture-freeze-phase-1.md)
+- [master-flows.md](C:/vibecode/coruja/docs/master-flows.md)
+- [navigation-contract.md](C:/vibecode/coruja/docs/navigation-contract.md)
+- [home-contract.md](C:/vibecode/coruja/docs/home-contract.md)
+- [architecture-freeze-phase-3.md](C:/vibecode/coruja/docs/architecture-freeze-phase-3.md)
+- [architecture-freeze-phase-5.md](C:/vibecode/coruja/docs/architecture-freeze-phase-5.md)
+- [migration-roadmap.md](C:/vibecode/coruja/docs/migration-roadmap.md)
 
-1. Migrar o check-in diário para `src/features/check-in`.
-2. Criar contratos de serviço para auth, sync e assinaturas.
-3. Portar o SOS/recaída em componentes React pequenos.
-4. Integrar plugins nativos por feature, começando pelo bloqueador.
+## Referencias em codigo
+
+- dominios: `src/core/config/domains.ts`
+- modulos: `src/core/config/modules.ts`
+- modelo central: `src/core/domain/models.ts`
+- estado global: `src/app/state/app-state.tsx`
+
+## Decisoes permanentes
+
+- um unico runtime React
+- uma unica fonte de verdade persistida
+- navegação de produto no router
+- plugins nativos isolados por feature
+- nada de HTML gigante controlando o fluxo principal

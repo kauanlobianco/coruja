@@ -1,5 +1,9 @@
 import type { AppModel } from './models'
 
+function getUtcDayStamp(date: Date) {
+  return Date.UTC(date.getFullYear(), date.getMonth(), date.getDate())
+}
+
 export function getCurrentStreakFromStartDate(startDate: string | null, now = new Date()) {
   if (!startDate) {
     return 0
@@ -12,17 +16,14 @@ export function getCurrentStreakFromStartDate(startDate: string | null, now = ne
 
   const from = new Date(start)
   const to = new Date(now)
-  from.setHours(0, 0, 0, 0)
-  to.setHours(0, 0, 0, 0)
-
-  const diffMs = to.getTime() - from.getTime()
-  const diffDays = Math.round(diffMs / (1000 * 60 * 60 * 24))
+  const diffMs = getUtcDayStamp(to) - getUtcDayStamp(from)
+  const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24))
 
   return Math.max(0, diffDays)
 }
 
-export function normalizeAppModel(model: AppModel): AppModel {
-  const current = getCurrentStreakFromStartDate(model.profile.startDate)
+export function normalizeAppModel(model: AppModel, now = new Date()): AppModel {
+  const current = getCurrentStreakFromStartDate(model.profile.startDate, now)
   const best = Math.max(model.streak.best, current)
 
   return {
