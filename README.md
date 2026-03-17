@@ -30,6 +30,20 @@ src/
 - `npm run cap:android`
 - `npm run cap:ios`
 
+## Supabase
+
+Para configurar auth, backup e takeover entre dispositivos:
+
+1. copie `.env.example` para `.env.local`
+2. preencha `VITE_SUPABASE_URL` e `VITE_SUPABASE_ANON_KEY`
+3. siga [supabase-setup.md](C:/vibecode/coruja/docs/supabase-setup.md)
+
+## QA manual
+
+Para validar os fluxos criticos do app sem depender de memoria:
+
+- siga [regression-checklist.md](C:/vibecode/coruja/docs/regression-checklist.md)
+
 ## Decisões de arquitetura
 
 - Um único runtime React.

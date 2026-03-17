@@ -38,8 +38,13 @@ export function AppShell({
 
         <nav className="top-nav" aria-label="Navegacao principal">
           <NavLink to="/app">App</NavLink>
+          <NavLink to="/check-in">Check-in</NavLink>
+          <NavLink to="/sos">SOS</NavLink>
+          <NavLink to="/journal">Jornal</NavLink>
+          <NavLink to="/relapse">Recaida</NavLink>
+          <NavLink to="/analytics">Analytics</NavLink>
+          <NavLink to="/blocker">Bloqueador</NavLink>
           <NavLink to="/pre-purchase">Pre-compra</NavLink>
-          <NavLink to="/paywall">Paywall</NavLink>
           <NavLink to="/settings">Settings</NavLink>
         </nav>
 

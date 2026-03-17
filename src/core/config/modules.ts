@@ -40,6 +40,6 @@ export const productModules: ModuleDefinition[] = [
     id: 'blocker',
     title: 'Bloqueador',
     description: 'Camada nativa isolada por feature, com contratos explícitos por plataforma.',
-    status: 'later',
+    status: 'next',
   },
 ]

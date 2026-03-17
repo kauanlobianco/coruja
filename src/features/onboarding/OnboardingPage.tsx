@@ -32,7 +32,11 @@ export function OnboardingPage() {
     state.profile.triggers.length > 0 ? state.profile.triggers : [],
   )
 
-  function toggleValue(value: string, current: string[], setter: (values: string[]) => void) {
+  function toggleValue(
+    value: string,
+    current: string[],
+    setter: (values: string[]) => void,
+  ) {
     setter(
       current.includes(value)
         ? current.filter((item) => item !== value)
@@ -54,7 +58,7 @@ export function OnboardingPage() {
   }
 
   return (
-    <AppShell title="Fluxo inicial enxuto" eyebrow="Onboarding">
+    <AppShell title="Onboarding consolidado" eyebrow="Onboarding">
       <form className="form-card" onSubmit={handleSubmit}>
         <div className="field">
           <label htmlFor="name">Nome</label>
@@ -79,7 +83,7 @@ export function OnboardingPage() {
         </div>
 
         <div className="field">
-          <span>Motivações principais</span>
+          <span>Motivacoes principais</span>
           <div className="chip-row">
             {defaultMotivations.map((item) => (
               <button
@@ -119,9 +123,13 @@ export function OnboardingPage() {
         <span className="section-label">Decisao estrutural</span>
         <h2>Um fluxo, uma rota, uma fonte de verdade</h2>
         <p>
-          O app antigo distribuía setup entre páginas React, HTMLs públicos e
-          armazenamento duplicado. Aqui, o onboarding já grava apenas um estado
-          versionável e fácil de migrar.
+          O app antigo distribuia setup entre paginas React, HTMLs publicos e
+          armazenamento duplicado. Aqui, o onboarding grava um unico modelo
+          versionavel e facil de migrar.
+        </p>
+        <p>
+          Este passo tambem inicializa a baseline do streak usando a data de
+          inicio do novo usuario.
         </p>
       </section>
     </AppShell>

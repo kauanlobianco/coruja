@@ -14,6 +14,7 @@
 - integração com Capacitor
 - persistência
 - contratos técnicos comuns
+- modelos centrais de domínio
 
 ### `features/`
 
@@ -31,3 +32,18 @@
 3. Persistência local e sync remoto usam modelos explícitos.
 4. Plugin nativo só conversa com a feature por uma interface clara.
 5. Monetização não decide sozinha a navegação do app.
+
+## Dominios principais do app
+
+- `pre-purchase`
+- `onboarding`
+- `home`
+- `check-in`
+- `sos`
+- `journal`
+- `relapse`
+- `analytics`
+- `blocker`
+- `account`
+- `backup`
+- `session-lease`

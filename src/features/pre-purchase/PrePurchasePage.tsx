@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { useAppState } from '../../app/state/use-app-state'
 import {
   painSlides,
   planOptions,
@@ -80,6 +81,7 @@ function getProgress(step: FunnelStep) {
 
 export function PrePurchasePage() {
   const navigate = useNavigate()
+  const { state: appState } = useAppState()
   const [state, setState] = useState<PrePurchaseState>(() => loadPrePurchaseState() ?? initialState)
 
   useEffect(() => {
@@ -162,7 +164,7 @@ export function PrePurchasePage() {
 
   function continueToOnboarding() {
     clearPrePurchaseState()
-    navigate('/onboarding', { replace: true })
+    navigate('/account/auth?mode=signup&signupOnly=1', { replace: true })
   }
 
   return (
@@ -192,14 +194,25 @@ export function PrePurchasePage() {
               Um fluxo guiado para entender seu padrão, diagnosticar seus
               gatilhos e montar um plano mais estável antes de entrar no app.
             </p>
+            {appState.backup.status === 'conflict' && appState.backup.lastError ? (
+              <p className="warning-banner">{appState.backup.lastError}</p>
+            ) : null}
             <div className="hero-checks">
               <span>Quiz com 13 perguntas</span>
               <span>Sintomas e diagnóstico</span>
               <span>Plano e paywall desacoplados</span>
             </div>
-            <button className="button button-primary" onClick={() => goTo('quiz')}>
-              Iniciar avaliação
-            </button>
+            <div className="hero-actions">
+              <button className="button button-primary" onClick={() => goTo('quiz')}>
+                Iniciar avaliação
+              </button>
+              <button
+                className="button button-secondary"
+                onClick={() => navigate('/account/auth?mode=login&loginOnly=1')}
+              >
+                Ja tenho conta
+              </button>
+            </div>
           </section>
         ) : null}
 

@@ -37,7 +37,8 @@ body {
 }
 
 button,
-input {
+input,
+textarea {
   font: inherit;
 }
 
@@ -132,7 +133,7 @@ dt {
 }
 
 .top-nav {
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(9, minmax(0, 1fr));
 }
 
 .top-nav a {
@@ -173,19 +174,24 @@ dt {
 
 .button,
 .chip,
-.text-link {
+.text-link,
+.answer-card,
+.plan-card {
   border: 0;
   border-radius: 16px;
   cursor: pointer;
   transition:
     transform 160ms ease,
     opacity 160ms ease,
-    background 160ms ease;
+    background 160ms ease,
+    border-color 160ms ease;
 }
 
 .button:hover,
 .chip:hover,
-.text-link:hover {
+.text-link:hover,
+.answer-card:hover,
+.plan-card:hover {
   transform: translateY(-1px);
 }
 
@@ -215,6 +221,17 @@ dt {
 .stats-grid {
   grid-template-columns: repeat(3, minmax(0, 1fr));
   margin: 20px 0 0;
+}
+
+.home-hero-card {
+  display: grid;
+  gap: 18px;
+}
+
+.home-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
 }
 
 dt {
@@ -267,13 +284,19 @@ dd {
   gap: 10px;
 }
 
-.field input {
+.field input,
+.textarea {
   width: 100%;
   border: 1px solid var(--border);
   border-radius: 16px;
   padding: 14px 16px;
   background: rgba(255, 255, 255, 0.04);
   color: var(--text);
+}
+
+.textarea {
+  min-height: 120px;
+  resize: vertical;
 }
 
 .chip-row {
@@ -404,6 +427,14 @@ dd {
   background: rgba(255, 255, 255, 0.04);
 }
 
+.warning-banner {
+  padding: 14px 16px;
+  border-radius: 18px;
+  background: rgba(228, 154, 84, 0.16);
+  border: 1px solid rgba(228, 154, 84, 0.3);
+  color: var(--text);
+}
+
 .answer-grid,
 .testimonial-grid,
 .diagnosis-metrics {
@@ -418,7 +449,6 @@ dd {
   text-align: left;
   padding: 18px;
   color: var(--text);
-  cursor: pointer;
 }
 
 .answer-card,
@@ -432,7 +462,6 @@ dd {
 
 .answer-card:hover,
 .plan-card:hover {
-  transform: translateY(-1px);
   border-color: rgba(228, 154, 84, 0.35);
 }
 
@@ -505,6 +534,58 @@ dd {
   animation: spin 1s linear infinite;
 }
 
+.inline-card {
+  padding: 18px;
+}
+
+.sos-breathing {
+  display: grid;
+  place-items: center;
+  min-height: 180px;
+  margin-top: 18px;
+  border-radius: 24px;
+  background:
+    radial-gradient(circle, rgba(228, 154, 84, 0.28), transparent 60%),
+    rgba(255, 255, 255, 0.04);
+  font-size: clamp(2rem, 8vw, 3.5rem);
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+
+.bar-list {
+  display: grid;
+  gap: 14px;
+}
+
+.bar-item {
+  display: grid;
+  gap: 8px;
+}
+
+.bar-label-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  color: var(--muted);
+}
+
+.bar-track {
+  height: 12px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+  overflow: hidden;
+}
+
+.bar-fill {
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, var(--accent), var(--accent-strong));
+}
+
+.bar-fill-cool {
+  background: linear-gradient(90deg, var(--accent-cool), var(--success));
+}
+
 @keyframes spin {
   to {
     transform: rotate(360deg);
@@ -540,6 +621,7 @@ dd {
   }
 
   .stats-grid,
+  .home-stats-grid,
   .intro-meta,
   .top-nav,
   .funnel-header,
