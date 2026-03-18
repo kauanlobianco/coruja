@@ -111,13 +111,15 @@ export function AnalyticsPage() {
         {!hasEnoughData ? (
           <article className="info-card">
             <span className="section-label">Ainda nao liberado</span>
-            <h2>Seu painel vai ficar melhor com mais alguns registros</h2>
-            <p>Faca check-ins em pelo menos 3 dias diferentes para liberar uma leitura mais confiavel.</p>
+            <div className="empty-state">
+              <h2>Seu painel vai ficar melhor com mais alguns registros</h2>
+              <p>Faca check-ins em pelo menos 3 dias diferentes para liberar uma leitura mais confiavel.</p>
+            </div>
             <div className="toolbar">
               <Link className="button button-secondary" to="/app">
                 Voltar para a Home
               </Link>
-              <Link className="button button-primary" to="/check-in">
+              <Link className="button button-primary shimmer" to="/check-in">
                 Fazer check-in
               </Link>
             </div>

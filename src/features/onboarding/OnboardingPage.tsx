@@ -120,13 +120,18 @@ export function OnboardingPage() {
             estiver te apoiando mais de perto.
           </p>
           <div className="field">
-            <label htmlFor="name">Nome</label>
-            <input
-              id="name"
-              value={name}
-              onChange={(event) => setName(event.target.value)}
-              placeholder="Como voce quer ser chamado?"
-            />
+            <div className="input-wrapper">
+              <input
+                className="input-field"
+                id="name"
+                value={name}
+                onChange={(event) => setName(event.target.value)}
+                placeholder=" "
+              />
+              <label className="input-label" htmlFor="name">
+                Nome
+              </label>
+            </div>
           </div>
         </section>
 
@@ -176,14 +181,19 @@ export function OnboardingPage() {
             ))}
           </div>
           <div className="field">
-            <label htmlFor="custom-motivation">Outro motivo importante para voce</label>
-            <input
-              id="custom-motivation"
-              value={customMotivation}
-              onChange={(event) => setCustomMotivation(event.target.value)}
-              placeholder="Escreva um motivo com as suas palavras"
-              maxLength={80}
-            />
+            <div className="input-wrapper">
+              <input
+                className="input-field"
+                id="custom-motivation"
+                value={customMotivation}
+                onChange={(event) => setCustomMotivation(event.target.value)}
+                placeholder=" "
+                maxLength={80}
+              />
+              <label className="input-label" htmlFor="custom-motivation">
+                Outro motivo importante para voce
+              </label>
+            </div>
           </div>
         </section>
 

@@ -141,7 +141,7 @@ export function RelapsePage() {
             <button className="button button-secondary" onClick={() => navigate('/app')}>
               Voltar
             </button>
-            <button className="button button-primary" onClick={() => void handleConfirm()}>
+            <button className="button button-danger" onClick={() => void handleConfirm()}>
               Confirmar e recomecar
             </button>
           </div>

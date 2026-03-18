@@ -219,7 +219,7 @@ export function SettingsPage() {
             Ao sair, o app limpa o cache local deste aparelho e retorna voce para a landing. O
             backup remoto continua salvo na conta.
           </p>
-          <button className="button button-secondary" onClick={() => void handleLogout()}>
+          <button className="button button-danger" onClick={() => void handleLogout()}>
             Fazer logout
           </button>
         </article>

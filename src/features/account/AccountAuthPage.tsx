@@ -192,45 +192,60 @@ export function AccountAuthPage() {
         ) : null}
 
         <div className="field">
-          <label htmlFor="account-email">E-mail</label>
-          <input
-            id="account-email"
-            type="email"
-            value={email}
-            onChange={(event) => setEmail(event.target.value)}
-            placeholder="voce@email.com"
-            required
-          />
+          <div className="input-wrapper">
+            <input
+              className="input-field"
+              id="account-email"
+              type="email"
+              value={email}
+              onChange={(event) => setEmail(event.target.value)}
+              placeholder=" "
+              required
+            />
+            <label className="input-label" htmlFor="account-email">
+              E-mail
+            </label>
+          </div>
         </div>
 
         <div className="field">
-          <label htmlFor="account-password">Senha</label>
-          <input
-            id="account-password"
-            type="password"
-            value={password}
-            onChange={(event) => setPassword(event.target.value)}
-            placeholder="******"
-            required
-          />
+          <div className="input-wrapper">
+            <input
+              className="input-field"
+              id="account-password"
+              type="password"
+              value={password}
+              onChange={(event) => setPassword(event.target.value)}
+              placeholder=" "
+              required
+            />
+            <label className="input-label" htmlFor="account-password">
+              Senha
+            </label>
+          </div>
         </div>
 
         {mode === 'signup' ? (
           <div className="field">
-            <label htmlFor="account-password-confirm">Confirmar senha</label>
-            <input
-              id="account-password-confirm"
-              type="password"
-              value={confirmPassword}
-              onChange={(event) => setConfirmPassword(event.target.value)}
-              placeholder="******"
-              required
-            />
+            <div className="input-wrapper">
+              <input
+                className="input-field"
+                id="account-password-confirm"
+                type="password"
+                value={confirmPassword}
+                onChange={(event) => setConfirmPassword(event.target.value)}
+                placeholder=" "
+                required
+              />
+              <label className="input-label" htmlFor="account-password-confirm">
+                Confirmar senha
+              </label>
+            </div>
           </div>
         ) : null}
 
-        {error ? <p>{error}</p> : null}
-        {message ? <p>{message}</p> : null}
+        {error ? <p className="toast toast-error">{error}</p> : null}
+        {message ? <p className="toast toast-success">{message}</p> : null}
 
         <button className="button button-primary" type="submit" disabled={loading}>
           {loading ? 'Processando...' : mode === 'signup' ? 'Criar conta e seguir' : 'Entrar e restaurar'}

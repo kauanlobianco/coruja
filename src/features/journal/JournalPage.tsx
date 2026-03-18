@@ -111,7 +111,7 @@ export function JournalPage() {
 
         <div className="card-grid">
           {entries.length === 0 ? (
-            <article className="info-card">
+            <article className="info-card empty-state">
               <h2>Nenhuma entrada ainda</h2>
               <p>
                 Quando voce escrever aqui, o app passa a guardar reflexoes livres
@@ -129,7 +129,7 @@ export function JournalPage() {
                 <p>{entry.content}</p>
                 {entry.type !== 'relapse' ? (
                   <button
-                    className="button button-secondary"
+                    className="button button-danger"
                     onClick={() => void deleteJournalEntry(entry.id)}
                   >
                     Excluir

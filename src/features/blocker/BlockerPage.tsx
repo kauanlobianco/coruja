@@ -183,8 +183,8 @@ export function BlockerPage() {
             {busy ? 'Processando...' : vpnActive ? 'Desativar bloqueador' : 'Ativar bloqueador'}
           </button>
         </div>
-        {message ? <p>{message}</p> : null}
-        {error ? <p>{error}</p> : null}
+        {message ? <p className="toast toast-success">{message}</p> : null}
+        {error ? <p className="toast toast-error">{error}</p> : null}
       </section>
 
       <section className="info-card">
@@ -224,7 +224,9 @@ export function BlockerPage() {
         </div>
 
         {customDomains.length === 0 ? (
-          <p>Nenhum dominio personalizado adicionado.</p>
+          <div className="empty-state">
+            <p>Nenhum dominio personalizado adicionado.</p>
+          </div>
         ) : (
           <div className="timeline-list">
             {customDomains.map((domain) => (
@@ -246,7 +248,9 @@ export function BlockerPage() {
         <span className="section-label">Historico</span>
         <h2>Tentativas bloqueadas</h2>
         {state.blocker.blockedAttempts.length === 0 ? (
-          <p>Nenhuma tentativa registrada ainda.</p>
+          <div className="empty-state">
+            <p>Nenhuma tentativa registrada ainda.</p>
+          </div>
         ) : (
           <div className="timeline-list">
             {[...state.blocker.blockedAttempts]

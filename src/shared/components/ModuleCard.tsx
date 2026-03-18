@@ -6,7 +6,7 @@ interface ModuleCardProps {
 
 export function ModuleCard({ module }: ModuleCardProps) {
   return (
-    <article className="info-card">
+    <article className="card">
       <div className="card-heading">
         <span className={`status-pill status-${module.status}`}>
           {module.status}

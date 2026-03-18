@@ -113,8 +113,8 @@ export function CheckInPage() {
 
   const strategyOverlay =
     !alreadyCheckedIn && showStrategy && strategy ? (
-      <section className="checkin-modal-backdrop">
-        <article className="info-card highlight-card checkin-modal-card">
+      <section className="checkin-modal-backdrop modal-overlay">
+        <article className="info-card highlight-card checkin-modal-card modal-content">
           <span className="section-label">Seu proximo passo</span>
           <h2>
             {suggestSos

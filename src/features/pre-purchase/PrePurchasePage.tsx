@@ -393,7 +393,7 @@ export function PrePurchasePage() {
                   ))}
                 </div>
                 <div className="hero-actions">
-                  <button className="button button-primary" onClick={() => goTo('quiz')}>
+                  <button className="button button-orange shimmer" onClick={() => goTo('quiz')}>
                     Comecar Quiz
                   </button>
                   <button
@@ -666,7 +666,7 @@ export function PrePurchasePage() {
                     </article>
                   ))}
                 </div>
-                <button className="button button-primary" onClick={() => goTo('plan-preview')}>
+                <button className="button button-orange shimmer" onClick={() => goTo('plan-preview')}>
                   Ver meu plano
                 </button>
               </section>
@@ -696,7 +696,7 @@ export function PrePurchasePage() {
                     <p>Usar apoio diario, resposta imediata e protecao do ambiente para ganhar mais consistencia.</p>
                   </div>
                 </div>
-                <button className="button button-primary" onClick={() => goTo('custom-plan')}>
+                <button className="button button-orange shimmer" onClick={() => goTo('custom-plan')}>
                   Revelar meu plano
                 </button>
               </section>
@@ -743,7 +743,7 @@ export function PrePurchasePage() {
                   registrar o que aconteceu, mas para te ajudar a ajustar a rota enquanto voce
                   avanca.
                 </p>
-                <button className="button button-primary" onClick={() => goTo('paywall')}>
+                <button className="button button-orange shimmer" onClick={() => goTo('paywall')}>
                   Escolher meu plano
                 </button>
               </section>
@@ -776,10 +776,10 @@ export function PrePurchasePage() {
                     </button>
                   ))}
                 </div>
-                <button className="button button-primary" onClick={continueToOnboarding}>
+                <button className="button button-orange shimmer" onClick={continueToOnboarding}>
                   {state.selectedPlan === 'annual'
                     ? 'Continuar com o plano anual'
-                    : 'Continuar com acesso vitalicio'}
+                    : 'Comecar com o plano mensal'}
                 </button>
                 <button className="text-link" onClick={continueToOnboarding}>
                   Ver cadastro e liberar meu acesso

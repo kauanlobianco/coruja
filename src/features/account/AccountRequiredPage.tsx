@@ -20,7 +20,7 @@ export function AccountRequiredPage() {
         </p>
         <div className="hero-actions">
           <button
-            className="button button-primary"
+            className="button button-orange shimmer"
             onClick={() => navigate('/account/auth?mode=signup&signupOnly=1')}
           >
             Criar conta e continuar

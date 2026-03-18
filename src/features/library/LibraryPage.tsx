@@ -8,10 +8,12 @@ export function LibraryPage() {
         <article className="info-card highlight-card">
           <span className="section-label">Em breve</span>
           <h2>Biblioteca ainda nao portada</h2>
-          <p>
-            Esta aba foi recolocada para reconstruir a navegacao final do produto.
-            A estrutura de conteudo entra depois, sem quebrar o fluxo principal.
-          </p>
+          <div className="empty-state">
+            <p>
+              Esta aba foi recolocada para reconstruir a navegacao final do produto.
+              A estrutura de conteudo entra depois, sem quebrar o fluxo principal.
+            </p>
+          </div>
           <div className="toolbar">
             <Link className="button button-secondary" to="/app">
               Voltar para a home
@@ -19,7 +21,7 @@ export function LibraryPage() {
             <Link className="button button-secondary" to="/check-in">
               Fazer check-in
             </Link>
-            <Link className="button button-primary" to="/analytics">
+            <Link className="button button-primary shimmer" to="/analytics">
               Ver analytics
             </Link>
           </div>

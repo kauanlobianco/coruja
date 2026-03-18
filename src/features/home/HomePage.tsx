@@ -1,19 +1,65 @@
 import { useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { motion } from 'framer-motion'
+import {
+  BookOpen,
+  Check,
+  ChevronRight,
+  Circle,
+  ClipboardCheck,
+  Flame,
+  Goal,
+  ShieldCheck,
+  Sparkles,
+} from 'lucide-react'
 import { useAppState } from '../../app/state/use-app-state'
 import { AppShell } from '../../shared/layout/AppShell'
 import { hasCheckInToday } from '../../core/domain/check-in'
 import { appRoutes } from '../../core/config/routes'
 
-function formatPtDate(value: string | null) {
+function formatPtDay(value: Date) {
+  return new Intl.DateTimeFormat('pt-BR', {
+    weekday: 'long',
+    day: 'numeric',
+    month: 'long',
+  }).format(value)
+}
+
+function getMentalStateEmoji(value: string | null | undefined) {
   if (!value) {
-    return 'ainda nao registrado'
+    return '😐'
   }
 
-  return new Intl.DateTimeFormat('pt-BR', {
-    dateStyle: 'short',
-    timeStyle: 'short',
-  }).format(new Date(value))
+  const normalized = value.toLowerCase()
+
+  if (
+    normalized.includes('ans') ||
+    normalized.includes('pan') ||
+    normalized.includes('agita') ||
+    normalized.includes('sobre')
+  ) {
+    return '😣'
+  }
+
+  if (
+    normalized.includes('triste') ||
+    normalized.includes('culpa') ||
+    normalized.includes('cans') ||
+    normalized.includes('vazio')
+  ) {
+    return '😔'
+  }
+
+  if (
+    normalized.includes('calm') ||
+    normalized.includes('bem') ||
+    normalized.includes('leve') ||
+    normalized.includes('estavel')
+  ) {
+    return '🙂'
+  }
+
+  return '😐'
 }
 
 function getPrimaryAction(state: ReturnType<typeof useAppState>['state'], now: Date) {
@@ -45,286 +91,232 @@ function getPrimaryAction(state: ReturnType<typeof useAppState>['state'], now: D
   }
 }
 
-function getTodaySummary(state: ReturnType<typeof useAppState>['state'], now: Date) {
-  const checkInDone = hasCheckInToday(state.checkIns, now)
-  const lastCheckIn = state.checkIns.at(-1) ?? null
-
-  if (!checkInDone) {
-    return 'Hoje ainda nao foi registrado. Comece entendendo como voce esta agora.'
-  }
-
-  if (lastCheckIn && lastCheckIn.craving >= 7) {
-    return 'Seu ultimo check-in mostrou um momento delicado. O foco agora e reduzir risco.'
-  }
-
-  if (state.blocker.isEnabled) {
-    return 'Seu check-in foi feito e sua protecao esta ligada. Agora e sustentar o dia.'
-  }
-
-  return 'Seu check-in foi feito. O proximo passo inteligente e ligar a protecao ou escrever no Jornal.'
-}
-
 export function HomePage() {
   const navigate = useNavigate()
   const { state, demoNow } = useAppState()
 
   const primaryAction = useMemo(() => getPrimaryAction(state, demoNow), [demoNow, state])
   const hasCheckInDoneToday = hasCheckInToday(state.checkIns, demoNow)
-  const lastCheckIn = state.checkIns.at(-1) ?? null
   const lastJournalEntry = state.journalEntries.at(-1) ?? null
   const motivations = state.profile.motivations.slice(0, 4)
+  const duplicatedMotivations = motivations.length > 0 ? [...motivations, ...motivations] : []
   const goalProgress = state.profile.goalDays
     ? Math.min(100, Math.round((state.streak.current / state.profile.goalDays) * 100))
     : 0
-  const todaySummary = useMemo(() => getTodaySummary(state, demoNow), [demoNow, state])
-  const orderedCards = useMemo(() => {
-    const cards = [
-      {
-        key: 'check-in',
-        element: (
-          <article
-            key="check-in"
-            className="info-card home-list-card"
-            onClick={() => navigate(appRoutes.checkIn)}
-          >
-            <div className="home-list-head">
-              <div>
-                <span className="section-label">Check-in</span>
-                <h2>Registrar como voce esta</h2>
-              </div>
-              <div className="home-card-status">
-                {primaryAction.key === 'check-in' ? (
-                  <span className="status-pill status-next">Recomendado</span>
-                ) : null}
-                <span
-                  className={
-                    hasCheckInDoneToday ? 'status-pill status-ready' : 'status-pill status-next'
-                  }
-                >
-                  {hasCheckInDoneToday ? 'Feito' : 'Pendente'}
-                </span>
-              </div>
-            </div>
-            {lastCheckIn ? (
-              <div className="home-item-body">
-                <p>Ultimo registro em {formatPtDate(lastCheckIn.createdAt)}</p>
-                <p>
-                  Vontade {lastCheckIn.craving}/10, estado {lastCheckIn.mentalState} e{' '}
-                  {lastCheckIn.triggers.length} gatilho(s) marcado(s).
-                </p>
-              </div>
-            ) : (
-              <p>Sem registro hoje. Este e o primeiro passo importante do seu dia.</p>
-            )}
-            {primaryAction.key === 'check-in' ? <p>{todaySummary}</p> : null}
-            <span className="text-link">Abrir check-in</span>
-          </article>
-        ),
-      },
-      {
-        key: 'journal',
-        element: (
-          <article
-            key="journal"
-            className="info-card home-list-card"
-            onClick={() => navigate(appRoutes.journal)}
-          >
-            <div className="home-list-head">
-              <div>
-                <span className="section-label">Jornal</span>
-                <h2>Clarear o momento</h2>
-              </div>
-              <div className="home-card-status">
-                {primaryAction.key === 'journal' ? (
-                  <span className="status-pill status-next">Recomendado</span>
-                ) : null}
-                <span className="status-pill">{state.journalEntries.length} entrada(s)</span>
-              </div>
-            </div>
-            {lastJournalEntry ? (
-              <div className="home-item-body">
-                <p>Ultima entrada em {formatPtDate(lastJournalEntry.createdAt)}</p>
-                <p>{lastJournalEntry.title}</p>
-              </div>
-            ) : (
-              <p>Use o Jornal para registrar contexto, aprendizados e o que esta pesando no dia.</p>
-            )}
-            {primaryAction.key === 'journal' ? <p>{todaySummary}</p> : null}
-            <span className="text-link">Abrir Jornal</span>
-          </article>
-        ),
-      },
-      {
-        key: 'blocker',
-        element: (
-          <article
-            key="blocker"
-            className="info-card home-list-card"
-            onClick={() => navigate(appRoutes.blocker)}
-          >
-            <div className="home-list-head">
-              <div>
-                <span className="section-label">Bloqueador</span>
-                <h2>Proteger seu ambiente</h2>
-              </div>
-              <div className="home-card-status">
-                {primaryAction.key === 'blocker' ? (
-                  <span className="status-pill status-next">Recomendado</span>
-                ) : null}
-                <span
-                  className={
-                    state.blocker.isEnabled
-                      ? 'status-pill status-ready'
-                      : 'status-pill status-later'
-                  }
-                >
-                  {state.blocker.isEnabled ? 'Ativo' : 'Desligado'}
-                </span>
-              </div>
-            </div>
-            <div className="home-item-body">
-              <p>
-                {state.blocker.isEnabled
-                  ? `${state.blocker.blockedDomains.length || 11} dominios protegidos e ${state.blocker.blockedAttempts.length} tentativa(s) interrompida(s).`
-                  : 'Ative a protecao para reduzir exposicao em momentos vulneraveis.'}
-              </p>
-              {state.blocker.blockedAttempts.length > 0 ? (
-                <p>
-                  Ultima interrupcao em{' '}
-                  {formatPtDate(state.blocker.blockedAttempts.at(-1)?.createdAt ?? null)}.
-                </p>
-              ) : null}
-            </div>
-            {primaryAction.key === 'blocker' ? <p>{todaySummary}</p> : null}
-            <span className="text-link">Abrir Bloqueador</span>
-          </article>
-        ),
-      },
-    ]
+  const homeSubtitle = hasCheckInDoneToday
+    ? `${formatPtDay(demoNow)} | dia registrado`
+    : `${formatPtDay(demoNow)} | check-in pendente`
+  const userInitial = state.profile.name?.trim().charAt(0).toUpperCase() || 'C'
 
-    return [...cards].sort((left, right) => {
-      if (left.key === primaryAction.key) {
-        return -1
-      }
+  const recentMoodEmojis = state.checkIns
+    .slice(-3)
+    .map((checkIn) => getMentalStateEmoji(checkIn.mentalState))
+  const previewMoodEmojis = recentMoodEmojis.length > 0 ? recentMoodEmojis : ['😐', '😔', '🙂']
 
-      if (right.key === primaryAction.key) {
-        return 1
-      }
+  const journalPreview = lastJournalEntry?.title?.trim() || 'Nenhuma entrada ainda.'
 
-      return 0
-    })
-  }, [
-    hasCheckInDoneToday,
-    lastCheckIn,
-    lastJournalEntry,
-    navigate,
-    primaryAction.key,
-    state.blocker.blockedAttempts,
-    state.blocker.blockedDomains.length,
-    state.blocker.isEnabled,
-    state.journalEntries.length,
-    todaySummary,
-  ])
+  const heroCardClassName =
+    state.streak.current === 0
+      ? 'info-card highlight-card home-hero-card home-hero-card-zero'
+      : 'info-card highlight-card home-hero-card'
+
+  const motionCards = [0, 1, 2, 3]
 
   return (
     <AppShell
-      title={state.profile.name ? `Ola, ${state.profile.name}` : 'Sua recuperacao'}
-      eyebrow="Home"
+      title={
+        state.profile.name ? (
+          <>
+            Ola, <span>{state.profile.name}</span>
+          </>
+        ) : (
+          'Sua recuperacao'
+        )
+      }
+      eyebrow=""
+      subtitle={homeSubtitle}
+      actions={<div className="home-avatar">{userInitial}</div>}
     >
-      <section className="panel-stack home-flow">
-        <article className="info-card highlight-card home-hero-card">
-          <div className="home-list-head">
-            <div>
-              <span className="section-label">Seu streak</span>
-              <h2>{state.streak.current} dias</h2>
-            </div>
-            <span className="status-pill">{goalProgress}% da meta</span>
-          </div>
-          <p>
-            Meta atual de {state.profile.goalDays} dias. Sua melhor marca ate aqui foi de{' '}
-            {state.streak.best} dias.
-          </p>
-          <div className="progress-track">
-            <div className="progress-fill" style={{ width: `${goalProgress}%` }} />
-          </div>
-          <div className="home-stats-grid">
-            <div className="metric-card">
-              <strong>{hasCheckInDoneToday ? 'feito' : 'pendente'}</strong>
-              <span>check-in de hoje</span>
-            </div>
-            <div className="metric-card">
-              <strong>{state.blocker.isEnabled ? 'ativa' : 'desligada'}</strong>
-              <span>protecao do aparelho</span>
-            </div>
-            <div className="metric-card">
-              <strong>{state.relapses.length}</strong>
-              <span>recaida(s) registradas</span>
-            </div>
-            <div className="metric-card">
-              <strong>{state.sos.totalSessions}</strong>
-              <span>uso(s) do SOS</span>
-            </div>
-          </div>
-        </article>
-
-        <article className="info-card">
-          <span className="section-label">Hoje</span>
-          <h2>{todaySummary}</h2>
-          <p>{primaryAction.description}</p>
-        </article>
-
-        {orderedCards.map((card) => card.element)}
-
-        <article
-          className="info-card home-list-card"
-          onClick={() => navigate(appRoutes.relapse)}
+      <section className="home-flow">
+        <motion.article
+          className={heroCardClassName}
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4, ease: 'easeOut', delay: motionCards[0] * 0.08 }}
         >
-          <div className="home-list-head">
-            <div>
-              <span className="section-label">Recaida</span>
-              <h2>Registrar um recomeco</h2>
-            </div>
-            <div className="home-card-status">
-              <span className="status-pill">{state.relapses.length} registro(s)</span>
+          <div className="home-hero-top">
+            <div className="home-streak-copy">
+              <div className="home-streak-number-row">
+                <h2>{state.streak.current}</h2>
+                <p className="home-streak-label">dias limpos</p>
+                {state.streak.current > 0 ? (
+                  <Flame className="streak-flame streak-pulse" size={28} />
+                ) : (
+                  <Goal className="home-streak-goal" size={26} />
+                )}
+              </div>
+              <div className="home-streak-progress">
+                <div className="home-streak-progress-label">
+                  <span>
+                    {state.streak.current} de {state.profile.goalDays} dias · Maior sequencia: {state.streak.best} dias
+                  </span>
+                </div>
+                <div className="progress-track home-streak-progress-track">
+                  <div
+                    className="progress-fill home-streak-progress-fill"
+                    style={{ width: `${goalProgress}%` }}
+                  />
+                </div>
+              </div>
             </div>
           </div>
-          <div className="home-item-body">
-            <p>
-              Se voce teve um deslize, registre esse momento com clareza para recomecar sem
-              abandonar a jornada.
-            </p>
-            {state.relapses.length > 0 ? (
-              <p>
-                Ultimo registro em {formatPtDate(state.relapses.at(-1)?.createdAt ?? null)}.
-              </p>
-            ) : null}
-          </div>
-          <span className="text-link">Abrir recaida</span>
-        </article>
+        </motion.article>
 
-        <section className="panel-stack">
-          <div className="section-header">
+        <motion.article
+          className={
+            hasCheckInDoneToday
+              ? 'info-card home-checkin-card home-checkin-card-done'
+              : 'info-card home-checkin-card'
+          }
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4, ease: 'easeOut', delay: motionCards[1] * 0.08 }}
+        >
+          <div className="home-checkin-row">
+            <div className="home-checkin-main">
+              {hasCheckInDoneToday ? (
+                <Check className="home-checkin-icon home-checkin-icon-done" size={20} />
+              ) : (
+                <Circle className="home-checkin-icon" size={20} />
+              )}
+              <div>
+                <h2>Check-in de hoje</h2>
+                <p
+                  className={
+                    hasCheckInDoneToday
+                      ? 'home-checkin-state home-checkin-state-done'
+                      : 'home-checkin-state'
+                  }
+                >
+                  {hasCheckInDoneToday ? 'Concluido' : 'Pendente'}
+                </p>
+              </div>
+            </div>
+
+            {hasCheckInDoneToday ? null : (
+              <button
+                className="button button-primary shimmer home-card-button"
+                onClick={() => navigate(appRoutes.checkIn)}
+              >
+                Registrar
+              </button>
+            )}
+          </div>
+        </motion.article>
+
+        <motion.article
+          className="info-card home-commitment-card"
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4, ease: 'easeOut', delay: motionCards[2] * 0.08 }}
+        >
+          <div className="home-commitment-head">
+            <Sparkles className="home-commitment-icon" size={24} />
             <div>
-              <span className="section-label">Motivos</span>
-              <h2>O que voce quer proteger</h2>
+              <span className="home-commitment-kicker">compromisso do dia</span>
+              <h2>{primaryAction.description}</h2>
             </div>
           </div>
+        </motion.article>
 
-          {motivations.length === 0 ? (
-            <article className="info-card">
-              <p>Seus motivos ainda nao foram definidos. Revise o onboarding para preencher isso.</p>
+        {motivations.length > 0 ? (
+          <section className="motivos-section">
+            <p className="motivos-label">seus motivos</p>
+            <div className="motivos-track-wrapper">
+              <div className="motivos-track">
+                {duplicatedMotivations.map((motivo, index) => (
+                  <div key={`${motivo}-${index}`} className="motivo-pill">
+                    <Sparkles size={14} />
+                    <span>{motivo}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </section>
+        ) : null}
+
+        <motion.section
+          className="home-tools-section"
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4, ease: 'easeOut', delay: motionCards[3] * 0.08 }}
+        >
+          <div className="home-modules-label">Ferramentas do app</div>
+
+          <div className="home-tools-grid">
+            <article className="tool-card tool-card-checkin" onClick={() => navigate(appRoutes.checkIn)}>
+              <div className="tool-card-icon tool-card-icon-primary">
+                <ClipboardCheck size={22} />
+              </div>
+              <div className="tool-card-copy">
+                <h2>Check-in</h2>
+              </div>
+              <div className="tool-card-emojis" aria-hidden="true">
+                {previewMoodEmojis.map((emoji, index) => (
+                  <span
+                    key={`${emoji}-${index}`}
+                    className={
+                      recentMoodEmojis.length > 0
+                        ? 'tool-card-emoji'
+                        : 'tool-card-emoji tool-card-emoji-faded'
+                    }
+                  >
+                    {emoji}
+                  </span>
+                ))}
+              </div>
+              <span
+                className={
+                  hasCheckInDoneToday
+                    ? 'tool-card-status tool-card-status-success'
+                    : 'tool-card-status'
+                }
+              >
+                {hasCheckInDoneToday ? 'feito hoje' : 'pendente'}
+              </span>
             </article>
-          ) : (
-            <div className="home-motivos-grid">
-              {motivations.map((motivation) => (
-                <article key={motivation} className="info-card motivo-card-lite">
-                  <span className="section-label">Motivo</span>
-                  <h2>{motivation}</h2>
-                </article>
-              ))}
+
+            <article className="tool-card tool-card-blocker" onClick={() => navigate(appRoutes.blocker)}>
+              <div className="tool-card-icon tool-card-icon-success">
+                <ShieldCheck size={22} />
+              </div>
+              <div className="tool-card-copy">
+                <h2>Bloqueador</h2>
+              </div>
+              {state.blocker.isEnabled ? (
+                <div className="tool-card-blocker-state">
+                  <span className="tool-card-dot tool-card-dot-success" />
+                  <strong>Protegido</strong>
+                </div>
+              ) : (
+                <div className="tool-card-blocker-state tool-card-blocker-state-off">
+                  <strong>Desativado</strong>
+                </div>
+              )}
+            </article>
+          </div>
+
+          <article className="tool-card-journal" onClick={() => navigate(appRoutes.journal)}>
+            <div className="tool-card-journal-icon">
+              <BookOpen size={20} />
             </div>
-          )}
-        </section>
+            <div className="tool-card-journal-copy">
+              <strong>Jornal</strong>
+              <p>{journalPreview}</p>
+            </div>
+            <ChevronRight className="tool-card-journal-chevron" size={18} />
+          </article>
+        </motion.section>
       </section>
     </AppShell>
   )

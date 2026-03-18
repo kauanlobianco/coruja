@@ -1,19 +1,30 @@
 import type { PropsWithChildren, ReactNode } from 'react'
 import { NavLink, useNavigate } from 'react-router-dom'
+import { BarChart3, Home, Library, Settings, Zap } from 'lucide-react'
 import { useAppState } from '../../app/state/use-app-state'
 import { appRoutes, appShellNavItems } from '../../core/config/routes'
 
 interface AppShellProps extends PropsWithChildren {
-  title: string
+  title: ReactNode
   eyebrow: string
+  subtitle?: string
   actions?: ReactNode
   overlay?: ReactNode
   shellMode?: 'entry' | 'app' | 'system'
 }
 
+const navIcons = {
+  Home,
+  Analytics: BarChart3,
+  Panico: Zap,
+  Biblioteca: Library,
+  Settings,
+} as const
+
 export function AppShell({
   title,
   eyebrow,
+  subtitle,
   actions,
   overlay,
   children,
@@ -65,8 +76,9 @@ export function AppShell({
             <main className="content-grid app-content">
               <header className="app-topbar">
                 <div className="hero-copy">
-                  <span className="eyebrow">{eyebrow}</span>
+                  {eyebrow ? <span className="eyebrow">{eyebrow}</span> : null}
                   <h1>{title}</h1>
+                  {subtitle ? <p className="app-topbar-subtitle">{subtitle}</p> : null}
                 </div>
                 {actions ? <div className="toolbar toolbar-mobile">{actions}</div> : null}
               </header>
@@ -77,11 +89,35 @@ export function AppShell({
 
             {shellMode === 'app' ? (
               <nav className="bottom-nav" aria-label="Navegacao principal">
-                {appShellNavItems.map((item) => (
-                  <NavLink key={item.to} to={item.to} className="nav-item">
-                    {item.label}
-                  </NavLink>
-                ))}
+                {appShellNavItems.map((item) => {
+                  const Icon = navIcons[item.label]
+                  const isSos = item.label === 'Panico'
+
+                  return (
+                    <NavLink key={item.to} to={item.to} className="nav-item">
+                      {({ isActive }) => (
+                        <div className={isSos ? 'nav-item-inner nav-item-sos' : 'nav-item-inner'}>
+                          {isSos ? (
+                            <div className="nav-sos-button">
+                              <Icon size={28} strokeWidth={2.4} />
+                            </div>
+                          ) : (
+                            <>
+                              <Icon
+                                size={22}
+                                strokeWidth={2.2}
+                                className={isActive ? 'nav-icon nav-icon-active' : 'nav-icon'}
+                              />
+                              <span className="nav-label">{item.label}</span>
+                              {isActive ? <span className="nav-dot" aria-hidden="true" /> : null}
+                            </>
+                          )}
+                          {isSos ? <span className="nav-label nav-label-sos">{item.label}</span> : null}
+                        </div>
+                      )}
+                    </NavLink>
+                  )
+                })}
               </nav>
             ) : null}
           </div>
