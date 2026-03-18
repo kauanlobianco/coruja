@@ -1,4 +1,4 @@
-import { useMemo } from 'react'
+import { type ReactNode, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import {
@@ -16,6 +16,38 @@ import { useAppState } from '../../app/state/use-app-state'
 import { AppShell } from '../../shared/layout/AppShell'
 import { hasCheckInToday } from '../../core/domain/check-in'
 import { appRoutes } from '../../core/config/routes'
+
+interface HomeToolCardProps {
+  className: string
+  iconClassName: string
+  icon: ReactNode
+  title: string
+  onClick: () => void
+  children: ReactNode
+}
+
+function HomeToolCard({
+  className,
+  iconClassName,
+  icon,
+  title,
+  onClick,
+  children,
+}: HomeToolCardProps) {
+  return (
+    <article className={`tool-card ${className}`} onClick={onClick}>
+      <div className="tool-card-head">
+        <div className={`tool-card-icon-shell ${iconClassName}`}>
+          <div className="tool-card-icon">{icon}</div>
+        </div>
+        <div className="tool-card-copy">
+          <h2>{title}</h2>
+        </div>
+      </div>
+      {children}
+    </article>
+  )
+}
 
 function formatPtDay(value: Date) {
   return new Intl.DateTimeFormat('pt-BR', {
@@ -104,7 +136,7 @@ export function HomePage() {
     ? Math.min(100, Math.round((state.streak.current / state.profile.goalDays) * 100))
     : 0
   const homeSubtitle = hasCheckInDoneToday
-    ? `${formatPtDay(demoNow)} | dia registrado`
+    ? `${formatPtDay(demoNow)} | check-in concluido`
     : `${formatPtDay(demoNow)} | check-in pendente`
   const userInitial = state.profile.name?.trim().charAt(0).toUpperCase() || 'C'
 
@@ -149,16 +181,19 @@ export function HomePage() {
               <div className="home-streak-number-row">
                 <h2>{state.streak.current}</h2>
                 <p className="home-streak-label">dias limpos</p>
-                {state.streak.current > 0 ? (
-                  <Flame className="streak-flame streak-pulse" size={28} />
-                ) : (
-                  <Goal className="home-streak-goal" size={26} />
-                )}
+                <span className="home-streak-icon-shell">
+                  {state.streak.current > 0 ? (
+                    <Flame className="streak-flame streak-pulse" size={28} />
+                  ) : (
+                    <Goal className="home-streak-goal" size={26} />
+                  )}
+                </span>
               </div>
               <div className="home-streak-progress">
                 <div className="home-streak-progress-label">
                   <span>
-                    {state.streak.current} de {state.profile.goalDays} dias · Maior sequencia: {state.streak.best} dias
+                    {state.streak.current} de {state.profile.goalDays} dias · Maior sequencia:{' '}
+                    {state.streak.best} dias
                   </span>
                 </div>
                 <div className="progress-track home-streak-progress-track">
@@ -254,13 +289,13 @@ export function HomePage() {
           <div className="home-modules-label">Ferramentas do app</div>
 
           <div className="home-tools-grid">
-            <article className="tool-card tool-card-checkin" onClick={() => navigate(appRoutes.checkIn)}>
-              <div className="tool-card-icon tool-card-icon-primary">
-                <ClipboardCheck size={22} />
-              </div>
-              <div className="tool-card-copy">
-                <h2>Check-in</h2>
-              </div>
+            <HomeToolCard
+              className="tool-card-checkin"
+              iconClassName="tool-card-icon-shell-primary"
+              icon={<ClipboardCheck size={22} />}
+              title="Check-in"
+              onClick={() => navigate(appRoutes.checkIn)}
+            >
               <div className="tool-card-emojis" aria-hidden="true">
                 {previewMoodEmojis.map((emoji, index) => (
                   <span
@@ -284,15 +319,15 @@ export function HomePage() {
               >
                 {hasCheckInDoneToday ? 'feito hoje' : 'pendente'}
               </span>
-            </article>
+            </HomeToolCard>
 
-            <article className="tool-card tool-card-blocker" onClick={() => navigate(appRoutes.blocker)}>
-              <div className="tool-card-icon tool-card-icon-success">
-                <ShieldCheck size={22} />
-              </div>
-              <div className="tool-card-copy">
-                <h2>Bloqueador</h2>
-              </div>
+            <HomeToolCard
+              className="tool-card-blocker"
+              iconClassName="tool-card-icon-shell-success"
+              icon={<ShieldCheck size={22} />}
+              title="Bloqueador"
+              onClick={() => navigate(appRoutes.blocker)}
+            >
               {state.blocker.isEnabled ? (
                 <div className="tool-card-blocker-state">
                   <span className="tool-card-dot tool-card-dot-success" />
@@ -303,12 +338,14 @@ export function HomePage() {
                   <strong>Desativado</strong>
                 </div>
               )}
-            </article>
+            </HomeToolCard>
           </div>
 
           <article className="tool-card-journal" onClick={() => navigate(appRoutes.journal)}>
-            <div className="tool-card-journal-icon">
-              <BookOpen size={20} />
+            <div className="tool-card-journal-icon-shell">
+              <div className="tool-card-journal-icon">
+                <BookOpen size={20} />
+              </div>
             </div>
             <div className="tool-card-journal-copy">
               <strong>Jornal</strong>

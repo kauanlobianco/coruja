@@ -1,5 +1,6 @@
 import { useEffect, useEffectEvent, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { motion } from 'framer-motion'
 import { AppShell } from '../../shared/layout/AppShell'
 import { useAppState } from '../../app/state/use-app-state'
 
@@ -88,86 +89,53 @@ export function SosPage() {
     : panicSupportMessages[Math.min(cycleCount, panicSupportMessages.length - 1)]
 
   return (
-    <AppShell title="SOS" eyebrow="Suporte imediato">
-      <section className="panel-stack">
-        <article className="info-card highlight-card">
-          <span className="section-label">Foque no seu motivo</span>
-          <h2>{activeMotivation}</h2>
-          <p>Fique com isso antes de fazer qualquer outra coisa.</p>
-          <div className="carousel-dots" aria-hidden="true">
-            {motivations.map((motivation, index) => (
-              <span
-                key={motivation}
-                className={motivationIndex === index ? 'dot active' : 'dot'}
-              />
-            ))}
-          </div>
+    <AppShell title="" eyebrow="" hideTopbar contentClassName="app-content-sos">
+      <section className="sos-screen">
+        <motion.div
+          className="sos-content"
+          initial={{ opacity: 0, scale: 0.96 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.3, ease: 'easeOut' }}
+        >
+          <h1>{activeMotivation}</h1>
           {motivations.length > 1 ? (
-            <button
-              className="text-link"
-              type="button"
-              onClick={() => setMotivationIndex((current) => (current + 1) % motivations.length)}
-            >
-              Ver outro motivo
-            </button>
+            <p className="sos-motivation-strip">{motivations.join(' • ')}</p>
           ) : null}
-        </article>
 
-        <div className="card-grid">
-          <article className="info-card">
+          <div className="sos-breathing-stage">
             <span className="section-label">Respire</span>
-            <h2>{breathingSteps[stepIndex]}</h2>
-            <p>Siga o ritmo e ganhe alguns minutos de distancia.</p>
             <div className="sos-breathing">{breathingSteps[stepIndex]}</div>
-            <p>{cycleCount} ciclo(s) completo(s)</p>
-          </article>
+            <p className="sos-support-copy">Siga o ritmo e ganhe alguns minutos de distancia.</p>
+          </div>
 
-          <article className="info-card">
+          <div className="sos-timer-block">
             <span className="section-label">Segure por 5 minutos</span>
-            <h2>{formatCountdown(secondsLeft)}</h2>
-            <p>{supportMessage}</p>
-            <div className="toolbar">
-              <button
-                className="button button-primary"
-                type="button"
-                onClick={() => {
-                  setTimerStarted(true)
-                  if (timerDone) {
-                    setSecondsLeft(300)
-                  }
-                }}
-              >
-                {timerStarted && !timerDone ? 'Contagem em andamento' : 'Comecar agora'}
-              </button>
-              <button
-                className="button button-secondary"
-                type="button"
-                onClick={() => {
-                  setTimerStarted(false)
-                  setSecondsLeft(300)
-                }}
-              >
-                Reiniciar
-              </button>
-            </div>
-          </article>
-        </div>
-      </section>
+            <strong className="sos-timer">{formatCountdown(secondsLeft)}</strong>
+            <p className="sos-support-copy">{supportMessage}</p>
+          </div>
 
-      <section className="info-card">
-        <span className="section-label">Quando estiver pronto</span>
-        <h2>Escolha seu proximo passo</h2>
-        <div className="hero-actions">
-          <button className="button button-secondary" onClick={() => navigate('/check-in')}>
-            Voltar ao check-in
+          <button
+            className="sos-primary-button"
+            type="button"
+            onClick={() => {
+              setTimerStarted(true)
+              if (timerDone) {
+                setSecondsLeft(300)
+              }
+            }}
+          >
+            {timerStarted && !timerDone ? 'Contagem em andamento' : 'Comecar agora'}
           </button>
-          <button className="button button-secondary" onClick={() => navigate('/journal')}>
-            Ir para o Jornal
-          </button>
-          <button className="button button-primary" onClick={() => navigate('/app')}>
-            Voltar para a Home
-          </button>
-        </div>
+
+          <div className="sos-secondary-actions">
+            <button className="sos-secondary-button" onClick={() => navigate('/app')}>
+              Estou bem, voltar para a Home
+            </button>
+            <button className="sos-secondary-button" onClick={() => navigate('/library')}>
+              Relaxar na biblioteca de jogos
+            </button>
+          </div>
+        </motion.div>
       </section>
     </AppShell>
   )

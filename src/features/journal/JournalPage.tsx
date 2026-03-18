@@ -1,4 +1,6 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
+import { animate, motion, useMotionValue } from 'framer-motion'
+import { Plus } from 'lucide-react'
 import { AppShell } from '../../shared/layout/AppShell'
 import { useAppState } from '../../app/state/use-app-state'
 
@@ -9,10 +11,23 @@ function formatDate(value: string) {
   }).format(new Date(value))
 }
 
+function formatToday(value: Date) {
+  return new Intl.DateTimeFormat('pt-BR', {
+    weekday: 'long',
+    day: 'numeric',
+    month: 'long',
+  }).format(value)
+}
+
 export function JournalPage() {
-  const { state, saveJournalEntry, deleteJournalEntry } = useAppState()
+  const { state, demoNow, saveJournalEntry, deleteJournalEntry } = useAppState()
   const [title, setTitle] = useState('')
   const [content, setContent] = useState('')
+  const [isExpanded, setIsExpanded] = useState(false)
+  const [collapsedOffset, setCollapsedOffset] = useState(0)
+  const [dragBounds, setDragBounds] = useState(0)
+  const textareaRef = useRef<HTMLTextAreaElement | null>(null)
+  const y = useMotionValue(0)
 
   const entries = useMemo(
     () =>
@@ -21,6 +36,34 @@ export function JournalPage() {
       ),
     [state.journalEntries],
   )
+
+  useEffect(() => {
+    function computeSheetMetrics() {
+      const viewportHeight = window.innerHeight
+      const sheetHeight = Math.min(viewportHeight * 0.9, 720)
+      const collapsed = Math.max(sheetHeight - 120, 0)
+
+      setCollapsedOffset(collapsed)
+      setDragBounds(collapsed)
+      y.set(isExpanded ? 0 : collapsed)
+    }
+
+    computeSheetMetrics()
+    window.addEventListener('resize', computeSheetMetrics)
+
+    return () => {
+      window.removeEventListener('resize', computeSheetMetrics)
+    }
+  }, [isExpanded, y])
+
+  function snapTo(expanded: boolean) {
+    animate(y, expanded ? 0 : collapsedOffset, {
+      type: 'spring',
+      stiffness: 300,
+      damping: 35,
+    })
+    setIsExpanded(expanded)
+  }
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault()
@@ -39,106 +82,120 @@ export function JournalPage() {
     setContent('')
   }
 
-  const relapseEntries = entries.filter((entry) => entry.type === 'relapse').length
+  function handleNewEntryFocus() {
+    textareaRef.current?.focus()
+  }
 
   return (
-    <AppShell title="Jornal" eyebrow="Reflexao e clareza">
-      <section className="panel-stack">
-        <article className="info-card highlight-card">
-          <span className="section-label">Nova entrada</span>
-          <h2>Escreva para clarear o momento</h2>
-          <p>
-            No app antigo, o journal ajudava a dar contexto para o dia e tambem
-            guardava reflexoes de recaida. Aqui ele continua com esse papel.
-          </p>
-          <form className="form-card" onSubmit={handleSubmit}>
-            <div className="field">
-              <label htmlFor="journal-title">Titulo</label>
-              <input
-                id="journal-title"
-                value={title}
-                onChange={(event) => setTitle(event.target.value)}
-                placeholder="Resumo curto do momento"
-              />
+    <AppShell title="" eyebrow="" hideTopbar>
+      <section className="journal-screen">
+        <div className="journal-static">
+          <header className="journal-header">
+            <div>
+              <p className="journal-date">{formatToday(demoNow)}</p>
+              <h1>Jornal</h1>
             </div>
-            <div className="field">
-              <label htmlFor="journal-content">Conteudo</label>
-              <textarea
-                id="journal-content"
-                className="textarea"
-                value={content}
-                onChange={(event) => setContent(event.target.value)}
-                placeholder="Comece a escrever aqui..."
-              />
-            </div>
-            <button className="button button-primary" type="submit">
-              Salvar entrada
+            <button
+              className="button button-orange shimmer journal-new-button"
+              onClick={handleNewEntryFocus}
+              type="button"
+            >
+              <Plus size={16} />
+              <span>Nova entrada</span>
             </button>
-          </form>
-        </article>
+          </header>
 
-        <article className="info-card">
-          <span className="section-label">Panorama</span>
-          <h2>O que ja foi registrado</h2>
-          <dl className="home-stats-grid">
-            <div>
-              <dt>Total de entradas</dt>
-              <dd>{entries.length}</dd>
-            </div>
-            <div>
-              <dt>Entradas livres</dt>
-              <dd>{entries.length - relapseEntries}</dd>
-            </div>
-            <div>
-              <dt>Reflexoes de recaida</dt>
-              <dd>{relapseEntries}</dd>
-            </div>
-            <div>
-              <dt>Ultima atividade</dt>
-              <dd>{entries[0] ? formatDate(entries[0].createdAt) : 'Nenhuma'}</dd>
-            </div>
-          </dl>
-        </article>
-      </section>
+          <article className="info-card journal-composer-card">
+            <span className="section-label">Nova entrada</span>
+            <h2>Escreva para clarear o momento</h2>
+            <form className="form-card journal-form" onSubmit={handleSubmit}>
+              <div className="field">
+                <label htmlFor="journal-title">Titulo</label>
+                <input
+                  id="journal-title"
+                  value={title}
+                  onChange={(event) => setTitle(event.target.value)}
+                  placeholder="Resumo curto do momento"
+                />
+              </div>
+              <div className="field">
+                <label htmlFor="journal-content">Conteudo</label>
+                <textarea
+                  id="journal-content"
+                  ref={textareaRef}
+                  className="textarea"
+                  value={content}
+                  onChange={(event) => setContent(event.target.value)}
+                  placeholder="Comece a escrever aqui..."
+                />
+              </div>
+              <button className="button button-primary" type="submit">
+                Salvar entrada
+              </button>
+            </form>
+          </article>
+        </div>
 
-      <section className="panel-stack">
-        <div className="section-header">
-          <div>
-            <span className="section-label">Historico</span>
-            <h2>Entradas salvas</h2>
+        <motion.div
+          className="journal-sheet"
+          style={{ y }}
+          drag="y"
+          dragConstraints={{ top: 0, bottom: dragBounds }}
+          dragElastic={0.1}
+          onDragEnd={(_, info) => {
+            if (info.velocity.y > 300 || info.offset.y > 150) {
+              snapTo(false)
+            } else {
+              snapTo(true)
+            }
+          }}
+        >
+          <div className="journal-sheet-handle" />
+          <div className="journal-sheet-head">
+            <span>entradas</span>
+            {!isExpanded ? (
+              <button
+                className="journal-sheet-trigger"
+                onClick={() => snapTo(true)}
+                type="button"
+              >
+                ver tudo ↑
+              </button>
+            ) : null}
           </div>
-        </div>
-
-        <div className="card-grid">
-          {entries.length === 0 ? (
-            <article className="info-card empty-state">
-              <h2>Nenhuma entrada ainda</h2>
-              <p>
-                Quando voce escrever aqui, o app passa a guardar reflexoes livres
-                e tambem aprendizados vindos da recaida.
-              </p>
-            </article>
-          ) : (
-            entries.map((entry) => (
-              <article key={entry.id} className="info-card">
-                <span className="section-label">
-                  {entry.type === 'relapse' ? 'Reflexao de recaida' : 'Entrada livre'}
-                </span>
-                <h2>{entry.title}</h2>
-                <p>{formatDate(entry.createdAt)}</p>
-                <p>{entry.content}</p>
-                {entry.type !== 'relapse' ? (
-                  <button
-                    className="button button-danger"
-                    onClick={() => void deleteJournalEntry(entry.id)}
-                  >
-                    Excluir
-                  </button>
-                ) : null}
+          <div className="journal-sheet-content">
+            {entries.length === 0 ? (
+              <article className="info-card empty-state journal-empty">
+                <h2>Nenhuma entrada ainda</h2>
+                <p>
+                  Quando voce escrever aqui, o app passa a guardar reflexoes livres e
+                  aprendizados do seu processo.
+                </p>
               </article>
-            ))
-          )}
-        </div>
+            ) : (
+              <div className="journal-entry-list">
+                {entries.map((entry) => (
+                  <article key={entry.id} className="info-card journal-entry-card">
+                    <span className="section-label">
+                      {entry.type === 'relapse' ? 'Reflexao de recaida' : 'Entrada livre'}
+                    </span>
+                    <h2>{entry.title}</h2>
+                    <p className="journal-entry-date">{formatDate(entry.createdAt)}</p>
+                    <p>{entry.content}</p>
+                    {entry.type !== 'relapse' ? (
+                      <button
+                        className="button button-danger"
+                        onClick={() => void deleteJournalEntry(entry.id)}
+                      >
+                        Excluir
+                      </button>
+                    ) : null}
+                  </article>
+                ))}
+              </div>
+            )}
+          </div>
+        </motion.div>
       </section>
     </AppShell>
   )
