@@ -138,26 +138,34 @@ function CheckInSection({
   label,
   title,
   description,
+  locked = false,
   children,
 }: {
   index: number
   label: string
   title: string
   description?: string
+  locked?: boolean
   children: React.ReactNode
 }) {
   return (
     <motion.section
-      className="checkin-section"
+      className={locked ? 'checkin-section checkin-section-locked' : 'checkin-section'}
       initial={{ opacity: 0, y: 16 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.4, ease: 'easeOut', delay: index * 0.1 }}
+      transition={{ duration: 0.42, ease: 'easeOut', delay: index * 0.08 }}
     >
       <p className="checkin-section-label">{label}</p>
       <div className="checkin-section-copy">
         <h2>{title}</h2>
         {description ? <p>{description}</p> : null}
       </div>
+      {locked ? (
+        <div className="checkin-lock-hint">
+          <span className="checkin-lock-dot" aria-hidden="true" />
+          <span>Disponivel depois de confirmar o compromisso acima.</span>
+        </div>
+      ) : null}
       {children}
     </motion.section>
   )
@@ -218,16 +226,14 @@ function CommitmentButton({
       <motion.div
         className="commitment-button-icon"
         initial={false}
-        animate={confirmed ? { scale: [0.84, 1.06, 1] } : { scale: 1 }}
-        transition={{ duration: 0.42, ease: 'easeOut' }}
+        animate={confirmed ? { scale: [0.8, 1.14, 1], rotate: [0, -6, 0] } : { scale: 1, rotate: 0 }}
+        transition={{ duration: 0.55, ease: 'easeOut' }}
       >
         {confirmed ? <Check size={28} /> : <Sun size={32} />}
       </motion.div>
       <strong>{confirmed ? 'Sobriedade confirmada' : 'Confirmar sobriedade hoje'}</strong>
       <span>
-        {confirmed
-          ? 'Voce assumiu o compromisso de hoje'
-          : 'Toque para assumir o compromisso do dia'}
+        {confirmed ? 'Agora o restante do check-in foi liberado' : 'Toque para liberar o check-in'}
       </span>
     </button>
   )
@@ -521,8 +527,8 @@ export function CheckInPage() {
             <CheckInSection
               index={0}
               label="compromisso"
-              title="Assuma o compromisso que vai guiar o seu dia"
-              description="Antes de medir este momento, confirme a direcao de hoje."
+              title="Confirme a direcao de hoje"
+              description="Isso libera o restante do check-in."
             >
               <CommitmentButton
                 confirmed={pledgeConfirmed}
@@ -533,94 +539,109 @@ export function CheckInPage() {
 
             <CheckInSeparator />
 
-            <CheckInSection
-              index={1}
-              label="vontade"
-              title="Como esta sua vontade agora?"
-              description="Registrar com honestidade ajuda a responder melhor ao momento."
-            >
-              <CravingSelector
-                value={craving}
-                disabled={!pledgeConfirmed}
-                onChange={setCraving}
-                onSosClick={() => navigate(appRoutes.sos)}
-              />
-            </CheckInSection>
-
-            <CheckInSeparator />
-
-            <CheckInSection
-              index={2}
-              label="estado mental"
-              title="Como voce se percebe neste momento?"
-              description="Essa leitura ajuda o app a sugerir uma resposta mais coerente com seu contexto real."
-            >
-              <MoodRating
-                value={mentalState}
-                disabled={!pledgeConfirmed}
-                onChange={setMentalState}
-              />
-            </CheckInSection>
-
-            <CheckInSeparator />
-
-            <CheckInSection
-              index={3}
-              label="gatilhos"
-              title="O que pode estar contribuindo para isso?"
-              description="Escolha os gatilhos que mais combinam com o seu dia."
-            >
-              <div className="checkin-trigger-list">
-                {availableTriggers.map((item) => (
-                  <button
-                    key={item}
-                    type="button"
-                    className={
-                      selectedTriggers.includes(item)
-                        ? 'trigger-chip selected'
-                        : 'trigger-chip'
-                    }
-                    disabled={!pledgeConfirmed}
-                    onClick={() => toggleTrigger(item)}
-                  >
-                    {item}
-                  </button>
-                ))}
-              </div>
-            </CheckInSection>
-
-            <CheckInSeparator />
-
-            <CheckInSection
-              index={4}
-              label="observacao"
-              title="Quer registrar algo importante sobre este momento?"
-              description="Se fizer sentido, deixe uma anotacao curta para entender melhor seus padroes depois."
-            >
-              <textarea
-                id="notes"
-                className="textarea checkin-notes"
-                value={notes}
-                disabled={!pledgeConfirmed}
-                onChange={(event) => setNotes(event.target.value)}
-                placeholder="O que esta pesando mais agora?"
-              />
-            </CheckInSection>
-
             <motion.div
-              className="checkin-submit-footer"
-              initial={{ opacity: 0, y: 16 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.4, ease: 'easeOut', delay: 0.5 }}
+              className={pledgeConfirmed ? 'checkin-unlocked checkin-unlocked-active' : 'checkin-unlocked'}
+              initial={false}
+              animate={
+                pledgeConfirmed
+                  ? { opacity: 1, y: 0, scale: 1, filter: 'blur(0px)' }
+                  : { opacity: 0.38, y: 10, scale: 0.985, filter: 'blur(1.5px)' }
+              }
+              transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
             >
-              <button
-                className="button button-primary shimmer checkin-submit"
-                type="button"
-                disabled={!pledgeConfirmed || !mentalState || isSaving}
-                onClick={() => void handlePersistAndGoHome()}
+              <CheckInSection
+                index={1}
+                label="vontade"
+                title="Como esta sua vontade agora?"
+                description="Registre de 1 a 10."
+                locked={!pledgeConfirmed}
               >
-                {isSaving ? 'Salvando...' : 'Salvar check-in'}
-              </button>
+                <CravingSelector
+                  value={craving}
+                  disabled={!pledgeConfirmed}
+                  onChange={setCraving}
+                  onSosClick={() => navigate(appRoutes.sos)}
+                />
+              </CheckInSection>
+
+              <CheckInSeparator />
+
+              <CheckInSection
+                index={2}
+                label="estado mental"
+                title="Como voce se percebe agora?"
+                description="Escolha o estado que mais combina."
+                locked={!pledgeConfirmed}
+              >
+                <MoodRating
+                  value={mentalState}
+                  disabled={!pledgeConfirmed}
+                  onChange={setMentalState}
+                />
+              </CheckInSection>
+
+              <CheckInSeparator />
+
+              <CheckInSection
+                index={3}
+                label="gatilhos"
+                title="O que pode estar contribuindo?"
+                description="Marque o que pesa hoje."
+                locked={!pledgeConfirmed}
+              >
+                <div className="checkin-trigger-list">
+                  {availableTriggers.map((item) => (
+                    <button
+                      key={item}
+                      type="button"
+                      className={
+                        selectedTriggers.includes(item)
+                          ? 'trigger-chip selected'
+                          : 'trigger-chip'
+                      }
+                      disabled={!pledgeConfirmed}
+                      onClick={() => toggleTrigger(item)}
+                    >
+                      {item}
+                    </button>
+                  ))}
+                </div>
+              </CheckInSection>
+
+              <CheckInSeparator />
+
+              <CheckInSection
+                index={4}
+                label="observacao"
+                title="Algo importante sobre este momento?"
+                description="Opcional."
+                locked={!pledgeConfirmed}
+              >
+                <textarea
+                  id="notes"
+                  className="textarea checkin-notes"
+                  value={notes}
+                  disabled={!pledgeConfirmed}
+                  onChange={(event) => setNotes(event.target.value)}
+                  placeholder="O que esta pesando mais agora?"
+                />
+              </CheckInSection>
+
+              <motion.div
+                className="checkin-submit-footer"
+                initial={{ opacity: 0, y: 16 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.4, ease: 'easeOut', delay: 0.35 }}
+              >
+                <button
+                  className="button button-primary shimmer checkin-submit"
+                  type="button"
+                  disabled={!pledgeConfirmed || !mentalState || isSaving}
+                  onClick={() => void handlePersistAndGoHome()}
+                >
+                  {isSaving ? 'Salvando...' : 'Salvar check-in'}
+                </button>
+              </motion.div>
             </motion.div>
 
             <div className="checkin-footer-spacer" />

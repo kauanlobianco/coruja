@@ -176,53 +176,85 @@ export const symptomOptions: SymptomOption[] = [
 
 export const painSlides = [
   {
-    title: 'Foco e energia',
-    body: 'Quando esse padrao entra na rotina, ele costuma roubar presenca mental. O dia fica mais disperso, a energia cai e tarefas simples podem parecer mais pesadas.',
+    title: 'Pornografia é uma droga',
+    body: 'Usar pornografia libera uma substância química no cérebro chamada dopamina. Ela faz você se sentir bem — é por isso que surge prazer ao assistir pornografia.',
+    icon: 'Brain'
   },
   {
-    title: 'Autoestima',
-    body: 'Muita gente entra no mesmo ciclo: impulso, alivio rapido e peso depois. A repeticao disso desgasta a forma como voce se ve e faz parecer que nada muda de verdade.',
+    title: 'Pornografia destrói relacionamentos',
+    body: 'A pornografia reduz sua fome por um relacionamento real e a substitui por desejo de ainda mais pornografia.',
+    icon: 'HeartCrack'
   },
   {
-    title: 'Conexao',
-    body: 'Com o tempo, isso tambem pode aparecer nas relacoes. Fica mais dificil estar presente, se conectar de verdade e sustentar proximidade sem distancia emocional.',
+    title: 'A pornografia destrói o desejo sexual',
+    body: 'Mais de 50% dos dependentes de pornografia relatam perda de interesse em sexo real e uma queda geral no desejo sexual.',
+    icon: 'Unplug'
+  },
+  {
+    title: 'Sentindo-se infeliz?',
+    body: 'Um nível elevado de dopamina faz você precisar de cada vez mais para se sentir bem. Por isso tantos usuários intensivos relatam sentir-se deprimidos, desmotivados e antissociais.',
+    icon: 'Frown'
   },
 ]
 
 export const solutionSlides = [
   {
-    title: 'Nao e so falta de vontade',
-    body: 'Quando esse ciclo ja ficou automatico, tentar segurar so no impulso costuma falhar. O problema nao e fraqueza. E o jeito como o padrao se repete.',
+    title: 'Bem-vindo ao Coruja',
+    body: 'Com mais de 1.000.000 de usuários, o Coruja é referência, apoiado em anos de pesquisa e interação com a comunidade.',
+    icon: 'Rocket'
   },
   {
-    title: 'Medir para entender',
-    body: 'O check-in diario te ajuda a perceber como voce esta, o que pesa mais no dia e quando o risco sobe. Nao e julgamento. E clareza.',
+    title: 'Reconecte seu cérebro',
+    body: 'Exercícios baseados em ciência ajudam você a reconectar o cérebro, reconstruir seus receptores de dopamina e evitar recaídas.',
+    icon: 'Brain'
   },
   {
-    title: 'Proteger o ambiente',
-    body: 'O bloqueador cria uma camada real de protecao nos momentos em que confiar so na disciplina nao basta. Nao e punicao. E apoio pratico.',
+    title: 'Mantenha-se motivado',
+    body: 'Parar com a pornografia é desafiador. Seus check-ins diários mantêm você motivado enquanto se torna sua melhor versão.',
+    icon: 'Flame'
   },
   {
-    title: 'Agir na hora certa',
-    body: 'Quando o momento apertar, o SOS e o Jornal ajudam voce a atravessar a vulnerabilidade com mais presenca, em vez de cair no piloto automatico.',
+    title: 'Evite recaídas',
+    body: 'O Coruja aprende seus hábitos e gatilhos de tentação, oferecendo proteção 24 horas por dia.',
+    icon: 'ShieldCheck'
+  },
+  {
+    title: 'Domine a si mesmo',
+    body: 'Conheça-se para ir além. Entenda seus pontos fortes e fracos, conquiste medalhas e acompanhe seu progresso.',
+    icon: 'Trophy'
+  },
+  {
+    title: 'Caminho para a recuperação',
+    body: 'A recuperação é possível. Ao se abster da pornografia, seu cérebro redefine a sensibilidade à dopamina, levando a relacionamentos mais saudáveis e a um bem-estar maior.',
+    icon: 'Sprout'
+  },
+  {
+    title: 'Eleve sua vida',
+    body: 'Recomeçar traz imensos benefícios psicológicos e físicos. Fique mais forte, saudável e feliz.',
+    icon: 'Activity'
   },
 ]
 
 export const testimonials: Testimonial[] = [
   {
+    name: 'Andrew Huberman, Ph.D.',
+    role: 'Melhore drasticamente sua vida',
+    quote: 'O reset do seu balanço de dopamina ao fazer uma pausa de conteúdos altamente estimulantes pode melhorar dramaticamente sua motivação, estabilidade emocional e prazer diário.',
+  },
+  {
+    name: 'Steven Bartlett',
+    role: 'Não há nada de bom na pornografia',
+    quote: 'A pornografia não tem nenhum papel educacional — é apenas uma janela aberta para um mercado que traz mais vazio e vício do que lucro para si mesmo.',
+  },
+  {
+    name: 'Connor',
+    role: 'Parar me permitiu mudar minha mentalidade',
+    quote: 'Eu estava começando a aceitar o fato de que a vida é escura, chata e deprimente. Esqueça isso. Parar me permitiu mudar minha mentalidade sobre as pequenas coisas da vida.',
+  },
+  {
     name: 'Rafael',
-    role: 'voltou a dormir sem culpa toda noite',
-    quote: 'O maior alivio foi parar de acordar me sentindo mal no dia seguinte.',
-  },
-  {
-    name: 'Joao',
-    role: 'entendeu melhor os gatilhos da noite',
-    quote: 'Eu achava que era so falta de controle. Depois percebi que eu repetia o mesmo gatilho quase todo dia.',
-  },
-  {
-    name: 'Mateus',
-    role: 'conseguiu recomecar mais rapido depois de cair',
-    quote: 'Antes eu sumia quando errava. Com uma rotina, eu consegui voltar sem me abandonar por dias.',
+    role: 'Voltou a dormir sem culpa toda noite',
+    quote: 'O maior alívio foi parar de acordar me sentindo mal no dia seguinte.',
   },
 ]
 

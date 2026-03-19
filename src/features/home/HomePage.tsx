@@ -1,4 +1,4 @@
-import { type ReactNode, useMemo } from 'react'
+﻿import { type ReactNode, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import {
@@ -6,7 +6,6 @@ import {
   Check,
   ChevronRight,
   Circle,
-  ClipboardCheck,
   Flame,
   Goal,
   ShieldCheck,
@@ -22,6 +21,7 @@ interface HomeToolCardProps {
   iconClassName: string
   icon: ReactNode
   title: string
+  description: string
   onClick: () => void
   children: ReactNode
 }
@@ -31,6 +31,7 @@ function HomeToolCard({
   iconClassName,
   icon,
   title,
+  description,
   onClick,
   children,
 }: HomeToolCardProps) {
@@ -42,6 +43,7 @@ function HomeToolCard({
         </div>
         <div className="tool-card-copy">
           <h2>{title}</h2>
+          <p className="tool-card-desc">{description}</p>
         </div>
       </div>
       {children}
@@ -94,6 +96,35 @@ function getMentalStateEmoji(value: string | null | undefined) {
   return '😐'
 }
 
+function getWeekDayHistory(
+  checkIns: Array<{ createdAt: string; mentalState?: string | null }>,
+  now: Date,
+) {
+  const days = ['SEG', 'TER', 'QUA', 'QUI', 'SEX', 'SAB', 'DOM']
+  const startOfWeek = new Date(now)
+  const day = startOfWeek.getDay()
+  const diff = startOfWeek.getDate() - day + (day === 0 ? -6 : 1)
+  startOfWeek.setDate(diff)
+  startOfWeek.setHours(0, 0, 0, 0)
+
+  return days.map((label, index) => {
+    const d = new Date(startOfWeek)
+    d.setDate(startOfWeek.getDate() + index)
+    
+    const isToday = d.toDateString() === now.toDateString()
+    const checkIn = checkIns.find(
+      (checkInEntry) => new Date(checkInEntry.createdAt).toDateString() === d.toDateString(),
+    )
+    
+    return {
+      label,
+      emoji: checkIn ? getMentalStateEmoji(checkIn.mentalState) : '•',
+      isToday,
+      done: !!checkIn,
+    }
+  })
+}
+
 function getPrimaryAction(state: ReturnType<typeof useAppState>['state'], now: Date) {
   if (!hasCheckInToday(state.checkIns, now)) {
     return {
@@ -129,7 +160,6 @@ export function HomePage() {
 
   const primaryAction = useMemo(() => getPrimaryAction(state, demoNow), [demoNow, state])
   const hasCheckInDoneToday = hasCheckInToday(state.checkIns, demoNow)
-  const lastJournalEntry = state.journalEntries.at(-1) ?? null
   const motivations = state.profile.motivations.slice(0, 4)
   const duplicatedMotivations = motivations.length > 0 ? [...motivations, ...motivations] : []
   const goalProgress = state.profile.goalDays
@@ -139,18 +169,6 @@ export function HomePage() {
     ? `${formatPtDay(demoNow)} | check-in concluido`
     : `${formatPtDay(demoNow)} | check-in pendente`
   const userInitial = state.profile.name?.trim().charAt(0).toUpperCase() || 'C'
-
-  const recentMoodEmojis = state.checkIns
-    .slice(-3)
-    .map((checkIn) => getMentalStateEmoji(checkIn.mentalState))
-  const previewMoodEmojis = recentMoodEmojis.length > 0 ? recentMoodEmojis : ['😐', '😔', '🙂']
-
-  const journalPreview = lastJournalEntry?.title?.trim() || 'Nenhuma entrada ainda.'
-
-  const heroCardClassName =
-    state.streak.current === 0
-      ? 'info-card highlight-card home-hero-card home-hero-card-zero'
-      : 'info-card highlight-card home-hero-card'
 
   const motionCards = [0, 1, 2, 3]
 
@@ -168,10 +186,11 @@ export function HomePage() {
       eyebrow=""
       subtitle={homeSubtitle}
       actions={<div className="home-avatar">{userInitial}</div>}
+      contentClassName="app-content-home"
     >
       <section className="home-flow">
         <motion.article
-          className={heroCardClassName}
+          className="info-card highlight-card home-hero-card"
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4, ease: 'easeOut', delay: motionCards[0] * 0.08 }}
@@ -192,7 +211,7 @@ export function HomePage() {
               <div className="home-streak-progress">
                 <div className="home-streak-progress-label">
                   <span>
-                    {state.streak.current} de {state.profile.goalDays} dias · Maior sequencia:{' '}
+                    {state.streak.current} de {state.profile.goalDays} dias · Maior sequência:{' '}
                     {state.streak.best} dias
                   </span>
                 </div>
@@ -216,6 +235,7 @@ export function HomePage() {
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4, ease: 'easeOut', delay: motionCards[1] * 0.08 }}
+          style={{ width: '100%' }}
         >
           <div className="home-checkin-row">
             <div className="home-checkin-main">
@@ -247,6 +267,15 @@ export function HomePage() {
               </button>
             )}
           </div>
+
+          <div className="home-week-strip" aria-label="Histórico da semana">
+            {getWeekDayHistory(state.checkIns, demoNow).map((day, idx) => (
+              <div key={idx} className={`home-week-day ${day.isToday ? 'home-week-day-today' : ''}`}>
+                <span className="home-week-day-label">{day.label}</span>
+                <span className="home-week-day-emoji">{day.emoji}</span>
+              </div>
+            ))}
+          </div>
         </motion.article>
 
         <motion.article
@@ -264,22 +293,6 @@ export function HomePage() {
           </div>
         </motion.article>
 
-        {motivations.length > 0 ? (
-          <section className="motivos-section">
-            <p className="motivos-label">seus motivos</p>
-            <div className="motivos-track-wrapper">
-              <div className="motivos-track">
-                {duplicatedMotivations.map((motivo, index) => (
-                  <div key={`${motivo}-${index}`} className="motivo-pill">
-                    <Sparkles size={14} />
-                    <span>{motivo}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </section>
-        ) : null}
-
         <motion.section
           className="home-tools-section"
           initial={{ opacity: 0, y: 16 }}
@@ -290,44 +303,14 @@ export function HomePage() {
 
           <div className="home-tools-grid">
             <HomeToolCard
-              className="tool-card-checkin"
-              iconClassName="tool-card-icon-shell-primary"
-              icon={<ClipboardCheck size={22} />}
-              title="Check-in"
-              onClick={() => navigate(appRoutes.checkIn)}
-            >
-              <div className="tool-card-emojis" aria-hidden="true">
-                {previewMoodEmojis.map((emoji, index) => (
-                  <span
-                    key={`${emoji}-${index}`}
-                    className={
-                      recentMoodEmojis.length > 0
-                        ? 'tool-card-emoji'
-                        : 'tool-card-emoji tool-card-emoji-faded'
-                    }
-                  >
-                    {emoji}
-                  </span>
-                ))}
-              </div>
-              <span
-                className={
-                  hasCheckInDoneToday
-                    ? 'tool-card-status tool-card-status-success'
-                    : 'tool-card-status'
-                }
-              >
-                {hasCheckInDoneToday ? 'feito hoje' : 'pendente'}
-              </span>
-            </HomeToolCard>
-
-            <HomeToolCard
-              className="tool-card-blocker"
+              className={`tool-card-full ${state.blocker.isEnabled ? 'tool-card-blocker' : 'tool-card-blocker-off'}`}
               iconClassName="tool-card-icon-shell-success"
               icon={<ShieldCheck size={22} />}
               title="Bloqueador"
+              description="Protege você de conteúdo prejudicial"
               onClick={() => navigate(appRoutes.blocker)}
             >
+              <ChevronRight className="tool-card-blocker-chevron" size={18} />
               {state.blocker.isEnabled ? (
                 <div className="tool-card-blocker-state">
                   <span className="tool-card-dot tool-card-dot-success" />
@@ -341,20 +324,48 @@ export function HomePage() {
             </HomeToolCard>
           </div>
 
-          <article className="tool-card-journal" onClick={() => navigate(appRoutes.journal)}>
-            <div className="tool-card-journal-icon-shell">
-              <div className="tool-card-journal-icon">
-                <BookOpen size={20} />
+          <article className="tool-card-journal tool-card-full">
+            <div className="tool-card-journal-head">
+              <div className="tool-card-journal-head-main">
+                <div className="tool-card-journal-icon-shell">
+                  <div className="tool-card-journal-icon">
+                    <BookOpen size={20} />
+                  </div>
+                </div>
+                <strong>Jornal</strong>
               </div>
+              <button
+                className="tool-card-journal-cta tool-card-journal-cta-compact"
+                type="button"
+                onClick={() => navigate(appRoutes.journal)}
+              >
+                Nova entrada
+              </button>
             </div>
             <div className="tool-card-journal-copy">
-              <strong>Jornal</strong>
-              <p>{journalPreview}</p>
+              <h3>Como você está se sentindo?</h3>
+              <p>Reserve um momento para registrar o que aconteceu no seu dia.</p>
             </div>
-            <ChevronRight className="tool-card-journal-chevron" size={18} />
           </article>
         </motion.section>
+
+        {motivations.length > 0 ? (
+          <section className="motivos-section">
+            <p className="motivos-label">seus motivos</p>
+            <div className="motivos-track-wrapper">
+              <div className="motivos-track">
+                {duplicatedMotivations.map((motivo, index) => (
+                  <div key={`${motivo}-${index}`} className="motivo-pill">
+                    <Flame size={14} />
+                    <span>{motivo}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </section>
+        ) : null}
       </section>
     </AppShell>
   )
 }
+

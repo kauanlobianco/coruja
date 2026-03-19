@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { AppShell } from '../../shared/layout/AppShell'
 import { useAppState } from '../../app/state/use-app-state'
@@ -61,7 +62,16 @@ function getBackupStatusLabel(status: 'idle' | 'uploading' | 'restoring' | 'conf
 
 export function SettingsPage() {
   const navigate = useNavigate()
-  const { state, markSyncNow, logoutAccount } = useAppState()
+  const {
+    state,
+    demoNow,
+    demoOffsetDays,
+    markSyncNow,
+    logoutAccount,
+    shiftDemoDays,
+    resetDemoClock,
+  } = useAppState()
+  const [isDemoModalOpen, setIsDemoModalOpen] = useState(false)
 
   const account = state.account
   const backupStatusLabel = getBackupStatusLabel(state.backup.status)
@@ -70,6 +80,18 @@ export function SettingsPage() {
   const blockerDomainsCount = state.blocker.blockedDomains.length
   const hasAccount = Boolean(account)
   const hasRemoteBackup = state.backup.hasRemoteBackup
+  const previewMode =
+    typeof window !== 'undefined' &&
+    window.localStorage.getItem('coruja-shell-preview-mode') === 'preview'
+
+  function togglePreviewMode() {
+    if (typeof window === 'undefined') {
+      return
+    }
+
+    window.localStorage.setItem('coruja-shell-preview-mode', previewMode ? 'dev' : 'preview')
+    window.location.reload()
+  }
 
   async function handleLogout() {
     const confirmed = window.confirm(
@@ -212,6 +234,17 @@ export function SettingsPage() {
           </div>
         </article>
 
+        {!isNativePlatform ? (
+          <article className="info-card">
+            <span className="section-label">Teste</span>
+            <h2>Ferramentas de demo</h2>
+            <p>Abra os controles de teste sem poluir a visualizacao do app durante o uso.</p>
+            <button className="button button-secondary" onClick={() => setIsDemoModalOpen(true)}>
+              Abrir painel demo
+            </button>
+          </article>
+        ) : null}
+
         <article className="info-card">
           <span className="section-label">Logout</span>
           <h2>Sair desta conta</h2>
@@ -224,6 +257,50 @@ export function SettingsPage() {
           </button>
         </article>
       </section>
+
+      {!isNativePlatform && isDemoModalOpen ? (
+        <div className="modal-overlay" onClick={() => setIsDemoModalOpen(false)}>
+          <div className="modal-content settings-demo-modal" onClick={(event) => event.stopPropagation()}>
+            <span className="section-label">Demo</span>
+            <h2>Painel de teste</h2>
+            <p>Modo atual: {previewMode ? 'preview com moldura' : 'desenvolvimento sem moldura'}</p>
+            <p>
+              Data simulada: {new Intl.DateTimeFormat('pt-BR', { dateStyle: 'full' }).format(demoNow)}
+            </p>
+            <p>Deslocamento: {demoOffsetDays >= 0 ? `+${demoOffsetDays}` : demoOffsetDays} dia(s)</p>
+            <div className="demo-actions settings-demo-actions">
+              <button className="button button-secondary" onClick={togglePreviewMode}>
+                {previewMode ? 'Usar modo dev' : 'Ver moldura'}
+              </button>
+              <button className="button button-secondary" onClick={() => void shiftDemoDays(-1)}>
+                -1 dia
+              </button>
+              <button className="button button-secondary" onClick={() => void shiftDemoDays(1)}>
+                +1 dia
+              </button>
+              <button className="button button-secondary" onClick={() => void shiftDemoDays(7)}>
+                +7 dias
+              </button>
+              <button className="button button-secondary" onClick={() => void resetDemoClock()}>
+                Hoje real
+              </button>
+              <button
+                className="button button-primary"
+                onClick={async () => {
+                  setIsDemoModalOpen(false)
+                  await logoutAccount(null)
+                  navigate('/pre-purchase', { replace: true })
+                }}
+              >
+                Voltar ao pre-compra
+              </button>
+              <button className="button button-secondary" onClick={() => setIsDemoModalOpen(false)}>
+                Fechar
+              </button>
+            </div>
+          </div>
+        </div>
+      ) : null}
     </AppShell>
   )
 }
