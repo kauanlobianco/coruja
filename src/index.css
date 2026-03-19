@@ -1,6 +1,7 @@
 @import './styles/foundation.css';
 @import './styles/home.css';
 @import './styles/pre-purchase.css';
+@import './styles/onboarding.css';
 
 .journal-screen {
   min-height: 100%;

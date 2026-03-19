@@ -1,257 +1,362 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { motion, AnimatePresence } from 'framer-motion'
 import { useAppState } from '../../app/state/use-app-state'
 import { AppShell } from '../../shared/layout/AppShell'
 import { getPrePurchaseAge, getPrePurchaseName } from '../pre-purchase/storage'
+import { SelectionScreen, type SelectionOption } from '../../components/onboarding/SelectionScreen'
 
-const goalOptions = [
-  {
-    days: 5,
-    title: 'Ganhar tracao',
-    description: 'Uma meta curta para sair do automatico e comecar com firmeza.',
-  },
-  {
-    days: 10,
-    title: 'Criar consistencia',
-    description: 'Tempo suficiente para firmar rotina e abrir mais distancia do impulso.',
-  },
-  {
-    days: 15,
-    title: 'Recomeco mais firme',
-    description: 'Uma meta mais forte para quem quer virar a chave com mais estrutura.',
-  },
-  {
-    days: 30,
-    title: 'Marco maior',
-    description: 'Um compromisso mais longo para quem quer buscar um primeiro grande marco.',
-  },
+// ─── Data ────────────────────────────────────────────────────────────────────
+
+const motivationOptions: SelectionOption[] = [
+  { label: 'Mais clareza mental', emoji: '🧠' },
+  { label: 'Voltar a ter controle', emoji: '🎯' },
+  { label: 'Melhorar relacionamentos', emoji: '💛' },
+  { label: 'Parar de perder tempo', emoji: '⏱' },
+  { label: 'Dormir melhor', emoji: '🌙' },
+  { label: 'Estar mais presente', emoji: '🌿' },
+  { label: 'Autoestima mais sólida', emoji: '💪' },
+  { label: 'Foco no trabalho', emoji: '📈' },
 ]
 
-const defaultMotivations = [
-  'Quero ter mais clareza mental',
-  'Quero voltar a sentir controle sobre mim',
-  'Quero melhorar meus relacionamentos',
-  'Quero parar de perder tempo com isso',
-  'Quero dormir melhor',
-  'Quero me sentir mais presente na minha vida',
+const triggerOptions: SelectionOption[] = [
+  { label: 'Sozinho no quarto', emoji: '🚪' },
+  { label: 'Celular na cama', emoji: '📱' },
+  { label: 'Madrugada', emoji: '🌒' },
+  { label: 'Redes sociais', emoji: '📲' },
+  { label: 'Dia estressante', emoji: '😤' },
+  { label: 'Após um conflito', emoji: '🌪' },
+  { label: 'Sem rumo', emoji: '🌀' },
+  { label: 'Enrolando tarefas', emoji: '😮‍💨' },
+  { label: 'Depois de beber', emoji: '🍺' },
+  { label: 'Ao acordar', emoji: '☀️' },
 ]
 
-const defaultTriggers = [
-  'Sozinho no quarto',
-  'Celular na cama',
-  'Madrugada',
-  'Redes sociais',
-  'Depois de um dia estressante',
-  'Depois de um conflito',
-  'Quando fico sem rumo',
-  'Quando estou enrolando tarefas',
-  'Depois de beber',
-  'Banho demorado',
-  'Apos acordar',
-  'Fim de semana sem rotina',
-  'Cansaco no fim do dia',
-  'Quando fico sozinho em casa',
+interface GoalOption {
+  days: number
+  label: string
+  desc: string
+  emoji: string
+}
+
+const goalOptions: GoalOption[] = [
+  { days: 5,  label: 'Ganhar tração',    desc: 'Sair do automático com firmeza', emoji: '🚀' },
+  { days: 10, label: 'Criar consistência', desc: 'Firmar rotina e criar distância', emoji: '📌' },
+  { days: 15, label: 'Recomeço firme',   desc: 'Virar a chave com mais estrutura', emoji: '🔥' },
+  { days: 30, label: 'Marco maior',      desc: 'Um compromisso mais longo',        emoji: '🏆' },
 ]
 
-function toggleValue(
-  value: string,
-  current: string[],
-  setter: (values: string[]) => void,
-) {
-  setter(
-    current.includes(value)
-      ? current.filter((item) => item !== value)
-      : [...current, value],
+// ─── Slide transition variants ────────────────────────────────────────────────
+
+const slideVariants = {
+  enter: (dir: number) => ({ x: dir > 0 ? 56 : -56, opacity: 0 }),
+  center: { x: 0, opacity: 1 },
+  exit: (dir: number) => ({ x: dir > 0 ? -56 : 56, opacity: 0 }),
+}
+
+const slideTransition = { duration: 0.24, ease: [0.22, 1, 0.36, 1] as const }
+
+// ─── Welcome Step (Step 0) ────────────────────────────────────────────────────
+
+function WelcomeStep({ name, onNext }: { name: string; onNext: () => void }) {
+  const displayName = name.trim() || 'você'
+
+  return (
+    <AppShell title="" eyebrow="" shellMode="entry" hideTopbar>
+      <div className="ob-welcome-screen">
+        {/* Progress */}
+        <div style={{ padding: '0', flexShrink: 0 }}>
+          <div className="ob-step-label" style={{ marginBottom: 12 }}>1 de 4</div>
+          <div className="ob-progress-track">
+            <motion.div
+              className="ob-progress-fill"
+              initial={{ width: 0 }}
+              animate={{ width: '25%' }}
+              transition={{ duration: 0.4, ease: 'easeOut' }}
+            />
+          </div>
+        </div>
+
+        {/* Hero content */}
+        <div className="ob-welcome-hero">
+          <div>
+            <p className="ob-welcome-intro">Bem-vindo de volta</p>
+            <h1 className="ob-welcome-title">
+              Olá, <span className="ob-welcome-name">{displayName}</span>.<br />
+              Vamos começar?
+            </h1>
+          </div>
+          <p className="ob-welcome-sub">
+            Em 3 passos rápidos vamos personalizar sua jornada. Escolha com calma — isso vai guiar tudo no app.
+          </p>
+        </div>
+
+        {/* CTA */}
+        <div className="ob-bottom-bar">
+          <motion.button
+            type="button"
+            className="button ob-cta"
+            onClick={onNext}
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3, ease: 'easeOut', delay: 0.15 }}
+          >
+            Continuar
+          </motion.button>
+        </div>
+      </div>
+    </AppShell>
   )
 }
+
+// ─── Goal Step (Step 3 — single select + number prominent) ───────────────────
+
+function GoalStep({
+  step,
+  progress,
+  onContinue,
+}: {
+  step: string
+  progress: number
+  onContinue: (days: number) => void
+}) {
+  const [selected, setSelected] = useState<number | null>(null)
+
+  return (
+    <AppShell title="" eyebrow="" shellMode="entry" hideTopbar>
+      <motion.div
+        className="ob-screen"
+        initial={{ opacity: 0, y: 14 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.25, ease: 'easeOut' }}
+      >
+        {/* Header */}
+        <div className="ob-header">
+          <div className="ob-step-row">
+            <span className="ob-step-label">{step}</span>
+          </div>
+          <h1 className="ob-title">Sua primeira meta</h1>
+          <p className="ob-subtitle">Escolha uma meta séria, mas possível de sustentar.</p>
+          <div
+            className="ob-progress-track"
+            role="progressbar"
+            aria-valuenow={Math.round(progress * 100)}
+            aria-valuemin={0}
+            aria-valuemax={100}
+          >
+            <motion.div
+              className="ob-progress-fill"
+              initial={{ width: 0 }}
+              animate={{ width: `${progress * 100}%` }}
+              transition={{ duration: 0.4, ease: 'easeOut' }}
+            />
+          </div>
+        </div>
+
+        {/* Context card */}
+        <div className="ob-context-card">
+          <span className="ob-context-icon" aria-hidden="true">🎯</span>
+          <p className="ob-context-message">
+            Não precisa provar tudo agora. O importante é dar o primeiro passo com intenção.
+          </p>
+        </div>
+
+        {/* Goal pills — single-col, number prominent */}
+        <div className="ob-pills-area ob-pills-area--single">
+          {goalOptions.map((opt) => {
+            const isSelected = selected === opt.days
+            return (
+              <motion.button
+                key={opt.days}
+                type="button"
+                className={`ob-goal-pill${isSelected ? ' ob-goal-pill--selected' : ''}`}
+                onClick={() => setSelected(opt.days)}
+                whileTap={{ scale: 0.97 }}
+                animate={isSelected ? { scale: [1, 0.97, 1.02, 1.0] } : { scale: 1 }}
+                transition={isSelected ? { duration: 0.18, times: [0, 0.3, 0.7, 1] } : { duration: 0.1 }}
+              >
+                <span className="ob-goal-emoji" aria-hidden="true">{opt.emoji}</span>
+                <div className="ob-goal-days-block">
+                  <span className="ob-goal-days-number">{opt.days}</span>
+                  <span className="ob-goal-days-unit">dias</span>
+                </div>
+                <div className="ob-goal-pill-copy">
+                  <span className="ob-goal-pill-title">{opt.label}</span>
+                  <span className="ob-goal-pill-desc">{opt.desc}</span>
+                </div>
+                <AnimatePresence>
+                  {isSelected && (
+                    <motion.span
+                      aria-hidden="true"
+                      initial={{ scale: 0, opacity: 0 }}
+                      animate={{ scale: 1, opacity: 1 }}
+                      exit={{ scale: 0, opacity: 0 }}
+                      transition={{ type: 'spring', stiffness: 500, damping: 28 }}
+                      style={{ fontSize: 14, flexShrink: 0 }}
+                    >
+                      ✓
+                    </motion.span>
+                  )}
+                </AnimatePresence>
+              </motion.button>
+            )
+          })}
+        </div>
+
+        {/* Bottom bar */}
+        <div className="ob-bottom-bar">
+          <AnimatePresence mode="wait">
+            {selected !== null ? (
+              <motion.button
+                key="cta-active"
+                type="button"
+                className="button ob-cta"
+                onClick={() => onContinue(selected!)}
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: 6 }}
+                transition={{ duration: 0.2, ease: 'easeOut' }}
+              >
+                Começar agora
+              </motion.button>
+            ) : (
+              <motion.button
+                key="cta-ghost"
+                type="button"
+                className="button ob-cta ob-cta--ghost"
+                disabled
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+              >
+                Escolha sua meta para começar
+              </motion.button>
+            )}
+          </AnimatePresence>
+        </div>
+      </motion.div>
+    </AppShell>
+  )
+}
+
+// ─── Main page ────────────────────────────────────────────────────────────────
 
 export function OnboardingPage() {
   const navigate = useNavigate()
   const { state, completeOnboarding } = useAppState()
-  const [name, setName] = useState(state.profile.name || getPrePurchaseName())
-  const [goalDays, setGoalDays] = useState(state.profile.goalDays || 5)
-  const [customMotivation, setCustomMotivation] = useState('')
+
+  const [step, setStep] = useState(0)
+  const [direction, setDirection] = useState(1)
   const [motivations, setMotivations] = useState<string[]>(
-    state.profile.motivations.length > 0
-      ? state.profile.motivations
-      : [defaultMotivations[0]],
+    state.profile.motivations.length > 0 ? state.profile.motivations : [],
   )
   const [triggers, setTriggers] = useState<string[]>(
     state.profile.triggers.length > 0 ? state.profile.triggers : [],
   )
 
-  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
-    event.preventDefault()
+  const name = state.profile.name || getPrePurchaseName()
 
+  function advance(nextStep: number) {
+    setDirection(1)
+    setStep(nextStep)
+  }
+
+  async function handleFinish(days: number) {
     const prePurchaseAge = getPrePurchaseAge()
     const resolvedAge =
       state.profile.age ?? (prePurchaseAge.trim() ? Number(prePurchaseAge) : null)
-    const resolvedCustomMotivation = customMotivation.trim()
-    const resolvedMotivations = resolvedCustomMotivation
-      ? Array.from(new Set([...motivations, resolvedCustomMotivation]))
-      : motivations
 
     await completeOnboarding({
-      name: name.trim() || 'Usuario',
+      name: name.trim() || 'Usuário',
       age: resolvedAge,
-      goalDays,
-      motivations: resolvedMotivations,
+      goalDays: days,
+      motivations,
       triggers,
     })
 
     navigate('/app', { replace: true })
   }
 
-  const selectedGoal =
-    goalOptions.find((option) => option.days === goalDays) ?? goalOptions[0]
+  // Step 0 — Welcome hero
+  if (step === 0) {
+    return <WelcomeStep name={name} onNext={() => advance(1)} />
+  }
 
+  // Steps 1–3 — animated slide transitions
   return (
-    <AppShell
-      title="Vamos montar a base da sua jornada"
-      eyebrow="Onboarding"
-      shellMode="entry"
-    >
-      <form className="panel-stack" onSubmit={handleSubmit}>
-        <section className="info-card highlight-card">
-          <span className="section-label">Identidade</span>
-          <h2>Como voce quer ser chamado aqui dentro?</h2>
-          <p>
-            Esse nome vai aparecer na sua Home e nos momentos em que o app
-            estiver te apoiando mais de perto.
-          </p>
-          <div className="field">
-            <div className="input-wrapper">
-              <input
-                className="input-field"
-                id="name"
-                value={name}
-                onChange={(event) => setName(event.target.value)}
-                placeholder=" "
-              />
-              <label className="input-label" htmlFor="name">
-                Nome
-              </label>
-            </div>
-          </div>
-        </section>
+    <AnimatePresence mode="wait" custom={direction}>
+      {step === 1 && (
+        <motion.div
+          key="step-motivations"
+          custom={direction}
+          variants={slideVariants}
+          initial="enter"
+          animate="center"
+          exit="exit"
+          transition={slideTransition}
+          style={{ height: '100%' }}
+        >
+          <SelectionScreen
+            title="O que te trouxe aqui?"
+            subtitle="Vamos personalizar sua jornada com base no que você selecionar."
+            contextIcon="🤝"
+            contextMessage="Você não está sozinho. Milhares de pessoas compartilham esses sentimentos e encontraram um caminho."
+            options={motivationOptions}
+            progress={0.5}
+            step="2 de 4"
+            onContinue={(selected) => {
+              setMotivations(selected)
+              advance(2)
+            }}
+          />
+        </motion.div>
+      )}
 
-        <section className="info-card">
-          <span className="section-label">Meta inicial</span>
-          <h2>Qual vai ser a sua primeira meta?</h2>
-          <p>
-            Nao precisa provar tudo agora. Escolha uma meta que pareca seria,
-            mas possivel de sustentar.
-          </p>
-          <div className="pricing-grid">
-            {goalOptions.map((option) => (
-              <button
-                key={option.days}
-                className={
-                  goalDays === option.days ? 'plan-card plan-card-active' : 'plan-card'
-                }
-                type="button"
-                onClick={() => setGoalDays(option.days)}
-              >
-                <span className="section-label">{option.days} dias</span>
-                <strong>{option.title}</strong>
-                <p>{option.description}</p>
-              </button>
-            ))}
-          </div>
-        </section>
+      {step === 2 && (
+        <motion.div
+          key="step-triggers"
+          custom={direction}
+          variants={slideVariants}
+          initial="enter"
+          animate="center"
+          exit="exit"
+          transition={slideTransition}
+          style={{ height: '100%' }}
+        >
+          <SelectionScreen
+            title="Seus gatilhos"
+            subtitle="Identifique os momentos em que você fica mais vulnerável."
+            contextIcon="🔍"
+            contextMessage="Conhecer seus gatilhos é o primeiro passo para ter controle sobre eles."
+            options={triggerOptions}
+            progress={0.75}
+            step="3 de 4"
+            onContinue={(selected) => {
+              setTriggers(selected)
+              advance(3)
+            }}
+          />
+        </motion.div>
+      )}
 
-        <section className="info-card">
-          <span className="section-label">Motivos</span>
-          <h2>Por que isso importa para voce?</h2>
-          <p>
-            Escolha os motivos que mais combinam com o que voce quer recuperar
-            na sua vida. Eles vao reaparecer quando voce precisar lembrar por
-            que comecou.
-          </p>
-          <div className="chip-row">
-            {defaultMotivations.map((item) => (
-              <button
-                key={item}
-                className={motivations.includes(item) ? 'chip active' : 'chip'}
-                type="button"
-                onClick={() => toggleValue(item, motivations, setMotivations)}
-              >
-                {item}
-              </button>
-            ))}
-          </div>
-          <div className="field">
-            <div className="input-wrapper">
-              <input
-                className="input-field"
-                id="custom-motivation"
-                value={customMotivation}
-                onChange={(event) => setCustomMotivation(event.target.value)}
-                placeholder=" "
-                maxLength={80}
-              />
-              <label className="input-label" htmlFor="custom-motivation">
-                Outro motivo importante para voce
-              </label>
-            </div>
-          </div>
-        </section>
-
-        <section className="info-card">
-          <span className="section-label">Gatilhos</span>
-          <h2>Em que momentos voce costuma ficar mais vulneravel?</h2>
-          <p>
-            Aqui a ideia e mapear situacoes do seu dia a dia. Isso ajuda o app a
-            entender melhor seu contexto e a te orientar com mais clareza depois.
-          </p>
-          <div className="chip-row">
-            {defaultTriggers.map((item) => (
-              <button
-                key={item}
-                className={triggers.includes(item) ? 'chip active' : 'chip'}
-                type="button"
-                onClick={() => toggleValue(item, triggers, setTriggers)}
-              >
-                {item}
-              </button>
-            ))}
-          </div>
-        </section>
-
-        <section className="info-card">
-          <span className="section-label">Resumo</span>
-          <h2>O que fica pronto quando voce entrar no app</h2>
-          <dl className="home-stats-grid">
-            <div>
-              <dt>Meta ativa</dt>
-              <dd>{selectedGoal.days} dias</dd>
-            </div>
-            <div>
-              <dt>Motivos escolhidos</dt>
-              <dd>{motivations.length + (customMotivation.trim() ? 1 : 0)}</dd>
-            </div>
-            <div>
-              <dt>Gatilhos mapeados</dt>
-              <dd>{triggers.length}</dd>
-            </div>
-            <div>
-              <dt>Destino</dt>
-              <dd>Home principal</dd>
-            </div>
-          </dl>
-          <p>
-            Ao continuar, essa base vai organizar sua Home, seu streak, seus
-            check-ins e os momentos de suporte como SOS.
-          </p>
-          <button
-            className="button button-primary"
-            type="submit"
-            disabled={!name.trim() || motivations.length === 0}
-          >
-            Entrar no app
-          </button>
-        </section>
-      </form>
-    </AppShell>
+      {step === 3 && (
+        <motion.div
+          key="step-goal"
+          custom={direction}
+          variants={slideVariants}
+          initial="enter"
+          animate="center"
+          exit="exit"
+          transition={slideTransition}
+          style={{ height: '100%' }}
+        >
+          <GoalStep
+            step="4 de 4"
+            progress={1}
+            onContinue={(days) => handleFinish(days)}
+          />
+        </motion.div>
+      )}
+    </AnimatePresence>
   )
 }

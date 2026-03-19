@@ -1,0 +1,480 @@
+/* ==========================================================================
+   Onboarding Selection Screen — Refined v3
+   All values use design system CSS custom properties from foundation.css
+   ========================================================================== */
+
+/* Screen-level gradient token */
+:root {
+  --ob-noise: url("data:image/svg+xml;base64,PHN2ZyB2aWV3Qm94PSIwIDAgMjAwIDIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZmlsdGVyIGlkPSJuIj48ZmVUdXJidWxlbmNlIHR5cGU9ImZyYWN0YWxOb2lzZSIgYmFzZUZyZXF1ZW5jeT0iMC44IiBudW1PY3RhdmVzPSIzIiBzdGl0Y2hUaWxlcz0ic3RpdGNoIi8+PC9maWx0ZXI+PHJlY3Qgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgZmlsdGVyPSJ1cmwoI24pIiBvcGFjaXR5PSIwLjE1Ii8+PC9zdmc+");
+  
+  --ob-gradient-cyan-mesh: var(--ob-noise), var(--ds-gradient-ember-brand);
+  --ob-gradient-text: var(--ds-gradient-ember-brand);
+
+  --ob-gradient-cyan: var(--ob-gradient-text);
+  --ob-shadow-cyan: 0 10px 24px color-mix(in srgb, var(--ds-color-info-500) 18%, transparent);
+}
+
+/* ─── Screen — 100vh, no scroll, flex column ────────────────────────────── */
+
+.ob-screen {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+  overflow: hidden;
+  padding-top: calc(env(safe-area-inset-top) + 16px);
+}
+
+/* ─── Header — compact, title dominates ─────────────────────────────────── */
+
+.ob-header {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 0 var(--ds-space-5);
+  flex-shrink: 0;
+  margin-bottom: 4px;
+}
+
+.ob-step-row {
+  display: flex;
+  align-items: center;
+  margin-bottom: 6px;
+}
+
+.ob-step-label {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 10px;
+  border-radius: var(--ds-radius-pill);
+  background: color-mix(in srgb, var(--ds-color-info-500) 10%, transparent);
+  border: 1px solid color-mix(in srgb, var(--ds-color-info-400) 18%, rgba(255,255,255,0.06));
+  color: var(--ds-color-info-400);
+  font-size: var(--ds-type-overline-size);
+  font-weight: var(--ds-font-weight-bold);
+  letter-spacing: var(--ds-type-overline-tracking);
+  text-transform: uppercase;
+}
+
+.ob-title {
+  margin: 0;
+  font-size: clamp(22px, 6vw, 26px);
+  font-weight: var(--ds-font-weight-black);
+  line-height: 1.05;
+  letter-spacing: -0.04em;
+  color: var(--ds-color-text-primary);
+}
+
+.ob-title-name {
+  background: var(--ob-gradient-cyan);
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+}
+
+.ob-subtitle {
+  margin: 0;
+  font-size: 11px;
+  line-height: 1.4;
+  color: var(--ds-color-text-secondary);
+}
+
+/* Progress bar — 3px, cyan gradient */
+.ob-progress-track {
+  margin-top: 8px;
+  height: 3px;
+  border-radius: var(--ds-radius-pill);
+  background: rgba(255, 255, 255, 0.08);
+  overflow: hidden;
+}
+
+.ob-progress-fill {
+  height: 100%;
+  border-radius: inherit;
+  background: var(--ob-gradient-cyan);
+}
+
+/* ─── Context card — compact glassmorphism ────────────────────────────────── */
+
+.ob-context-card {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--ds-space-2);
+  margin: var(--ds-space-3) var(--ds-space-5);
+  padding: 10px 14px;
+  border-radius: var(--ds-radius-card);
+  background:
+    linear-gradient(
+      180deg,
+      color-mix(in srgb, white 2%, transparent) 0%,
+      color-mix(in srgb, var(--ds-color-info-500) 2%, transparent) 100%
+    );
+  backdrop-filter: blur(14px) saturate(1.03);
+  -webkit-backdrop-filter: blur(14px) saturate(1.03);
+  border: 1px solid color-mix(in srgb, var(--ds-color-info-500) 14%, rgba(255,255,255,0.06));
+  box-shadow:
+    0 8px 18px color-mix(in srgb, black 6%, transparent),
+    inset 0 1px 0 color-mix(in srgb, white 4%, transparent);
+  flex-shrink: 0;
+}
+
+.ob-context-icon {
+  font-size: 14px;
+  line-height: 1.4;
+  flex-shrink: 0;
+}
+
+.ob-context-message {
+  margin: 0;
+  font-size: 11px;
+  line-height: 1.4;
+  color: var(--ds-color-text-secondary);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* ─── Pill area — flex 1, 2-col grid, no overflow ────────────────────────── */
+
+.ob-pills-area {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 7px;
+  padding: 0 var(--ds-space-5);
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+  align-content: start;
+}
+
+/* Single-column variant (goal step) */
+.ob-pills-area--single {
+  grid-template-columns: 1fr;
+}
+
+/* ─── Selection pill — quiz-style ────────────────────────────────────────── */
+
+.ob-selection-pill {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  height: 48px;
+  padding: 0 14px;
+  border-radius: 16px;
+  border: 1px solid color-mix(in srgb, var(--ds-color-info-500) 22%, rgba(255, 255, 255, 0.08));
+  background:
+    linear-gradient(
+      180deg,
+      color-mix(in srgb, white 3%, transparent) 0%,
+      color-mix(in srgb, var(--ds-color-info-500) 3%, transparent) 100%
+    );
+  color: var(--ds-color-text-primary);
+  font-family: var(--ds-font-sans);
+  font-size: 12.5px;
+  font-weight: var(--ds-font-weight-medium);
+  text-align: left;
+  cursor: pointer;
+  box-shadow:
+    0 10px 22px color-mix(in srgb, black 8%, transparent),
+    0 0 0 1px color-mix(in srgb, var(--ds-color-info-500) 5%, transparent),
+    inset 0 1px 0 color-mix(in srgb, white 5%, transparent);
+  transition:
+    transform var(--ds-transition-fast),
+    background var(--ds-transition-fast),
+    border-color var(--ds-transition-fast),
+    box-shadow var(--ds-transition-fast),
+    color var(--ds-transition-fast);
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+}
+
+.ob-selection-pill:hover {
+  border-color: color-mix(in srgb, var(--ds-color-info-400) 46%, rgba(255, 255, 255, 0.14));
+  box-shadow:
+    0 14px 26px color-mix(in srgb, var(--ds-color-info-500) 10%, transparent),
+    0 0 0 1px color-mix(in srgb, var(--ds-color-info-400) 16%, transparent),
+    inset 0 1px 0 color-mix(in srgb, white 8%, transparent);
+}
+
+.ob-selection-pill--selected {
+  border-color: rgba(232, 101, 10, 0.45);
+  background: 
+    var(--ob-noise),
+    linear-gradient(135deg, rgba(232, 101, 10, 0.22) 0%, rgba(249, 115, 22, 0.14) 100%),
+    rgba(255, 255, 255, 0.03);
+  box-shadow:
+    0 8px 20px rgba(232, 101, 10, 0.12),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  color: #fff;
+  font-weight: var(--ds-font-weight-semibold);
+}
+
+.ob-selection-pill--selected:hover {
+  border-color: rgba(232, 101, 10, 0.55);
+}
+
+.ob-selection-pill--selected .ob-pill-check {
+  color: #fff;
+}
+
+.ob-pill-emoji {
+  font-size: 13px;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.ob-pill-label {
+  line-height: 1.2;
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ob-pill-check {
+  font-size: 11px;
+  font-weight: var(--ds-font-weight-bold);
+  line-height: 1;
+  margin-left: auto;
+  flex-shrink: 0;
+  color: var(--ds-color-info-400);
+}
+
+/* ─── Goal pill — single-col, number prominent, quiz-style card ──────────── */
+
+.ob-goal-pill {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 12px 16px;
+  border-radius: var(--ds-radius-card);
+  border: 1px solid color-mix(in srgb, var(--ds-color-info-500) 22%, rgba(255, 255, 255, 0.08));
+  background:
+    linear-gradient(
+      180deg,
+      color-mix(in srgb, white 3%, transparent) 0%,
+      color-mix(in srgb, var(--ds-color-info-500) 3%, transparent) 100%
+    );
+  color: var(--ds-color-text-primary);
+  font-family: var(--ds-font-sans);
+  text-align: left;
+  cursor: pointer;
+  box-shadow:
+    0 10px 22px color-mix(in srgb, black 8%, transparent),
+    inset 0 1px 0 color-mix(in srgb, white 5%, transparent);
+  transition:
+    transform var(--ds-transition-fast),
+    background var(--ds-transition-fast),
+    border-color var(--ds-transition-fast),
+    box-shadow var(--ds-transition-fast);
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+}
+
+.ob-goal-pill:hover {
+  border-color: color-mix(in srgb, var(--ds-color-info-400) 46%, rgba(255, 255, 255, 0.14));
+  box-shadow:
+    0 14px 26px color-mix(in srgb, var(--ds-color-info-500) 10%, transparent),
+    inset 0 1px 0 color-mix(in srgb, white 8%, transparent);
+}
+
+.ob-goal-pill--selected {
+  border-color: color-mix(in srgb, var(--ds-color-info-400) 62%, rgba(255, 255, 255, 0.08));
+  background:
+    radial-gradient(
+      circle at 10% 50%,
+      color-mix(in srgb, var(--ds-color-info-400) 18%, transparent) 0%,
+      transparent 30%
+    ),
+    linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--ds-color-info-500) 12%, transparent) 0%,
+      color-mix(in srgb, var(--ds-color-primary-500) 14%, transparent) 100%
+    );
+  box-shadow:
+    0 14px 28px color-mix(in srgb, var(--ds-color-info-500) 16%, transparent),
+    0 0 0 1px color-mix(in srgb, var(--ds-color-info-400) 18%, transparent),
+    inset 0 1px 0 color-mix(in srgb, white 8%, transparent);
+}
+
+.ob-goal-pill--selected:hover {
+  border-color: color-mix(in srgb, var(--ds-color-info-400) 70%, rgba(255, 255, 255, 0.08));
+}
+
+.ob-goal-emoji {
+  font-size: 18px;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.ob-goal-days-block {
+  display: flex;
+  align-items: baseline;
+  gap: 3px;
+  flex-shrink: 0;
+  min-width: 52px;
+}
+
+.ob-goal-days-number {
+  font-size: 26px;
+  font-weight: var(--ds-font-weight-black);
+  line-height: 1;
+  letter-spacing: -0.04em;
+  color: inherit;
+}
+
+.ob-goal-days-unit {
+  font-size: 11px;
+  font-weight: var(--ds-font-weight-medium);
+  color: var(--ds-color-text-secondary);
+}
+
+.ob-goal-pill--selected .ob-goal-days-unit {
+  color: var(--ds-color-text-tertiary);
+}
+
+.ob-goal-pill-copy {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.ob-goal-pill-title {
+  font-size: 13px;
+  font-weight: var(--ds-font-weight-semibold);
+  color: inherit;
+  line-height: 1.2;
+}
+
+.ob-goal-pill-desc {
+  font-size: 10px;
+  color: var(--ds-color-text-secondary);
+  line-height: 1.3;
+}
+
+.ob-goal-pill--selected .ob-goal-pill-desc {
+  color: var(--ds-color-text-tertiary);
+}
+
+/* ─── Bottom bar ─────────────────────────────────────────────────────────── */
+
+.ob-bottom-bar {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 10px var(--ds-space-5) calc(32px + env(safe-area-inset-bottom));
+  background: linear-gradient(
+    to top,
+    var(--ds-color-bg-base) 55%,
+    transparent 100%
+  );
+  flex-shrink: 0;
+}
+
+.ob-count-label {
+  margin: 0;
+  font-size: 11px;
+  font-weight: var(--ds-font-weight-medium);
+  color: var(--ds-color-text-secondary);
+  text-align: center;
+}
+
+/* CTA — refined premium style */
+.ob-cta {
+  width: 100%;
+  border-radius: var(--ds-radius-pill) !important;
+  font-size: 15px;
+  font-weight: var(--ds-font-weight-extrabold);
+  letter-spacing: -0.01em;
+  background: var(--ob-gradient-cyan-mesh) !important;
+  color: var(--ds-color-text-inverted) !important;
+  box-shadow:
+    0 18px 36px rgba(227, 91, 46, 0.28),
+    inset 0 1px 0 rgba(255, 255, 255, 0.15) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  transition:
+    transform var(--ds-transition-fast),
+    opacity var(--ds-transition-fast),
+    box-shadow var(--ds-transition-fast) !important;
+}
+
+.ob-cta:hover:not(:disabled) {
+  transform: translateY(-1px);
+}
+
+.ob-cta:active:not(:disabled) {
+  transform: scale(0.985);
+}
+
+.ob-cta--ghost {
+  background: color-mix(in srgb, white 3%, transparent) !important;
+  background-image: none !important;
+  border: 1px solid color-mix(in srgb, white 7%, transparent) !important;
+  color: var(--ds-color-text-secondary) !important;
+  cursor: default;
+  font-weight: var(--ds-font-weight-medium);
+  font-size: 13px;
+  box-shadow: none !important;
+  opacity: 0.6;
+}
+
+/* ─── Welcome screen (step 0) ────────────────────────────────────────────── */
+
+.ob-welcome-screen {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: calc(env(safe-area-inset-top) + 16px) var(--ds-space-5) 0;
+}
+
+.ob-welcome-hero {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: var(--ds-space-4);
+  padding: 10vh 0 14vh;
+}
+
+.ob-welcome-intro {
+  font-size: 11px;
+  font-weight: var(--ds-font-weight-medium);
+  color: var(--ds-color-text-secondary);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  margin: 0;
+}
+
+.ob-welcome-title {
+  margin: 0;
+  font-size: clamp(26px, 7vw, 32px);
+  font-weight: var(--ds-font-weight-black);
+  line-height: 1.02;
+  letter-spacing: -0.04em;
+  color: var(--ds-color-text-primary);
+}
+
+.ob-welcome-name {
+  background: var(--ob-gradient-cyan);
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+}
+
+.ob-welcome-sub {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--ds-color-text-secondary);
+}
