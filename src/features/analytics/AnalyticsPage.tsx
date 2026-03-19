@@ -1,9 +1,10 @@
 import { useMemo, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { AnimatePresence, motion } from 'framer-motion'
 import {
   AlertCircle,
   BarChart3,
+  Flame,
   PieChart,
   TrendingUp,
 } from 'lucide-react'
@@ -103,6 +104,7 @@ function getMentalStateMeta(value: string | null | undefined) {
 
 export function AnalyticsPage() {
   const { state, demoNow } = useAppState()
+  const navigate = useNavigate()
   const [hoveredTrigger, setHoveredTrigger] = useState<number | null>(null)
   const [hoveredPoint, setHoveredPoint] = useState<number | null>(null)
   const joinedReference =
@@ -140,6 +142,10 @@ export function AnalyticsPage() {
       : evolutionScore >= 50
         ? 'Sua evolucao esta acontecendo. Manter o ritual diario deve fortalecer esse movimento.'
         : 'Seu painel ainda mostra oscilacao. Pequenas repeticoes consistentes devem melhorar esse score.'
+
+  const userFirstName = (state.profile.name || 'Você').trim().split(/\s+/)[0]
+  const periodCheckInsCount = report.periodCheckIns.length
+  const periodRelapsesCount = report.periodRelapses.length
 
   const weeklyMoodData = useMemo(() => {
     const weekStart = startOfWeekMonday(demoNow)
@@ -286,18 +292,80 @@ export function AnalyticsPage() {
           <span className="analytics-header-date">{formatTodayLabel(demoNow)}</span>
         </header>
 
-        <motion.section className="stat-row" {...motionTransition(0)}>
-          <article className="stat-card">
-            <strong className="stat-number stat-number-orange">{state.streak.current}</strong>
-            <span className="stat-label">streak atual</span>
-          </article>
-          <article className="stat-card">
-            <strong className="stat-number stat-number-primary">{state.checkIns.length}</strong>
-            <span className="stat-label">check-ins totais</span>
-          </article>
-          <article className="stat-card">
-            <strong className="stat-number stat-number-purple">{report.periodRelapses.length}</strong>
-            <span className="stat-label">recaidas no periodo</span>
+        <motion.section className="analytics-streak-snapshot" {...motionTransition(0)}>
+          <article className="analytics-snapshot-hero">
+            <div className="analytics-snapshot-hero-top">
+              <div className="analytics-snapshot-streak">
+                <div className="analytics-snapshot-streak-icon" aria-hidden="true">
+                  <Flame size={18} strokeWidth={2.2} />
+                </div>
+                <div className="analytics-snapshot-streak-number">{state.streak.current}</div>
+                <div className="analytics-snapshot-streak-label">Sequência diária</div>
+                <button
+                  type="button"
+                  className="analytics-relapse-quick"
+                  onClick={() => navigate('/relapse')}
+                >
+                  Registrar recaída &gt;
+                </button>
+              </div>
+
+              <div className="analytics-snapshot-hero-copy">
+                <div className="analytics-snapshot-hero-copy-title">
+                  {evolutionScore >= 75
+                    ? 'Mais clareza mental'
+                    : evolutionScore >= 50
+                      ? 'Mais consistência'
+                      : 'Em construção'}
+                </div>
+                <div className="analytics-snapshot-hero-copy-body">
+                  {evolutionBody.replace(/^Seu\s+/i, `${userFirstName}, `)}
+                </div>
+              </div>
+            </div>
+
+            <div className="analytics-snapshot-calendar">
+              <div className="analytics-snapshot-calendar-days">
+                {weeklyMoodData.days.map((d) => (
+                  <div key={d.label} className="analytics-snapshot-day">
+                    <span className="analytics-snapshot-day-label">{d.label}</span>
+                    <span
+                      className={
+                        d.entry
+                          ? 'analytics-snapshot-day-icon analytics-snapshot-day-icon-active'
+                          : 'analytics-snapshot-day-icon analytics-snapshot-day-icon-inactive'
+                      }
+                      aria-hidden="true"
+                    />
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="analytics-snapshot-card">
+              <div className="analytics-snapshot-card-head">Seu resumo</div>
+              <div className="analytics-snapshot-stats">
+                <div className="analytics-snapshot-stat">
+                  <div className="analytics-snapshot-stat-value">{totalPeriodDays}</div>
+                  <div className="analytics-snapshot-stat-label">Dias desde o onboarding</div>
+                </div>
+                <div className="analytics-snapshot-divider" aria-hidden="true" />
+                <div className="analytics-snapshot-stat">
+                  <div className="analytics-snapshot-stat-value">{periodCheckInsCount}</div>
+                  <div className="analytics-snapshot-stat-label">Check-ins</div>
+                </div>
+                <div className="analytics-snapshot-divider" aria-hidden="true" />
+                <div className="analytics-snapshot-stat">
+                  <div className="analytics-snapshot-stat-value">{periodRelapsesCount}</div>
+                  <div className="analytics-snapshot-stat-label">Recaídas no período</div>
+                </div>
+                <div className="analytics-snapshot-divider" aria-hidden="true" />
+                <div className="analytics-snapshot-stat">
+                  <div className="analytics-snapshot-stat-value">{evolutionScore}</div>
+                  <div className="analytics-snapshot-stat-label">Score de evolução</div>
+                </div>
+              </div>
+            </div>
           </article>
         </motion.section>
 

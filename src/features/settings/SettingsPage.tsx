@@ -2,48 +2,19 @@ import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { AppShell } from '../../shared/layout/AppShell'
 import { useAppState } from '../../app/state/use-app-state'
-import { isNativePlatform, platform } from '../../core/platform/capacitor'
-
-const premiumBenefits = [
-  'Check-in diario com historico',
-  'Journal e reflexao de recaida',
-  'Analytics de evolucao',
-  'SOS/Panico com suporte rapido',
-  'Bloqueador Android',
-  'Backup e restauracao na nuvem',
-]
-
-function formatDateTime(value: string | null) {
-  if (!value) {
-    return 'Ainda nao aconteceu'
-  }
-
-  const parsed = new Date(value)
-  if (Number.isNaN(parsed.getTime())) {
-    return value
-  }
-
-  return new Intl.DateTimeFormat('pt-BR', {
-    dateStyle: 'short',
-    timeStyle: 'short',
-  }).format(parsed)
-}
-
-function formatMonthYear(value: string | null) {
-  if (!value) {
-    return 'Ainda nao registrado'
-  }
-
-  const parsed = new Date(value)
-  if (Number.isNaN(parsed.getTime())) {
-    return value
-  }
-
-  return new Intl.DateTimeFormat('pt-BR', {
-    month: 'long',
-    year: 'numeric',
-  }).format(parsed)
-}
+import { isNativePlatform } from '../../core/platform/capacitor'
+import {
+  Crown,
+  KeyRound,
+  Landmark,
+  MonitorSmartphone,
+  ShieldCheck,
+  TriangleAlert,
+  UserRound,
+  ChevronRight,
+  CircleUserRound,
+  LogOut,
+} from 'lucide-react'
 
 function getBackupStatusLabel(status: 'idle' | 'uploading' | 'restoring' | 'conflict' | 'error') {
   switch (status) {
@@ -75,11 +46,6 @@ export function SettingsPage() {
 
   const account = state.account
   const backupStatusLabel = getBackupStatusLabel(state.backup.status)
-  const joinedLabel = formatMonthYear(state.profile.joinedAt)
-  const planName = state.hasProAccess ? 'Plano Premium' : 'Sem assinatura ativa'
-  const blockerDomainsCount = state.blocker.blockedDomains.length
-  const hasAccount = Boolean(account)
-  const hasRemoteBackup = state.backup.hasRemoteBackup
   const previewMode =
     typeof window !== 'undefined' &&
     window.localStorage.getItem('coruja-shell-preview-mode') === 'preview'
@@ -107,153 +73,155 @@ export function SettingsPage() {
   }
 
   return (
-    <AppShell title="Settings" eyebrow="Conta e produto">
-      <section className="panel-stack">
-        <article className="info-card highlight-card">
-          <span className="section-label">Profile</span>
-          <h2>Seu perfil dentro do app</h2>
-          <p>
-            Esta area concentra as informacoes que o usuario enxerga como identidade de conta,
-            nao como diagnostico tecnico.
-          </p>
-          <dl className="home-stats-grid">
-            <div>
-              <dt>Nome</dt>
-              <dd>{state.profile.name || 'Usuario'}</dd>
+    <AppShell
+      title="Configurações"
+      eyebrow="Conta e produto"
+      contentClassName="app-content-settings"
+    >
+      <section className="settings-stack">
+        <article className="info-card highlight-card settings-profile-card">
+          <div className="settings-profile-header">
+            <div className="settings-avatar" aria-hidden="true">
+              {(state.profile.name || 'Usuario').trim().slice(0, 1).toUpperCase()}
             </div>
-            <div>
-              <dt>Idade</dt>
-              <dd>{state.profile.age ?? 'Nao informada'}</dd>
+
+            <div className="settings-profile-meta">
+              <strong className="settings-profile-name">
+                {state.profile.name || 'Usuário'}
+              </strong>
+              <span className="settings-profile-email">
+                {account?.email ?? 'Conta ainda não conectada'}
+              </span>
             </div>
-            <div>
-              <dt>Email</dt>
-              <dd>{account?.email ?? 'Conta ainda nao conectada'}</dd>
+
+            <button
+              className="button button-secondary settings-edit-btn"
+              type="button"
+              onClick={() => navigate('/account/required')}
+            >
+              Editar
+            </button>
+          </div>
+
+          <div className="settings-premium-banner">
+            <div className="settings-premium-icon" aria-hidden="true">
+              <Crown size={18} strokeWidth={2.2} />
             </div>
-            <div>
-              <dt>Entrou em</dt>
-              <dd>{joinedLabel}</dd>
+            <div className="settings-premium-copy">
+              <strong>{state.hasProAccess ? 'Premium Account' : 'Conta gratuita'}</strong>
+              <span>
+                {state.hasProAccess
+                  ? 'Recursos premium ativos no seu ritmo.'
+                  : 'Ative o Premium para desbloquear recursos.'}
+              </span>
             </div>
-          </dl>
-          {!hasAccount ? (
-            <p className="warning-banner">
-              Esta sessao ainda esta sem conta vinculada. O app continua local, mas sem restauracao
-              em outro dispositivo.
-            </p>
-          ) : null}
+          </div>
         </article>
 
-        <article className="info-card">
-          <span className="section-label">Manage subscription</span>
-          <h2>{planName}</h2>
-          <p>
-            Aqui o usuario entende rapidamente qual plano esta ativo e o que ele libera no
-            produto.
-          </p>
-          {!state.hasProAccess ? (
-            <p className="warning-banner">
-              Nenhuma assinatura ativa foi marcada nesta sessao. Os beneficios abaixo mostram o
-              pacote previsto do produto.
-            </p>
-          ) : null}
-          <div className="timeline-list">
-            {premiumBenefits.map((benefit) => (
-              <div key={benefit} className="timeline-item">
-                <strong>{benefit}</strong>
+        <div className="settings-subsection-title">Configurações da conta</div>
+
+        <article className="info-card settings-options-card">
+          <button className="settings-option-row" type="button" onClick={() => navigate('/account/required')}>
+            <div className="settings-option-left">
+              <CircleUserRound size={18} strokeWidth={2.2} />
+              <span>Informações da conta</span>
+            </div>
+            <ChevronRight size={18} strokeWidth={2.2} />
+          </button>
+
+          <div className="settings-option-row settings-option-row-disabled" role="presentation" aria-disabled="true">
+            <div className="settings-option-left">
+              <KeyRound size={18} strokeWidth={2.2} />
+              <span>Alterar senha</span>
+            </div>
+            <ChevronRight size={18} strokeWidth={2.2} />
+          </div>
+
+          <div className="settings-option-row settings-option-row-disabled" role="presentation" aria-disabled="true">
+            <div className="settings-option-left">
+              <MonitorSmartphone size={18} strokeWidth={2.2} />
+              <span>Dispositivo</span>
+            </div>
+            <ChevronRight size={18} strokeWidth={2.2} />
+          </div>
+
+          <div className="settings-option-row settings-option-row-disabled" role="presentation" aria-disabled="true">
+            <div className="settings-option-left">
+              <Landmark size={18} strokeWidth={2.2} />
+              <span>Conectar bancos</span>
+            </div>
+            <ChevronRight size={18} strokeWidth={2.2} />
+          </div>
+        </article>
+
+        <div className="settings-subsection-title">Preferências</div>
+
+        <article className="info-card settings-options-card">
+          <Link className="settings-option-row" to="/blocker">
+            <div className="settings-option-left">
+              <ShieldCheck size={18} strokeWidth={2.2} />
+              <span>Bloqueador</span>
+            </div>
+            <ChevronRight size={18} strokeWidth={2.2} />
+          </Link>
+
+          <Link className="settings-option-row" to="/sos">
+            <div className="settings-option-left">
+              <TriangleAlert size={18} strokeWidth={2.2} />
+              <span>SOS / Pânico</span>
+            </div>
+            <ChevronRight size={18} strokeWidth={2.2} />
+          </Link>
+
+          <button
+            className="settings-option-row settings-option-row-action"
+            type="button"
+            onClick={() => setIsDemoModalOpen(true)}
+          >
+            <div className="settings-option-left">
+              <UserRound size={18} strokeWidth={2.2} />
+              <span>Ferramentas demo</span>
+            </div>
+            <ChevronRight size={18} strokeWidth={2.2} />
+          </button>
+        </article>
+
+        <article className="info-card settings-options-card">
+          <div className="settings-section-head">
+            <div className="settings-section-title">Backup e sync</div>
+            <div className="settings-section-meta">{backupStatusLabel}</div>
+          </div>
+
+          <button className="settings-option-row settings-option-row-action settings-option-row-inline" type="button" onClick={() => void markSyncNow()}>
+            <div className="settings-option-left">
+              <CircleUserRound size={18} strokeWidth={2.2} />
+              <span>Sincronizar agora</span>
+            </div>
+            <ChevronRight size={18} strokeWidth={2.2} />
+          </button>
+
+          {!account ? (
+            <Link className="settings-option-row settings-option-row-inline" to="/account/required">
+              <div className="settings-option-left">
+                <Crown size={18} strokeWidth={2.2} />
+                <span>Vincular conta</span>
               </div>
-            ))}
-          </div>
-        </article>
-
-        <article className="info-card">
-          <span className="section-label">Backup e sync</span>
-          <h2>Seus dados protegidos na nuvem</h2>
-          <dl className="home-stats-grid">
-            <div>
-              <dt>Status do backup</dt>
-              <dd>{backupStatusLabel}</dd>
-            </div>
-            <div>
-              <dt>Ultimo sync</dt>
-              <dd>{formatDateTime(account?.lastBackupAt ?? null)}</dd>
-            </div>
-            <div>
-              <dt>Ultimo restore</dt>
-              <dd>{formatDateTime(account?.lastRestoreAt ?? null)}</dd>
-            </div>
-            <div>
-              <dt>Heartbeat</dt>
-              <dd>{formatDateTime(account?.lastLeaseRefreshAt ?? null)}</dd>
-            </div>
-          </dl>
-          {state.backup.lastError ? <p className="warning-banner">{state.backup.lastError}</p> : null}
-          {!hasRemoteBackup && hasAccount && !state.backup.lastError ? (
-            <p className="warning-banner">
-              Esta conta ja esta vinculada, mas ainda nao temos confirmacao de backup remoto salvo.
-            </p>
+              <ChevronRight size={18} strokeWidth={2.2} />
+            </Link>
           ) : null}
-          <div className="toolbar">
-            <button className="button button-primary" onClick={() => void markSyncNow()}>
-              Sincronizar agora
-            </button>
-            {!account ? (
-              <Link className="button button-secondary" to="/account/required">
-                Vincular conta
-              </Link>
-            ) : null}
-          </div>
         </article>
 
-        <article className="info-card">
-          <span className="section-label">Seguranca</span>
-          <h2>Protecao e sessao deste dispositivo</h2>
-          <dl className="home-stats-grid">
-            <div>
-              <dt>Bloqueador</dt>
-              <dd>{state.blocker.isEnabled ? 'Ligado' : 'Desligado'}</dd>
-            </div>
-            <div>
-              <dt>Dominios protegidos</dt>
-              <dd>{blockerDomainsCount || 0}</dd>
-            </div>
-            <div>
-              <dt>Ambiente</dt>
-              <dd>{platform}</dd>
-            </div>
-            <div>
-              <dt>Plataforma</dt>
-              <dd>{isNativePlatform ? 'Capacitor' : 'Web'}</dd>
-            </div>
-          </dl>
-          <div className="toolbar">
-            <Link className="button button-secondary" to="/blocker">
-              Abrir bloqueador
-            </Link>
-            <Link className="button button-secondary" to="/sos">
-              Abrir panico
-            </Link>
+        <article className="info-card settings-options-card">
+          <div className="settings-section-head">
+            <div className="settings-section-title">Sair</div>
+            <div className="settings-section-meta">Limpa cache local</div>
           </div>
-        </article>
 
-        {!isNativePlatform ? (
-          <article className="info-card">
-            <span className="section-label">Teste</span>
-            <h2>Ferramentas de demo</h2>
-            <p>Abra os controles de teste sem poluir a visualizacao do app durante o uso.</p>
-            <button className="button button-secondary" onClick={() => setIsDemoModalOpen(true)}>
-              Abrir painel demo
-            </button>
-          </article>
-        ) : null}
-
-        <article className="info-card">
-          <span className="section-label">Logout</span>
-          <h2>Sair desta conta</h2>
-          <p>
-            Ao sair, o app limpa o cache local deste aparelho e retorna voce para a landing. O
-            backup remoto continua salvo na conta.
-          </p>
-          <button className="button button-danger" onClick={() => void handleLogout()}>
-            Fazer logout
+          <button className="settings-logout-row" type="button" onClick={() => void handleLogout()}>
+            <div className="settings-option-left">
+              <LogOut size={18} strokeWidth={2.2} />
+              <span>Fazer logout</span>
+            </div>
           </button>
         </article>
       </section>

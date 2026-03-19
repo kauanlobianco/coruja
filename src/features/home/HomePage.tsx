@@ -1,10 +1,9 @@
-﻿import { type ReactNode, useMemo } from 'react'
+import { useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import {
   BookOpen,
   Check,
-  ChevronRight,
   Circle,
   Flame,
   Goal,
@@ -15,41 +14,6 @@ import { useAppState } from '../../app/state/use-app-state'
 import { AppShell } from '../../shared/layout/AppShell'
 import { hasCheckInToday } from '../../core/domain/check-in'
 import { appRoutes } from '../../core/config/routes'
-
-interface HomeToolCardProps {
-  className: string
-  iconClassName: string
-  icon: ReactNode
-  title: string
-  description: string
-  onClick: () => void
-  children: ReactNode
-}
-
-function HomeToolCard({
-  className,
-  iconClassName,
-  icon,
-  title,
-  description,
-  onClick,
-  children,
-}: HomeToolCardProps) {
-  return (
-    <article className={`tool-card ${className}`} onClick={onClick}>
-      <div className="tool-card-head">
-        <div className={`tool-card-icon-shell ${iconClassName}`}>
-          <div className="tool-card-icon">{icon}</div>
-        </div>
-        <div className="tool-card-copy">
-          <h2>{title}</h2>
-          <p className="tool-card-desc">{description}</p>
-        </div>
-      </div>
-      {children}
-    </article>
-  )
-}
 
 function formatPtDay(value: Date) {
   return new Intl.DateTimeFormat('pt-BR', {
@@ -157,6 +121,10 @@ function getPrimaryAction(state: ReturnType<typeof useAppState>['state'], now: D
 export function HomePage() {
   const navigate = useNavigate()
   const { state, demoNow } = useAppState()
+  const normalizedName = state.profile.name?.trim() ?? ''
+  const displayName = normalizedName
+    ? `${normalizedName.charAt(0).toUpperCase()}${normalizedName.slice(1)}`
+    : ''
 
   const primaryAction = useMemo(() => getPrimaryAction(state, demoNow), [demoNow, state])
   const hasCheckInDoneToday = hasCheckInToday(state.checkIns, demoNow)
@@ -168,16 +136,16 @@ export function HomePage() {
   const homeSubtitle = hasCheckInDoneToday
     ? `${formatPtDay(demoNow)} | check-in concluido`
     : `${formatPtDay(demoNow)} | check-in pendente`
-  const userInitial = state.profile.name?.trim().charAt(0).toUpperCase() || 'C'
+  const userInitial = normalizedName.charAt(0).toUpperCase() || 'C'
 
   const motionCards = [0, 1, 2, 3]
 
   return (
     <AppShell
       title={
-        state.profile.name ? (
+        displayName ? (
           <>
-            Ola, <span>{state.profile.name}</span>
+            Ola,<span>{displayName}</span>
           </>
         ) : (
           'Sua recuperacao'
@@ -197,16 +165,16 @@ export function HomePage() {
         >
           <div className="home-hero-top">
             <div className="home-streak-copy">
+              <span className="home-streak-icon-shell home-streak-icon-shell-floating">
+                {state.streak.current > 0 ? (
+                  <Flame className="streak-flame streak-pulse" size={28} />
+                ) : (
+                  <Goal className="home-streak-goal" size={26} />
+                )}
+              </span>
               <div className="home-streak-number-row">
                 <h2>{state.streak.current}</h2>
                 <p className="home-streak-label">dias limpos</p>
-                <span className="home-streak-icon-shell">
-                  {state.streak.current > 0 ? (
-                    <Flame className="streak-flame streak-pulse" size={28} />
-                  ) : (
-                    <Goal className="home-streak-goal" size={26} />
-                  )}
-                </span>
               </div>
               <div className="home-streak-progress">
                 <div className="home-streak-progress-label">
@@ -214,6 +182,13 @@ export function HomePage() {
                     {state.streak.current} de {state.profile.goalDays} dias · Maior sequência:{' '}
                     {state.streak.best} dias
                   </span>
+                  <button
+                    type="button"
+                    className="home-relapse-quick"
+                    onClick={() => navigate(appRoutes.relapse)}
+                  >
+                    Registrar recaída &gt;
+                  </button>
                 </div>
                 <div className="progress-track home-streak-progress-track">
                   <div
@@ -225,6 +200,22 @@ export function HomePage() {
             </div>
           </div>
         </motion.article>
+
+        {motivations.length > 0 ? (
+          <section className="motivos-section">
+            <p className="motivos-label">seus motivos</p>
+            <div className="motivos-track-wrapper">
+              <div className="motivos-track">
+                {duplicatedMotivations.map((motivo, index) => (
+                  <div key={`${motivo}-${index}`} className="motivo-pill">
+                    <Flame size={14} />
+                    <span>{motivo}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </section>
+        ) : null}
 
         <motion.article
           className={
@@ -302,15 +293,36 @@ export function HomePage() {
           <div className="home-modules-label">Ferramentas do app</div>
 
           <div className="home-tools-grid">
-            <HomeToolCard
-              className={`tool-card-full ${state.blocker.isEnabled ? 'tool-card-blocker' : 'tool-card-blocker-off'}`}
-              iconClassName="tool-card-icon-shell-success"
-              icon={<ShieldCheck size={22} />}
-              title="Bloqueador"
-              description="Protege você de conteúdo prejudicial"
+            <article
+              className={`tool-card-journal tool-card-full ${state.blocker.isEnabled ? 'tool-card-blocker' : 'tool-card-blocker-off'}`}
               onClick={() => navigate(appRoutes.blocker)}
             >
-              <ChevronRight className="tool-card-blocker-chevron" size={18} />
+              <div className="tool-card-journal-head">
+                <div className="tool-card-journal-head-main">
+                  <div className="tool-card-journal-icon-shell">
+                    <div className="tool-card-journal-icon">
+                      <ShieldCheck size={20} />
+                    </div>
+                  </div>
+                  <strong>Bloqueador</strong>
+                </div>
+                <button
+                  className="tool-card-journal-cta tool-card-journal-cta-compact tool-card-blocker-cta"
+                  type="button"
+                  onClick={(event) => {
+                    event.stopPropagation()
+                    navigate(appRoutes.blocker)
+                  }}
+                >
+                  Abrir
+                </button>
+              </div>
+              <div className="tool-card-journal-copy">
+                <p>
+                  Mantém sua rotina segura com bloqueio ativo e reduz exposição a gatilhos durante o
+                  dia.
+                </p>
+              </div>
               {state.blocker.isEnabled ? (
                 <div className="tool-card-blocker-state">
                   <span className="tool-card-dot tool-card-dot-success" />
@@ -318,10 +330,10 @@ export function HomePage() {
                 </div>
               ) : (
                 <div className="tool-card-blocker-state tool-card-blocker-state-off">
-                  <strong>Desativado</strong>
+                  <strong>Desprotegido</strong>
                 </div>
               )}
-            </HomeToolCard>
+            </article>
           </div>
 
           <article className="tool-card-journal tool-card-full">
@@ -348,22 +360,6 @@ export function HomePage() {
             </div>
           </article>
         </motion.section>
-
-        {motivations.length > 0 ? (
-          <section className="motivos-section">
-            <p className="motivos-label">seus motivos</p>
-            <div className="motivos-track-wrapper">
-              <div className="motivos-track">
-                {duplicatedMotivations.map((motivo, index) => (
-                  <div key={`${motivo}-${index}`} className="motivo-pill">
-                    <Flame size={14} />
-                    <span>{motivo}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </section>
-        ) : null}
       </section>
     </AppShell>
   )

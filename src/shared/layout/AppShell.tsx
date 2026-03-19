@@ -15,10 +15,10 @@ interface AppShellProps extends PropsWithChildren {
 
 const navIcons = {
   Home,
-  Analytics: BarChart3,
-  Panico: AlertTriangle,
+  Analises: BarChart3,
+  Sos: AlertTriangle,
   Biblioteca: Library,
-  Settings,
+  Ajustes: Settings,
 } as const
 
 const PREVIEW_MODE_STORAGE_KEY = 'coruja-shell-preview-mode'
@@ -71,7 +71,7 @@ export function AppShell({
                 <nav className="bottom-nav" aria-label="Navegacao principal">
                   {appShellNavItems.map((item) => {
                     const Icon = navIcons[item.label]
-                    const isSos = item.label === 'Panico'
+                    const isSos = item.label === 'Sos'
 
                     return (
                       <NavLink key={item.to} to={item.to} className="nav-item">
@@ -79,7 +79,7 @@ export function AppShell({
                           <div className={isSos ? 'nav-item-inner nav-item-sos' : 'nav-item-inner'}>
                             {isSos ? (
                               <div className="nav-sos-button">
-                                <Icon size={24} strokeWidth={2.2} />
+                                <Icon size={22} strokeWidth={2.2} />
                               </div>
                             ) : (
                               <>

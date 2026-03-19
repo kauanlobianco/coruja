@@ -19,8 +19,8 @@ export const appRoutes = {
 
 export const appShellNavItems = [
   { to: appRoutes.home, label: 'Home' },
-  { to: appRoutes.analytics, label: 'Analytics' },
-  { to: appRoutes.sos, label: 'Panico' },
+  { to: appRoutes.analytics, label: 'Analises' },
+  { to: appRoutes.sos, label: 'Sos' },
   { to: appRoutes.library, label: 'Biblioteca' },
-  { to: appRoutes.settings, label: 'Settings' },
+  { to: appRoutes.settings, label: 'Ajustes' },
 ] as const

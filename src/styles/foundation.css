@@ -22,8 +22,8 @@
   --ds-color-text-dark: #0e1120;
   --ds-color-primary-500: #384a94;
   --ds-color-primary-600: #4353cb;
-  --ds-color-info-500: #268eba;
-  --ds-color-info-400: #2bb5c4;
+  --ds-color-info-500: #3299c2;
+  --ds-color-info-400: #67bfd2;
   --ds-color-success-500: #409672;
   --ds-color-warning-500: #ec9e32;
   --ds-color-danger-500: #b14343;
@@ -31,7 +31,7 @@
   --ds-color-ember-500: #e35b2e;
   --ds-color-ember-400: #f97316;
   --ds-color-gold-400: #fbbf24;
-  --ds-gradient-primary: linear-gradient(135deg, #2aa5c0 0%, #258bb6 34%, #277bc4 70%, #3055cf 100%);
+  --ds-gradient-primary: linear-gradient(135deg, #38a0c7 0%, #4b9fbe 34%, #6489aa 68%, #7a7399 100%);
   --ds-gradient-ember: linear-gradient(135deg, #ec9e32 0%, #e35b2e 38%, #f97316 68%, #fbbf24 100%);
   --ds-gradient-ember-brand:
     radial-gradient(circle at 10% 10%, rgba(79, 172, 254, 0.28) 0%, transparent 40%),
@@ -54,8 +54,8 @@
   --ds-gradient-progress: linear-gradient(90deg, #384a94 0%, #4353cb 100%);
   --ds-gradient-progress-ember-brand: linear-gradient(90deg, #ffffff 0%, #ec9e32 35%, #f97316 100%);
   --ds-gradient-topbar-accent:
-    radial-gradient(circle at 18% 20%, rgba(132, 224, 242, 0.28) 0%, transparent 30%),
-    linear-gradient(135deg, #2faac6 0%, #268eba 42%, #2f5fc6 100%);
+    radial-gradient(circle at 18% 20%, rgba(150, 220, 240, 0.34) 0%, transparent 30%),
+    linear-gradient(135deg, #3f9dc4 0%, #4b8fb3 42%, #6b7ea3 100%);
   --ds-border-subtle: rgba(255, 255, 255, 0.04);
   --ds-border-soft: rgba(255, 255, 255, 0.06);
   --ds-border-strong: rgba(255, 255, 255, 0.08);
@@ -111,7 +111,7 @@
     0 24px 54px rgba(0, 0, 0, 0.26),
     0 8px 22px rgba(26, 44, 134, 0.16);
   --ds-shadow-primary:
-    0 14px 28px rgba(27, 37, 102, 0.34),
+    0 14px 28px color-mix(in srgb, var(--ds-color-info-500) 34%, rgba(12, 20, 44, 0.66)),
     inset 0 1px 0 rgba(255, 255, 255, 0.14);
   --ds-shadow-ember:
     0 14px 28px rgba(236, 151, 49, 0.26),
@@ -255,6 +255,7 @@ a {
 .app-frame {
   display: grid;
   gap: 16px;
+  position: relative;
 }
 
 .hero-panel,
@@ -404,14 +405,14 @@ dt {
   width: 100%;
   height: 100%;
   background:
-    radial-gradient(circle at 16% 10%, rgba(43, 181, 196, 0.1) 0%, transparent 20%),
-    radial-gradient(circle at 88% 18%, rgba(38, 142, 186, 0.08) 0%, transparent 18%),
-    radial-gradient(circle at 68% 88%, rgba(68, 85, 204, 0.22) 0%, transparent 34%),
+    radial-gradient(circle at 16% 10%, rgba(67, 196, 214, 0.16) 0%, transparent 24%),
+    radial-gradient(circle at 88% 18%, rgba(54, 158, 201, 0.12) 0%, transparent 22%),
+    radial-gradient(circle at 68% 88%, rgba(88, 102, 206, 0.2) 0%, transparent 34%),
     radial-gradient(circle at 18% 100%, rgba(227, 91, 46, 0.06) 0%, transparent 22%),
     linear-gradient(
       180deg,
-      color-mix(in srgb, var(--ds-color-bg-base) 88%, var(--ds-color-info-500) 12%) 0%,
-      color-mix(in srgb, var(--ds-color-bg-base) 90%, var(--ds-color-info-400) 10%) 14%,
+      color-mix(in srgb, var(--ds-color-bg-base) 84%, var(--ds-color-info-500) 16%) 0%,
+      color-mix(in srgb, var(--ds-color-bg-base) 86%, var(--ds-color-info-400) 14%) 14%,
       color-mix(in srgb, var(--ds-color-bg-base) 92%, var(--ds-color-primary-500) 8%) 34%,
       color-mix(in srgb, var(--ds-color-bg-base) 96%, var(--ds-color-bg-card) 4%) 70%,
       var(--ds-color-bg-base) 100%
@@ -536,6 +537,11 @@ dt {
   -ms-overflow-style: none;
 }
 
+.app-content-home {
+  /* Garante que o conteúdo não avance por baixo da bottom-nav */
+  padding-bottom: 110px;
+}
+
 .app-content::-webkit-scrollbar {
   width: 0;
   height: 0;
@@ -550,47 +556,74 @@ dt {
 }
 
 .bottom-nav {
-  position: relative;
-  width: calc(100% - 24px);
-  max-width: calc(100% - 24px);
-  margin: 0 auto 12px;
+  position: absolute;
+  left: 12px;
+  right: 12px;
+  bottom: 12px;
+  width: auto;
   display: grid;
   grid-template-columns: repeat(5, minmax(0, 1fr));
   gap: 4px;
-  padding: 10px 10px calc(8px + env(safe-area-inset-bottom));
-  background:
-    linear-gradient(180deg, rgba(22, 27, 54, 0.42) 0%, rgba(9, 11, 24, 0.58) 100%);
+  padding: 7px 10px calc(6px + env(safe-area-inset-bottom));
+  /* Glass over conteúdo (precisa de alpha para o blur funcionar) */
+  /* Mais desfoque e mais tom azul escuro */
+  background: rgba(6, 12, 32, 0.42);
   border-radius: var(--ds-radius-nav);
-  border: none;
-  border-top: 1px solid var(--ds-border-strong);
+  border-left: 0;
+  border-right: 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
   box-shadow:
-    0 -12px 26px rgba(13, 15, 26, 0.14),
-    0 8px 22px rgba(0, 0, 0, 0.24),
-    inset 0 1px 0 rgba(255, 255, 255, 0.05);
-  backdrop-filter: blur(28px) saturate(1.08);
-  -webkit-backdrop-filter: blur(28px) saturate(1.08);
-  z-index: 100;
+    0 -8px 18px rgba(13, 15, 26, 0.10),
+    0 6px 14px rgba(0, 0, 0, 0.18),
+    inset 0 1px 0 rgba(255, 255, 255, 0.03);
+  /* O blur deve ser aplicado via pseudo-elemento mascarado (evita degrau duro) */
+  /* Aplica desfoque em toda a altura da nav */
+  backdrop-filter: blur(22px) saturate(1.06);
+  -webkit-backdrop-filter: blur(22px) saturate(1.06);
+  z-index: 1000;
+  isolation: isolate;
   overflow: visible;
+  pointer-events: auto;
 }
 
 .bottom-nav::before {
   content: '';
   position: absolute;
-  left: 16px;
-  right: 16px;
-  bottom: 100%;
-  height: 12px;
+  left: -10px;
+  right: -10px;
+  top: -14px;
+  bottom: -12px;
   pointer-events: none;
-  border-radius: 18px 18px 0 0;
-  background: linear-gradient(to top, rgba(13, 15, 26, 0.08), transparent 82%);
-  z-index: 0;
+  border-radius: calc(var(--ds-radius-nav) + 8px);
+  /* Dissolve o "limite" do blur no fundo real */
+  background:
+    radial-gradient(ellipse at 50% 20%, rgba(12, 18, 44, 0.26) 0%, rgba(12, 18, 44, 0.0) 62%),
+    linear-gradient(to top, rgba(12, 18, 44, 0.26) 0%, rgba(12, 18, 44, 0) 72%);
+  /* Mantém o gradiente/máscara pra dissolver a transição, sem precisar blur extra */
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  z-index: -1;
+
+  /* Máscara em degrade vertical pra dissolver o blur na borda da nav */
+  -webkit-mask-image: linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 1) 0%,
+    rgba(0, 0, 0, 1) 45%,
+    rgba(0, 0, 0, 0) 100%
+  );
+  mask-image: linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 1) 0%,
+    rgba(0, 0, 0, 1) 45%,
+    rgba(0, 0, 0, 0) 100%
+  );
 }
 
 .nav-item {
   display: grid;
   place-items: center;
-  min-height: 48px;
-  padding: 4px 2px;
+  min-height: 44px;
+  padding: 3px 2px;
   color: var(--text-muted);
   font-size: 10px;
   text-align: center;
@@ -612,13 +645,22 @@ dt {
 }
 
 .nav-item-sos {
-  gap: 5px;
-  justify-content: flex-start;
+  gap: 1px;
+  justify-content: center;
 }
 
 .nav-icon {
   color: var(--text-muted);
   transform: scale(0.94);
+}
+
+.nav-sos-button svg {
+  transform: scale(1);
+  color: color-mix(in srgb, var(--ds-color-ember-400) 30%, var(--ds-color-danger-500) 70%);
+  filter: drop-shadow(
+    0 0 10px
+      color-mix(in srgb, var(--ds-color-ember-400) 25%, transparent)
+  );
 }
 
 .nav-icon-active {
@@ -644,27 +686,26 @@ dt {
 }
 
 .nav-sos-button {
-  margin-top: -28px;
-  width: 56px;
-  height: 56px;
-  border-radius: 50%;
+  margin-top: 0;
+  width: 28px;
+  height: 28px;
+  border-radius: 12px;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--ds-color-text-inverted);
-  background-color: var(--ds-color-danger-500);
-  background-image:
-    radial-gradient(circle at 22% 20%, rgba(255, 189, 189, 0.26) 0%, transparent 28%),
-    radial-gradient(circle at 78% 76%, rgba(224, 116, 40, 0.14) 0%, transparent 32%),
-    radial-gradient(circle at 32% 84%, rgba(196, 75, 75, 0.24) 0%, transparent 36%),
-    var(--ds-gradient-danger);
-  box-shadow: var(--ds-shadow-danger);
+  color: inherit;
+  border: 0;
+  background: transparent;
+  background-image: none;
+  box-shadow: none;
   position: relative;
   overflow: hidden;
+  /* Ajuste fino: ícone do SOS parecia um pouco mais baixo */
+  transform: translateY(-2px);
 }
 
 .nav-sos-button::after {
-  content: '';
+  content: none;
   position: absolute;
   inset: 0;
   border-radius: inherit;
@@ -672,7 +713,7 @@ dt {
     radial-gradient(circle at 24% 22%, rgba(255, 255, 255, 0.12) 0.7px, transparent 0.9px),
     radial-gradient(circle at 74% 62%, rgba(255, 255, 255, 0.08) 0.6px, transparent 0.9px);
   background-size: 11px 11px, 13px 13px;
-  opacity: 0.12;
+  opacity: 0.05;
   pointer-events: none;
 }
 
@@ -742,14 +783,14 @@ dt {
 }
 
 .button-secondary {
-  background: rgba(255, 255, 255, 0.02);
+  background: color-mix(in srgb, var(--ds-color-info-500) 10%, transparent);
   color: var(--ds-color-info-500);
-  border: 2px solid rgba(38, 142, 186, 0.45);
+  border: 2px solid color-mix(in srgb, var(--ds-color-info-500) 56%, rgba(255, 255, 255, 0.14));
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.03);
 }
 
 .button-secondary:hover {
-  background: rgba(38, 142, 186, 0.08);
+  background: color-mix(in srgb, var(--ds-color-info-500) 16%, transparent);
 }
 
 .button-danger {

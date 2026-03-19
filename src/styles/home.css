@@ -85,6 +85,8 @@
   gap: 4px;
   min-width: 0;
   width: 100%;
+  position: relative;
+  padding-right: 0;
 }
 
 .home-streak-number-row {
@@ -115,6 +117,12 @@
     0 8px 18px rgba(13, 15, 26, 0.08);
 }
 
+.home-streak-icon-shell-floating {
+  position: absolute;
+  top: 8px;
+  right: 0;
+}
+
 .streak-flame {
   color: var(--orange-fg);
   width: 24px;
@@ -126,6 +134,7 @@
 .home-streak-label {
   margin: 0;
   font-size: 14px;
+  line-height: 1;
   color: hsl(230 40% 9% / 0.7);
   letter-spacing: -0.01em;
 }
@@ -140,15 +149,42 @@
   display: grid;
   gap: 8px;
   margin-top: 12px;
+  width: 100%;
 }
 
 .home-streak-progress-label {
   display: flex;
   justify-content: space-between;
   gap: 8px;
-  font-size: 11px;
+  font-size: 12px;
+  line-height: 1.4;
   color: hsl(230 40% 9% / 0.62);
   opacity: 0.6;
+  width: 100%;
+}
+
+.home-streak-progress-label span {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.home-relapse-quick {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--ds-color-warning-500);
+  font-size: 11px;
+  font-weight: 800;
+  cursor: pointer;
+  opacity: 0.9;
+  transition: opacity 0.15s ease, transform 0.15s ease;
+  white-space: nowrap;
+  margin-left: auto;
+}
+
+.home-relapse-quick:active {
+  transform: translateY(1px);
 }
 
 .home-streak-progress-track {
@@ -209,9 +245,10 @@
   align-items: center;
   justify-content: center;
   background:
-    radial-gradient(circle at 22% 18%, rgba(150, 229, 242, 0.22) 0%, transparent 28%),
-    radial-gradient(circle at 78% 76%, rgba(62, 121, 207, 0.18) 0%, transparent 34%),
-    linear-gradient(135deg, hsl(191 62% 46%) 0%, hsl(198 65% 42%) 40%, hsl(214 67% 45%) 72%, hsl(226 62% 48%) 100%);
+    radial-gradient(circle at 22% 18%, color-mix(in srgb, var(--ds-color-info-400) 42%, transparent) 0%, transparent 30%),
+    radial-gradient(circle at 78% 76%, color-mix(in srgb, var(--ds-color-primary-500) 24%, transparent) 0%, transparent 36%),
+    radial-gradient(circle at 14% 86%, color-mix(in srgb, var(--ds-color-ember-500) 14%, transparent) 0%, transparent 32%),
+    var(--ds-gradient-topbar-accent);
   color: white;
   font-size: 0.95rem;
   font-weight: 700;
@@ -237,7 +274,7 @@
 
 .app-topbar .hero-copy h1 {
   display: inline-flex;
-  gap: 10px;
+  gap: 4px;
   align-items: baseline;
 }
 
@@ -362,14 +399,14 @@
   min-height: auto;
   padding: 8px 18px;
   font-size: 13px;
-  background-color: hsl(198 66% 44%);
+  background-color: var(--ds-color-info-500);
   background-image:
-    radial-gradient(circle at 14% 16%, rgba(150, 231, 244, 0.28) 0%, transparent 28%),
-    radial-gradient(circle at 30% 88%, rgba(33, 177, 214, 0.24) 0%, transparent 34%),
-    radial-gradient(circle at 82% 18%, rgba(108, 125, 232, 0.2) 0%, transparent 32%),
-    linear-gradient(135deg, hsl(191 64% 46%) 0%, hsl(198 66% 43%) 34%, hsl(208 67% 46%) 70%, hsl(226 62% 50%) 100%);
+    radial-gradient(circle at 14% 16%, color-mix(in srgb, var(--ds-color-info-400) 26%, transparent) 0%, transparent 30%),
+    radial-gradient(circle at 30% 88%, color-mix(in srgb, var(--ds-color-primary-500) 18%, transparent) 0%, transparent 34%),
+    radial-gradient(circle at 82% 18%, color-mix(in srgb, var(--ds-color-ember-500) 14%, transparent) 0%, transparent 32%),
+    var(--ds-gradient-primary);
   box-shadow:
-    0 12px 24px rgba(17, 102, 148, 0.22),
+    0 12px 24px rgba(23, 48, 72, 0.24),
     inset 0 1px 0 rgba(255, 255, 255, 0.08);
   position: relative;
   overflow: hidden;
@@ -428,6 +465,11 @@
   gap: 10px;
 }
 
+.home-commitment-head > div {
+  display: grid;
+  gap: 4px;
+}
+
 .home-commitment-icon {
   color: color-mix(in srgb, var(--ds-color-warning-500) 82%, var(--ds-color-text-primary) 18%);
   flex-shrink: 0;
@@ -437,11 +479,13 @@
 
 .home-commitment-kicker {
   display: inline-flex;
-  margin-bottom: 6px;
+  align-items: center;
+  min-height: 18px;
+  margin-bottom: 0;
   font-size: 11px;
   font-weight: 600;
   color: color-mix(in srgb, var(--ds-color-warning-500) 80%, var(--ds-color-text-primary) 20%);
-  line-height: 1;
+  line-height: 1.2;
 }
 
 .home-commitment-card h2 {
@@ -733,7 +777,8 @@
   padding-left: 4px;
   font-size: 10px;
   font-weight: 600;
-  color: color-mix(in srgb, var(--ds-color-warning-500) 62%, var(--ds-color-text-secondary) 38%);
+  color: var(--ds-color-text-inverted);
+  opacity: 0.9;
   letter-spacing: 0.08em;
   text-transform: uppercase;
 }
@@ -791,10 +836,10 @@
   background:
     linear-gradient(
       180deg,
-      color-mix(in srgb, var(--ds-color-warning-500) 6%, transparent) 0%,
-      color-mix(in srgb, white 2%, transparent) 100%
+      color-mix(in srgb, white 3%, transparent) 0%,
+      color-mix(in srgb, var(--ds-color-info-500) 3%, transparent) 100%
     );
-  border: 1px solid color-mix(in srgb, var(--ds-color-warning-500) 24%, rgba(255, 255, 255, 0.08));
+  border: 1px solid color-mix(in srgb, var(--ds-color-info-500) 26%, rgba(255, 255, 255, 0.1));
   border-radius: var(--ds-radius-pill);
   padding: var(--ds-space-2) var(--ds-space-4);
   white-space: nowrap;
@@ -803,18 +848,18 @@
   color: var(--text);
   font-family: 'Satoshi', sans-serif;
   box-shadow:
-    0 8px 18px rgba(8, 10, 24, 0.08),
-    inset 0 1px 0 rgba(255, 255, 255, 0.04);
-  backdrop-filter: blur(12px) saturate(1.03);
-  -webkit-backdrop-filter: blur(12px) saturate(1.03);
+    0 10px 22px rgba(8, 10, 24, 0.06),
+    inset 0 1px 0 color-mix(in srgb, white 5%, transparent);
+  backdrop-filter: blur(18px) saturate(1.05);
+  -webkit-backdrop-filter: blur(18px) saturate(1.05);
 }
 
 .motivo-pill svg {
   width: 14px;
   height: 14px;
-  color: color-mix(in srgb, var(--ds-color-warning-500) 82%, var(--ds-color-ember-500) 18%);
-  opacity: 0.92;
-  filter: drop-shadow(0 0 8px color-mix(in srgb, var(--ds-color-warning-500) 18%, transparent));
+  color: color-mix(in srgb, var(--ds-color-info-400) 28%, var(--text-muted) 72%);
+  opacity: 0.85;
+  filter: drop-shadow(0 0 10px color-mix(in srgb, var(--ds-color-info-400) 18%, transparent));
   flex-shrink: 0;
 }
 
@@ -897,38 +942,92 @@
 
 .tool-card-blocker {
   background:
-    radial-gradient(circle at 10% 10%, rgba(109, 214, 168, 0.26) 0%, transparent 38%),
-    radial-gradient(circle at 90% 5%, rgba(61, 170, 125, 0.28) 0%, transparent 42%),
-    radial-gradient(circle at 40% 55%, rgba(68, 85, 204, 0.18) 0%, transparent 62%),
-    radial-gradient(circle at 75% 80%, rgba(80, 227, 194, 0.2) 0%, transparent 54%),
-    radial-gradient(circle at 0% 100%, rgba(236, 151, 49, 0.1) 0%, transparent 48%),
-    #121521;
-  border: 1px solid rgba(76, 187, 136, 0.22);
-  border-left: 2px solid #3daa7d;
+    radial-gradient(circle at 12% 12%, color-mix(in srgb, var(--ds-color-success-500) 44%, transparent) 0%, transparent 46%),
+    radial-gradient(circle at 88% 10%, color-mix(in srgb, var(--ds-color-success-500) 34%, transparent) 0%, transparent 48%),
+    radial-gradient(circle at 42% 58%, color-mix(in srgb, var(--ds-color-primary-500) 16%, transparent) 0%, transparent 64%),
+    linear-gradient(
+      155deg,
+      color-mix(in srgb, var(--ds-color-success-500) 15%, var(--ds-color-bg-card-strong) 85%) 0%,
+      color-mix(in srgb, var(--ds-color-bg-card-strong) 92%, var(--ds-color-primary-500) 8%) 100%
+    );
+  border: 1px solid color-mix(in srgb, var(--ds-color-success-500) 36%, rgba(255, 255, 255, 0.08));
+  border-left: 2px solid color-mix(in srgb, var(--ds-color-success-500) 78%, var(--ds-color-text-primary) 22%);
   box-shadow:
-    0 18px 36px rgba(15, 54, 35, 0.18),
-    0 0 0 1px rgba(61, 170, 125, 0.05),
+    0 18px 36px rgba(15, 54, 35, 0.16),
+    0 0 0 1px color-mix(in srgb, var(--ds-color-success-500) 14%, transparent),
     inset 0 1px 0 rgba(255, 255, 255, 0.08);
   background-size: 130% 130%;
   animation: premium-card-drift 15s ease-in-out infinite alternate;
 }
 
+.tool-card-journal.tool-card-blocker {
+  background:
+    radial-gradient(circle at 12% 12%, color-mix(in srgb, var(--ds-color-success-500) 44%, transparent) 0%, transparent 46%),
+    radial-gradient(circle at 88% 10%, color-mix(in srgb, var(--ds-color-success-500) 34%, transparent) 0%, transparent 48%),
+    radial-gradient(circle at 42% 58%, color-mix(in srgb, var(--ds-color-primary-500) 16%, transparent) 0%, transparent 64%),
+    linear-gradient(
+      155deg,
+      color-mix(in srgb, var(--ds-color-success-500) 15%, var(--ds-color-bg-card-strong) 85%) 0%,
+      color-mix(in srgb, var(--ds-color-bg-card-strong) 92%, var(--ds-color-primary-500) 8%) 100%
+    );
+}
+
 .tool-card-blocker-off {
   background:
-    radial-gradient(circle at 10% 10%, rgba(232, 93, 93, 0.28) 0%, transparent 38%),
-    radial-gradient(circle at 90% 5%, rgba(196, 75, 75, 0.32) 0%, transparent 42%),
-    radial-gradient(circle at 40% 55%, rgba(140, 43, 43, 0.24) 0%, transparent 62%),
-    radial-gradient(circle at 75% 80%, rgba(224, 116, 40, 0.16) 0%, transparent 54%),
-    radial-gradient(circle at 0% 100%, rgba(236, 151, 49, 0.08) 0%, transparent 48%),
-    #121521;
-  border: 1px solid rgba(196, 75, 75, 0.24);
-  border-left: 2px solid #c44b4b;
+    radial-gradient(circle at 12% 12%, color-mix(in srgb, var(--ds-color-danger-500) 42%, transparent) 0%, transparent 46%),
+    radial-gradient(circle at 88% 10%, color-mix(in srgb, var(--ds-color-danger-500) 32%, transparent) 0%, transparent 48%),
+    radial-gradient(circle at 42% 58%, color-mix(in srgb, var(--ds-color-ember-500) 18%, transparent) 0%, transparent 64%),
+    linear-gradient(
+      155deg,
+      color-mix(in srgb, var(--ds-color-danger-500) 14%, var(--ds-color-bg-card-strong) 86%) 0%,
+      color-mix(in srgb, var(--ds-color-bg-card-strong) 90%, var(--ds-color-ember-500) 10%) 100%
+    );
+  border: 1px solid color-mix(in srgb, var(--ds-color-danger-500) 34%, rgba(255, 255, 255, 0.08));
+  border-left: 2px solid color-mix(in srgb, var(--ds-color-danger-500) 80%, var(--ds-color-ember-500) 20%);
   box-shadow:
-    0 18px 36px rgba(64, 18, 18, 0.2),
-    0 0 0 1px rgba(196, 75, 75, 0.04),
+    0 18px 36px rgba(64, 18, 18, 0.16),
+    0 0 0 1px color-mix(in srgb, var(--ds-color-danger-500) 14%, transparent),
     inset 0 1px 0 rgba(255, 255, 255, 0.08);
   background-size: 130% 130%;
   animation: premium-card-drift 15s ease-in-out infinite alternate;
+}
+
+.tool-card-journal.tool-card-blocker-off {
+  background:
+    radial-gradient(circle at 12% 12%, color-mix(in srgb, var(--ds-color-danger-500) 42%, transparent) 0%, transparent 46%),
+    radial-gradient(circle at 88% 10%, color-mix(in srgb, var(--ds-color-danger-500) 32%, transparent) 0%, transparent 48%),
+    radial-gradient(circle at 42% 58%, color-mix(in srgb, var(--ds-color-ember-500) 18%, transparent) 0%, transparent 64%),
+    linear-gradient(
+      155deg,
+      color-mix(in srgb, var(--ds-color-danger-500) 14%, var(--ds-color-bg-card-strong) 86%) 0%,
+      color-mix(in srgb, var(--ds-color-bg-card-strong) 90%, var(--ds-color-ember-500) 10%) 100%
+    );
+}
+
+.tool-card-blocker .tool-card-blocker-cta {
+  background-image:
+    radial-gradient(circle at 18% 18%, rgba(255, 255, 255, 0.12) 0%, transparent 34%),
+    linear-gradient(
+      135deg,
+      color-mix(in srgb, var(--ds-color-success-500) 82%, var(--ds-color-bg-base) 18%) 0%,
+      color-mix(in srgb, var(--ds-color-success-500) 60%, var(--ds-color-primary-500) 40%) 100%
+    );
+  box-shadow:
+    0 10px 22px color-mix(in srgb, var(--ds-color-success-500) 26%, transparent),
+    inset 0 1px 0 rgba(255, 255, 255, 0.14);
+}
+
+.tool-card-blocker-off .tool-card-blocker-cta {
+  background-image:
+    radial-gradient(circle at 18% 18%, rgba(255, 255, 255, 0.1) 0%, transparent 34%),
+    linear-gradient(
+      135deg,
+      color-mix(in srgb, var(--ds-color-danger-500) 82%, var(--ds-color-bg-base) 18%) 0%,
+      color-mix(in srgb, var(--ds-color-danger-500) 62%, var(--ds-color-ember-500) 38%) 100%
+    );
+  box-shadow:
+    0 10px 22px color-mix(in srgb, var(--ds-color-danger-500) 24%, transparent),
+    inset 0 1px 0 rgba(255, 255, 255, 0.12);
 }
 
 .tool-card-analytics {
@@ -1044,13 +1143,15 @@
 }
 
 .tool-card-blocker-state strong {
-  font-size: 20px;
-  font-weight: 800;
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
   color: var(--success);
 }
 
 .tool-card-blocker-state-off strong {
-  color: #ff8f8f;
+  color: color-mix(in srgb, var(--ds-color-danger-300) 84%, var(--ds-color-text-primary) 16%);
 }
 
 .tool-card-blocker-chevron {
@@ -1238,12 +1339,12 @@
   cursor: pointer;
   background-color: var(--ds-color-info-500);
   background-image:
-    radial-gradient(circle at 14% 16%, rgba(152, 232, 244, 0.3) 0%, transparent 28%),
-    radial-gradient(circle at 30% 84%, rgba(40, 180, 219, 0.26) 0%, transparent 36%),
-    radial-gradient(circle at 82% 18%, rgba(110, 128, 236, 0.2) 0%, transparent 32%),
+    radial-gradient(circle at 14% 16%, color-mix(in srgb, var(--ds-color-info-400) 28%, transparent) 0%, transparent 30%),
+    radial-gradient(circle at 30% 84%, color-mix(in srgb, var(--ds-color-primary-500) 18%, transparent) 0%, transparent 36%),
+    radial-gradient(circle at 82% 18%, color-mix(in srgb, var(--ds-color-ember-500) 14%, transparent) 0%, transparent 32%),
     var(--ds-gradient-primary);
   box-shadow:
-    0 18px 34px rgba(17, 102, 148, 0.26),
+    0 18px 34px rgba(23, 48, 72, 0.28),
     inset 0 1px 0 rgba(255, 255, 255, 0.14);
   transition:
     transform 0.15s ease,
@@ -1271,7 +1372,7 @@
   font-size: 13px;
   flex-shrink: 0;
   box-shadow:
-    0 12px 24px rgba(17, 102, 148, 0.22),
+    0 12px 24px rgba(23, 48, 72, 0.24),
     inset 0 1px 0 rgba(255, 255, 255, 0.12);
 }
 

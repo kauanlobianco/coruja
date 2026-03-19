@@ -12,6 +12,10 @@ const panicSupportMessages = [
   'Esperar tambem e agir.',
 ]
 
+const breathingStepSeconds = 5
+const breathingStepMs = breathingStepSeconds * 1000
+const traceDurationMs = breathingStepMs * breathingSteps.length
+
 function formatCountdown(totalSeconds: number) {
   const minutes = String(Math.floor(totalSeconds / 60)).padStart(2, '0')
   const seconds = String(totalSeconds % 60).padStart(2, '0')
@@ -29,6 +33,7 @@ export function SosPage() {
   const [motivationIndex, setMotivationIndex] = useState(0)
   const [timerStarted, setTimerStarted] = useState(false)
   const [secondsLeft, setSecondsLeft] = useState(300)
+  const [breathPhaseSecondsLeft, setBreathPhaseSecondsLeft] = useState(breathingStepSeconds)
 
   const registerSosSession = useEffectEvent(() => {
     void openSosSession()
@@ -40,14 +45,22 @@ export function SosPage() {
 
   useEffect(() => {
     const breathingTimer = window.setInterval(() => {
-      setStepIndex((current) => {
-        const next = (current + 1) % breathingSteps.length
-        if (next === 0) {
-          setCycleCount((count) => count + 1)
+      setBreathPhaseSecondsLeft((current) => {
+        if (current <= 1) {
+          setStepIndex((step) => {
+            const next = (step + 1) % breathingSteps.length
+            if (next === 0) {
+              setCycleCount((count) => count + 1)
+            }
+            return next
+          })
+
+          return breathingStepSeconds
         }
-        return next
+
+        return current - 1
       })
-    }, 3500)
+    }, 1000)
 
     return () => {
       window.clearInterval(breathingTimer)
@@ -103,8 +116,39 @@ export function SosPage() {
           ) : null}
 
           <div className="sos-breathing-stage">
-            <span className="section-label">Respire</span>
-            <div className="sos-breathing">{breathingSteps[stepIndex]}</div>
+            <div
+              className="sos-breathing"
+              style={{ ['--sos-trace-duration' as any]: `${traceDurationMs}ms` }}
+            >
+              <div className="sos-breathing-perimeter">
+                <svg className="sos-breathing-trace" viewBox="0 0 100 100" aria-hidden="true">
+                  <defs>
+                    <linearGradient id="sos-trace-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                      <stop offset="0%" stopColor="#E07B39" />
+                      <stop offset="100%" stopColor="#1ECFC4" />
+                    </linearGradient>
+                  </defs>
+                  <rect
+                    className="sos-breathing-trace-path"
+                    x="8"
+                    y="8"
+                    width="84"
+                    height="84"
+                    rx="22"
+                    ry="22"
+                    pathLength={1}
+                    fill="none"
+                    stroke="url(#sos-trace-gradient)"
+                  />
+                </svg>
+
+                <div className="sos-breathing-inner">
+                  <span className="sos-breathing-phase-label">{breathingSteps[stepIndex]}</span>
+                  <div className="sos-breathing-phase-number">{breathPhaseSecondsLeft}</div>
+                </div>
+              </div>
+            </div>
+
             <p className="sos-support-copy">Siga o ritmo e ganhe alguns minutos de distancia.</p>
           </div>
 
