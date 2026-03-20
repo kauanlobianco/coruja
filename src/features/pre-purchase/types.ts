@@ -1,3 +1,10 @@
+export interface MarkerRule {
+  id: string
+  title: string
+  matches: (answers: Map<number, number>) => boolean
+  copy: string
+}
+
 export type FunnelStep =
   | 'landing'
   | 'quiz'

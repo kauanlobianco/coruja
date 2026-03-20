@@ -1,4 +1,5 @@
 import type {
+  MarkerRule,
   PlanOption,
   QuizQuestion,
   SymptomCategory,
@@ -270,5 +271,76 @@ export const planOptions: PlanOption[] = [
     title: 'Acesso vitalicio',
     price: 'R$ 297 a vista',
     description: 'Para quem prefere liberar o acesso completo de uma vez e seguir no proprio ritmo.',
+  },
+]
+
+export const markerRules: MarkerRule[] = [
+  {
+    id: 'perda-controle',
+    title: 'Perda de controle em momentos-chave',
+    matches: (answers: Map<number, number>) =>
+      answers.get(13) === 1 || answers.get(6) === 4,
+    copy:
+      'Suas respostas mostram momentos em que interromper ou regular esse comportamento tem ficado dificil demais.',
+  },
+  {
+    id: 'interferencia-vida',
+    title: 'Impacto no dia a dia',
+    matches: (answers: Map<number, number>) => {
+      const answer = answers.get(6)
+      return answer === 3 || answer === 4
+    },
+    copy:
+      'Isso ja esta encostando em areas importantes da sua rotina, e por isso merece ser tratado com seriedade agora.',
+  },
+  {
+    id: 'tentativas-frustradas',
+    title: 'Dificuldade para sustentar tentativas',
+    matches: (answers: Map<number, number>) => {
+      const answer = answers.get(12)
+      return answer === 3 || answer === 4
+    },
+    copy:
+      'Voce ja tentou reduzir ou parar, mas nao conseguiu manter isso por muito tempo sozinho.',
+  },
+  {
+    id: 'impacto-sexual',
+    title: 'Impacto na vida sexual',
+    matches: (answers: Map<number, number>) => {
+      const answer = answers.get(8)
+      return answer !== undefined && answer >= 2
+    },
+    copy:
+      'Esse padrao tambem esta aparecendo na sua vida sexual, o que mostra que o problema nao ficou isolado.',
+  },
+  {
+    id: 'escalada',
+    title: 'Escalada do padrao',
+    matches: (answers: Map<number, number>) => {
+      const answer = answers.get(10)
+      return answer !== undefined && answer >= 2
+    },
+    copy:
+      'Ha sinais de que o que antes bastava ja nao tem o mesmo efeito, e a busca por estimulo tem aumentado.',
+  },
+  {
+    id: 'impacto-emocional',
+    title: 'Peso emocional depois do consumo',
+    matches: (answers: Map<number, number>) => {
+      const answer = answers.get(9)
+      return answer !== undefined && answer >= 2
+    },
+    copy:
+      'O que acontece depois tambem importa: culpa, vazio ou ansiedade costumam alimentar o retorno ao mesmo ciclo.',
+  },
+  {
+    id: 'gasto-financeiro',
+    title: 'Impacto financeiro',
+    matches: (answers: Map<number, number>) => {
+      const answer = answers.get(11)
+      return answer === 3 || answer === 4
+    },
+    copy:
+      'Voce tambem sinalizou impacto no dinheiro, o que mostra que esse padrao ja esta cobrando um preco concreto.',
   },
 ]

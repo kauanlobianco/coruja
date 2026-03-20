@@ -179,8 +179,7 @@ export function HomePage() {
               <div className="home-streak-progress">
                 <div className="home-streak-progress-label">
                   <span>
-                    {state.streak.current} de {state.profile.goalDays} dias · Maior sequência:{' '}
-                    {state.streak.best} dias
+                    {state.streak.current} de {state.profile.goalDays} dias
                   </span>
                   <button
                     type="button"

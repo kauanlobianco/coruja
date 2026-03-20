@@ -28,7 +28,7 @@
   box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.7);
   border-radius: var(--ds-radius-hero);
   padding: 26px;
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  border: 1px solid var(--color-border-strong);
 }
 
 @keyframes meshGradientShift {
@@ -110,7 +110,7 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  border-radius: 14px;
+  border-radius: var(--radius-icon);
   background: linear-gradient(180deg, rgba(13, 15, 26, 0.14), rgba(13, 15, 26, 0.08));
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.12),
@@ -334,9 +334,9 @@
     0 10px 22px color-mix(in srgb, black 8%, transparent),
     0 0 0 1px color-mix(in srgb, var(--ds-color-info-500) 5%, transparent),
     inset 0 1px 0 color-mix(in srgb, white 5%, transparent);
-  border: 1px solid color-mix(in srgb, var(--ds-color-info-500) 26%, rgba(255, 255, 255, 0.1));
-  backdrop-filter: blur(18px) saturate(1.05);
-  -webkit-backdrop-filter: blur(18px) saturate(1.05);
+  border: 1px solid var(--color-border-card);
+  backdrop-filter: blur(var(--blur-glass)) saturate(1.05);
+  -webkit-backdrop-filter: blur(var(--blur-glass)) saturate(1.05);
 }
 
 .home-checkin-card-done {
@@ -382,7 +382,7 @@
 .home-commitment-card h2,
 .home-module-copy h2 {
   margin: 0;
-  font-size: 15px;
+  font-size: var(--font-size-label);
 }
 
 .home-checkin-state {
@@ -447,8 +447,8 @@
   border: 1px solid color-mix(in srgb, var(--ds-color-warning-500) 24%, rgba(255, 255, 255, 0.08));
   background-size: 130% 130%;
   animation: premium-card-drift 14s ease-in-out infinite alternate;
-  backdrop-filter: blur(14px) saturate(1.02);
-  -webkit-backdrop-filter: blur(14px) saturate(1.02);
+  backdrop-filter: blur(var(--blur-card)) saturate(1.02);
+  -webkit-backdrop-filter: blur(var(--blur-card)) saturate(1.02);
 }
 
 .home-commitment-card::before {
@@ -660,7 +660,7 @@
   gap: 7px;
   margin-top: 4px;
   padding: 12px 12px 10px;
-  border-radius: 14px;
+  border-radius: var(--radius-icon);
   background:
     linear-gradient(180deg, rgba(255, 255, 255, 0.045), rgba(255, 255, 255, 0.03));
   border: 1px solid rgba(255, 255, 255, 0.05);
@@ -705,7 +705,7 @@
   justify-content: center;
   width: 36px;
   height: 36px;
-  border-radius: 12px;
+  border-radius: var(--radius-button);
   background: rgba(255, 255, 255, 0.06);
   color: rgba(255, 255, 255, 0.82);
 }
@@ -766,7 +766,6 @@
 }
 
 .motivos-section {
-  margin-top: 4px;
   width: 100%;
   max-width: 100%;
   min-width: 0;
@@ -839,19 +838,19 @@
       color-mix(in srgb, white 3%, transparent) 0%,
       color-mix(in srgb, var(--ds-color-info-500) 3%, transparent) 100%
     );
-  border: 1px solid color-mix(in srgb, var(--ds-color-info-500) 26%, rgba(255, 255, 255, 0.1));
+  border: 1px solid var(--color-border-strong);
   border-radius: var(--ds-radius-pill);
   padding: var(--ds-space-2) var(--ds-space-4);
   white-space: nowrap;
-  font-size: 13px;
-  font-weight: 600;
+  font-size: var(--font-size-small);
+  font-weight: var(--font-weight-semibold);
   color: var(--text);
   font-family: 'Satoshi', sans-serif;
   box-shadow:
     0 10px 22px rgba(8, 10, 24, 0.06),
     inset 0 1px 0 color-mix(in srgb, white 5%, transparent);
-  backdrop-filter: blur(18px) saturate(1.05);
-  -webkit-backdrop-filter: blur(18px) saturate(1.05);
+  backdrop-filter: blur(var(--blur-glass)) saturate(1.05);
+  -webkit-backdrop-filter: blur(var(--blur-glass)) saturate(1.05);
 }
 
 .motivo-pill svg {
@@ -895,8 +894,8 @@
     0 18px 36px rgba(8, 10, 24, 0.18),
     0 0 0 1px rgba(255, 255, 255, 0.02),
     inset 0 1px 0 rgba(255, 255, 255, 0.08);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(var(--blur-card));
+  -webkit-backdrop-filter: blur(var(--blur-card));
 }
 
 .tool-card:active {
@@ -1056,8 +1055,8 @@
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.12),
     0 10px 20px rgba(8, 10, 24, 0.12);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(var(--blur-icon-shell));
+  -webkit-backdrop-filter: blur(var(--blur-icon-shell));
 }
 
 .tool-card-icon-shell-primary {
@@ -1100,7 +1099,7 @@
 
 .tool-card-copy h2 {
   margin: 0;
-  font-size: 15px;
+  font-size: var(--font-size-label);
   font-weight: 700;
   color: var(--text);
   letter-spacing: -0.02em;
@@ -1223,15 +1222,12 @@
     radial-gradient(circle at 12% 0%, rgba(79, 172, 254, 0.12) 0%, transparent 28%),
     radial-gradient(circle at 88% 100%, rgba(68, 85, 204, 0.16) 0%, transparent 36%),
     linear-gradient(180deg, rgba(22, 27, 54, 0.96) 0%, rgba(13, 17, 37, 0.98) 100%);
-  border: 1px solid var(--ds-border-strong);
-  box-shadow:
-    0 26px 48px rgba(6, 10, 28, 0.34),
-    0 10px 24px rgba(21, 40, 118, 0.14),
-    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--color-border-card);
+  box-shadow: var(--shadow-card-deep);
   position: relative;
   overflow: hidden;
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(var(--blur-card));
+  -webkit-backdrop-filter: blur(var(--blur-card));
 }
 
 .tool-card-journal::before {
@@ -1274,8 +1270,8 @@
     inset 0 1px 0 rgba(255, 255, 255, 0.1),
     0 10px 24px rgba(0, 0, 0, 0.18);
   flex-shrink: 0;
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(var(--blur-card));
+  -webkit-backdrop-filter: blur(var(--blur-card));
 }
 
 .tool-card-journal-icon {
@@ -1328,13 +1324,13 @@
 
 .tool-card-journal-cta {
   width: 100%;
-  min-height: 58px;
+  min-height: 48px;
   border: 0;
-  border-radius: var(--ds-radius-pill);
-  padding: 16px 22px;
+  border-radius: var(--ds-radius-button);
+  padding: 14px var(--ds-space-5);
   font-family: 'Satoshi', sans-serif;
   font-size: 16px;
-  font-weight: 800;
+  font-weight: 700;
   color: var(--ds-color-text-inverted);
   cursor: pointer;
   background-color: var(--ds-color-info-500);

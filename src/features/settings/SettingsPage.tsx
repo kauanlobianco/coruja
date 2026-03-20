@@ -75,10 +75,10 @@ export function SettingsPage() {
   return (
     <AppShell
       title="Configurações"
-      eyebrow="Conta e produto"
+      eyebrow=""
       contentClassName="app-content-settings"
     >
-      <section className="settings-stack">
+      <section className="settings-stack home-flow">
         <article className="info-card highlight-card settings-profile-card">
           <div className="settings-profile-header">
             <div className="settings-avatar" aria-hidden="true">

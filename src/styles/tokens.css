@@ -1,0 +1,242 @@
+/* tokens.css — generated from Home as source of truth */
+/* DO NOT apply tokens here. This file only defines values. */
+
+:root {
+
+  /* ─── backgrounds ───────────────────────────────────────────────────────── */
+
+  /* Page / shell base – appears in body and app-frame backgrounds */
+  --color-bg-page:            #0a0c16;
+  /* Used in app-frame and home-hero-card base layer   */
+  --color-bg-page-muted:      hsl(232 34% 10%);
+
+  /* Card background – used on .info-card / .form-card / .funnel-panel        */
+  --color-bg-card:            hsl(232 34% 23% / 0.94);
+  /* Darker card variant – used on .home-checkin-card gradients and tool cards */
+  --color-bg-card-strong:     hsl(232 36% 18% / 0.96);
+  /* Input fields and elevated surfaces                                        */
+  --color-bg-card-elevated:   hsl(232 32% 21%);
+  /* Subtle interactive tint used on .chip, .status-pill etc.                  */
+  --color-bg-surface-subtle:  rgba(255, 255, 255, 0.04);
+  /* Overlay (modal overlay, sheet backdrops)                                  */
+  --color-bg-overlay:         rgba(0, 0, 0, 0.70);
+
+
+  /* ─── accent – cyan / info (primary interactive color) ─────────────────── */
+
+  /* Solid cyan – buttons, active badge, active borders */
+  --color-accent-cyan:        #3299c2;
+  /* Lighter cyan for highlights and icon accents */
+  --color-accent-cyan-light:  #67bfd2;
+  /* Primary button gradient (cyan → muted teal-blue) */
+  --gradient-accent-cyan:
+    linear-gradient(135deg, #38a0c7 0%, #4b9fbe 34%, #6489aa 68%, #7a7399 100%);
+
+
+  /* ─── accent – amber / orange / ember ───────────────────────────────────── */
+
+  /* Main orange accent – streak flame, warning labels, relapse quick link */
+  --color-accent-amber:       #ec9e32;
+  /* Deeper ember orange – used as gradient terminus in ember gradient */
+  --color-accent-ember:       #e35b2e;
+  /* Fiery orange – used mid-stop in ember brand gradient */
+  --color-accent-ember-light: #f97316;
+  /* Warm gold – used at tail of ember gradient */
+  --color-accent-gold:        #fbbf24;
+  /* Ember gradient (used on orange CTA buttons, streak progress) */
+  --gradient-accent-ember:
+    linear-gradient(135deg, #ec9e32 0%, #e35b2e 38%, #f97316 68%, #fbbf24 100%);
+
+
+  /* ─── accent – purple / primary-blue ───────────────────────────────────── */
+
+  /* Muted navy-blue used on .primary alias and card left-borders */
+  --color-accent-navy:        #384a94;
+  /* Brighter purple used on analytics card accent and .purple alias */
+  --color-accent-purple:      #4353cb;
+
+
+  /* ─── state colors ───────────────────────────────────────────────────────── */
+
+  --color-success:  #409672;
+  --color-warning:  #ec9e32;   /* same as accent-amber; alias for semantic use */
+  --color-danger:   #b14343;
+  --color-danger-light: #ff8f8f;
+
+
+  /* ─── text ─────────────────────────────────────────────────────────────── */
+
+  /* Full-white – used directly on dark cards and CTA buttons */
+  --color-text-primary:   #ffffff;
+  /* Secondary text – muted white used for labels, captions */
+  --color-text-secondary: rgba(233, 230, 226, 0.72);
+  /* Tertiary / on-dark-bg muted (text-muted alias) */
+  --color-text-muted:     rgba(255, 255, 255, 0.55);
+  /* Inverted – dark text on light backgrounds (amber CTA) */
+  --color-text-inverted:  #0e1120;
+
+
+  /* ─── borders ─────────────────────────────────────────────────────────────── */
+
+  /* Hairline card border – most common card outline */
+  --color-border-subtle:  rgba(255, 255, 255, 0.04);
+  /* Slightly visible card border */
+  --color-border-soft:    rgba(255, 255, 255, 0.06);
+  /* Standard card / input border */
+  --color-border-card:    rgba(255, 255, 255, 0.08);
+  /* Visible card border (hero card, profile card) */
+  --color-border-strong:  rgba(255, 255, 255, 0.12);
+  /* Amber-tinted border (warning banners, amber accents) */
+  --color-border-amber:   rgba(236, 158, 50, 0.22);
+  /* Divider between list rows */
+  --color-border-divider: rgba(255, 255, 255, 0.05);
+
+
+  /* ─── radius ─────────────────────────────────────────────────────────────── */
+
+  /* Small inline buttons ("Registrar", tool compact buttons) */
+  --radius-button:        12px;
+  /* Standard cards (.info-card, .form-card, module cards) */
+  --radius-card:          16px;
+  /* Featured tool cards (.tool-card-journal, .home-hero-card) */
+  --radius-card-featured: 20px;
+  /* Bottom nav pill */
+  --radius-nav:           24px;
+  /* Hero card (streak card) */
+  --radius-hero:          28px;
+  /* App shell container */
+  --radius-shell:         30px;
+  /* App frame inner border */
+  --radius-frame:         34px;
+  /* Pill – chips, motivos pills, progress tracks */
+  --radius-pill:          999px;
+  /* Small icon shells (14px) */
+  --radius-icon:          14px;
+  /* Large icon shells (46px square) */
+  --radius-icon-lg:       16px;
+
+
+  /* ─── shadows ─────────────────────────────────────────────────────────────── */
+
+  /* Standard card surface shadow */
+  --shadow-card:
+    0 16px 38px rgba(0, 0, 0, 0.24),
+    inset 0 1px 0 rgba(255, 255, 255, 0.04);
+
+  /* Floating element shadow (app shell, modals) */
+  --shadow-float:
+    0 24px 54px rgba(0, 0, 0, 0.26),
+    0 8px 22px rgba(26, 44, 134, 0.16);
+
+  /* Primary cyan CTA button shadow */
+  --shadow-button-primary:
+    0 14px 28px color-mix(in srgb, var(--color-accent-cyan) 34%, rgba(12, 20, 44, 0.66)),
+    inset 0 1px 0 rgba(255, 255, 255, 0.14);
+
+  /* Amber/ember CTA button shadow */
+  --shadow-button-amber:
+    0 14px 28px rgba(236, 151, 49, 0.26),
+    inset 0 1px 0 rgba(255, 255, 255, 0.18);
+
+  /* Danger/destructive button shadow */
+  --shadow-button-danger:
+    0 12px 26px rgba(106, 31, 31, 0.34),
+    inset 0 1px 0 rgba(255, 255, 255, 0.12);
+
+  /* Tool card with the large drop-down shadow seen on .tool-card-journal */
+  --shadow-card-deep:
+    0 26px 48px rgba(6, 10, 28, 0.34),
+    0 10px 24px rgba(21, 40, 118, 0.14),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+
+  /* Generic compact card shadow (check-in, commitment cards) */
+  --shadow-card-soft:
+    0 10px 22px rgba(8, 10, 24, 0.12),
+    inset 0 1px 0 rgba(255, 255, 255, 0.04);
+
+
+  /* ─── blur / backdrop ─────────────────────────────────────────────────────── */
+
+  /* Used on .home-checkin-card, .motivo-pill, floating sheets */
+  --blur-glass:       18px;
+  /* Used on .tool-card-journal, .settings-premium-banner */
+  --blur-card:        14px;
+  /* Used on .tool-card icon shells */
+  --blur-icon-shell:  10px;
+  /* Bottom nav blur */
+  --blur-nav:         22px;
+  /* Modal overlay */
+  --blur-overlay:     4px;
+
+
+  /* ─── typography – font sizes (used 2+ times in home.css) ───────────────── */
+
+  --font-size-overline:  10px;   /* home-modules-label, motivos-label */
+  --font-size-caption:   11px;   /* tool-card-status, home-streak-history */
+  --font-size-micro:     12px;   /* home-checkin-state, streak progress label */
+  --font-size-small:     13px;   /* motivo-pill, journal-date, settings labels */
+  --font-size-body:      14px;   /* general body, tool-card-journal-copy p */
+  --font-size-label:     15px;   /* h2 in checkin/module/commitment cards */
+  --font-size-ui:        16px;   /* tool-card-journal-cta, base button text */
+  --font-size-title:     17px;   /* tool-card-journal-head strong */
+  --font-size-subtitle:  19px;   /* tool-card-journal-copy h3 */
+  --font-size-display:   56px;   /* streak number in home hero */
+
+
+  /* ─── typography – font weights ──────────────────────────────────────────── */
+
+  --font-weight-medium:    500;
+  --font-weight-semibold:  600;
+  --font-weight-bold:      700;
+  --font-weight-extrabold: 800;
+  --font-weight-black:     900;
+
+
+  /* ─── typography – line heights ──────────────────────────────────────────── */
+
+  --line-height-tight:   1;      /* streak display number */
+  --line-height-heading: 1.18;   /* tool-card-journal h3 */
+  --line-height-body:    1.55;   /* tool-card-journal-copy p */
+
+
+  /* ─── spacing / layout ────────────────────────────────────────────────────── */
+
+  /* Used for inner padding in chips, pills, small buttons */
+  --space-1:  4px;
+  --space-2:  8px;
+  --space-3:  12px;
+  --space-4:  16px;
+  --space-5:  20px;
+  --space-6:  24px;
+  --space-8:  32px;
+
+  /* Main vertical gap between home-flow items */
+  --gap-flow:   18px;
+  /* Gap between tool cards */
+  --gap-cards:  16px;
+  /* Gap between list items in tool grids */
+  --gap-grid:   14px;
+
+
+  /* ─── gradients – backgrounds ────────────────────────────────────────────── */
+
+  /* Top-bar title gradient (h1 span accent highlight) */
+  --gradient-topbar-accent:
+    radial-gradient(circle at 18% 20%, rgba(150, 220, 240, 0.34) 0%, transparent 30%),
+    linear-gradient(135deg, #3f9dc4 0%, #4b8fb3 42%, #6b7ea3 100%);
+
+  /* Progress bar fill (used across funnel + app) */
+  --gradient-progress:
+    linear-gradient(90deg, #384a94 0%, #4353cb 100%);
+
+
+  /* ─── animation (Framer Motion defaults – extracted from component code) ─── */
+
+  --motion-duration-default:  0.4s;
+  --motion-ease-default:      ease-out;
+  --motion-stagger-step:      0.08s;
+
+  /* CSS transition used on cards and buttons */
+  --transition-fast:    150ms ease;
+  --transition-screen:  250ms cubic-bezier(0.22, 1, 0.36, 1);
+}
