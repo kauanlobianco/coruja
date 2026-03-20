@@ -36,6 +36,7 @@ const initialState: PrePurchaseState = {
   selectedPlan: 'annual',
   painSlide: 0,
   solutionSlide: 0,
+  darkMode: false,
 }
 
 function getProgress(step: FunnelStep) {
@@ -108,7 +109,13 @@ export function PrePurchasePage() {
     setQuizTransitionDirection(-1)
     setState((current) => {
       if (current.quizIndex > 0) {
-        return { ...current, quizIndex: current.quizIndex - 1, pendingQuizAnswerIndex: null }
+        const prevQuestionId = quizQuestions[current.quizIndex - 1]?.id
+        const prevAnswer = current.quizAnswers.find((a) => a.questionId === prevQuestionId)
+        return {
+          ...current,
+          quizIndex: current.quizIndex - 1,
+          pendingQuizAnswerIndex: prevAnswer?.answerIndex ?? null,
+        }
       }
       return { ...current, pendingQuizAnswerIndex: null, step: 'landing' }
     })
@@ -126,7 +133,7 @@ export function PrePurchasePage() {
 
     setState((current) => {
       const quizAnswers: QuizAnswer[] = [
-        ...current.quizAnswers,
+        ...current.quizAnswers.filter((a) => a.questionId !== currentQuestion.id),
         { questionId: currentQuestion.id, answerIndex: current.pendingQuizAnswerIndex!, points: selectedAnswer.points },
       ]
       const score = quizAnswers.reduce((sum, a) => sum + a.points, 0)
@@ -165,6 +172,10 @@ export function PrePurchasePage() {
     }))
   }
 
+  function handleIdentityContinue() {
+    setState((current) => ({ ...current, step: 'symptoms', darkMode: true }))
+  }
+
   function continueToOnboarding() {
     clearPrePurchaseState()
     navigate('/account/auth?mode=signup&signupOnly=1', { replace: true })
@@ -177,9 +188,12 @@ export function PrePurchasePage() {
     'pain-carousel', 'solution-carousel', 'social-proof',
   ].includes(state.step)
 
-  const funnelFrameClassName = usesImmersiveFrame
-    ? 'funnel-frame funnel-phone-frame funnel-phone-frame-quiz prepurchase-shell'
-    : 'funnel-frame funnel-phone-frame prepurchase-shell'
+  const funnelFrameClassName = [
+    usesImmersiveFrame
+      ? 'funnel-frame funnel-phone-frame funnel-phone-frame-quiz prepurchase-shell'
+      : 'funnel-frame funnel-phone-frame prepurchase-shell',
+    state.darkMode ? 'prepurchase-dark-mode' : '',
+  ].filter(Boolean).join(' ')
 
   const showDefaultHeader = !steps.includes(state.step)
 
@@ -190,6 +204,7 @@ export function PrePurchasePage() {
           <div className="phone-notch" aria-hidden="true" />
 
           <div className={funnelFrameClassName} style={{ maxWidth: '100vw', minWidth: 0, overflowX: 'hidden' }}>
+            <div className="prepurchase-dark-overlay" aria-hidden="true" />
             {showDefaultHeader && (
               <header className="funnel-header">
                 <div className="funnel-header-main" style={{ width: '100%' }}>
@@ -240,7 +255,7 @@ export function PrePurchasePage() {
                 onChangeName={(value) => setState((current) => ({ ...current, name: value }))}
                 onChangeAge={(value) => setState((current) => ({ ...current, age: value }))}
                 onBack={() => setState((current) => ({ ...current, step: 'quiz' }))}
-                onContinue={() => goTo('symptoms')}
+                onContinue={handleIdentityContinue}
               />
             )}
 
@@ -248,7 +263,7 @@ export function PrePurchasePage() {
               <SymptomsStep
                 symptoms={state.symptoms}
                 onToggleSymptom={toggleSymptom}
-                onBack={() => setState((current) => ({ ...current, step: 'identity' }))}
+                onBack={() => setState((current) => ({ ...current, step: 'identity', darkMode: false }))}
                 onContinue={() => goTo('diagnosis')}
               />
             )}

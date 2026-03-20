@@ -59,7 +59,8 @@ export function LandingStep({ conflictError, onStart }: LandingStepProps) {
           className="prepurchase-landing-secondary"
           onClick={() => navigate('/account/auth?mode=login&loginOnly=1')}
         >
-          Ja e assinante?
+          <span className="prepurchase-landing-secondary-label">Ja e assinante?</span>
+          <ArrowRight size={13} strokeWidth={2.2} />
         </button>
       </div>
     </section>

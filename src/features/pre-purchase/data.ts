@@ -7,151 +7,128 @@ import type {
   Testimonial,
 } from './types'
 
+// Escala BPS: A = 0 pts | B = 1 pt | C = 2 pts
+// Q1 e Q3 são demográficas (0 pts em todas as opções, não entram no score)
+// Q12 tem apenas opções A e C (sem B) — 0 ou 2 pts
+// Pontuação máxima = 20 pts (Q2 + Q4–Q12)
 export const quizQuestions: QuizQuestion[] = [
   {
     id: 1,
-    prompt: 'Qual e o seu genero?',
-    factor: 'Demografico',
+    prompt: 'Pra começar, com qual gênero você se identifica?',
+    factor: 'Demográfico',
     answers: [
       { label: 'Homem', points: 0 },
       { label: 'Mulher', points: 0 },
-      { label: 'Prefiro nao dizer', points: 0 },
+      { label: 'Outro / Prefiro não dizer', points: 0 },
     ],
   },
   {
     id: 2,
-    prompt: 'Qual a frequencia do seu consumo de conteudo adulto?',
-    factor: 'Intensidade',
+    prompt: 'Com que idade você deu o primeiro clique nesse tipo de conteúdo?',
+    factor: 'Precocidade',
     answers: [
-      { label: 'Menos de uma vez por semana', points: 0 },
-      { label: 'De 1 a 6 vezes por semana', points: 2 },
-      { label: 'Todos os dias', points: 4 },
-      { label: 'Mais de uma vez por dia', points: 6 },
+      { label: 'Depois dos 18 anos', points: 0 },
+      { label: 'Na adolescência (15–17)', points: 1 },
+      { label: 'Ainda na infância (menos de 14)', points: 2 },
     ],
   },
   {
     id: 3,
-    prompt: 'Com que idade voce teve o primeiro contato?',
-    factor: 'Precocidade',
+    prompt: 'Onde você costuma buscar isso na maioria das vezes?',
+    factor: 'Plataforma',
     answers: [
-      { label: '18 anos ou mais', points: 0 },
-      { label: '15-17 anos', points: 1 },
-      { label: '10-14 anos', points: 2 },
-      { label: 'Antes dos 10 anos', points: 3 },
+      { label: 'Sites tradicionais', points: 0 },
+      { label: 'Redes sociais (X / Reddit)', points: 0 },
+      { label: 'Canais ou grupos pagos', points: 0 },
     ],
   },
   {
     id: 4,
-    prompt: 'Onde esse consumo acontece com mais frequencia?',
-    factor: 'Contexto / Plataforma',
+    prompt: 'Você tem consumido pornografia mais do que gostaria?',
+    factor: 'Controle',
     answers: [
-      { label: 'Site de conteudo adulto', points: 0 },
-      { label: 'Redes sociais', points: 1 },
-      { label: 'Apps de mensagem e grupos privados', points: 2 },
-      { label: 'Plataformas pagas (OnlyFans, etc.)', points: 3 },
+      { label: 'Não, está sob controle', points: 0 },
+      { label: 'Sinto que às vezes passo do ponto', points: 1 },
+      { label: 'Com certeza, preciso parar', points: 2 },
     ],
   },
   {
     id: 5,
-    prompt: 'Quanto tempo costuma durar uma sessao?',
-    factor: 'Tempo dispendido',
+    prompt: 'Sente que precisa de vídeos cada vez mais "pesados" pra ter o mesmo prazer de antes?',
+    factor: 'Escalada',
     answers: [
-      { label: 'Ate 10 minutos', points: 0 },
-      { label: 'Entre 10 e 30 minutos', points: 2 },
-      { label: 'Entre 30 e 60 minutos', points: 3 },
-      { label: 'Mais de 60 minutos', points: 5 },
+      { label: 'Não, curto o básico de sempre', points: 0 },
+      { label: 'Às vezes busco uma novidade', points: 1 },
+      { label: 'Se não for algo extremo, nem sinto nada', points: 2 },
     ],
   },
   {
     id: 6,
-    prompt: 'Voce sente que o consumo de pornografia tem sido um problema na sua vida?',
-    factor: 'Autocritica',
+    prompt: 'Você usa a pornografia pra fugir do estresse, da ansiedade ou do tédio?',
+    factor: 'Gatilho emocional',
     answers: [
-      { label: 'Nao', points: 0 },
-      { label: 'Talvez, nao tenho certeza', points: 3 },
-      { label: 'Sim, me incomoda um pouco', points: 7 },
-      { label: 'Sim, ja atrapalha areas da minha vida', points: 12 },
-      { label: 'Sim, sinto que esta fora de controle', points: 16 },
+      { label: 'Não, vejo porque quero', points: 0 },
+      { label: 'Às vezes uso pra relaxar', points: 1 },
+      { label: 'É o meu "escape" principal pra tudo', points: 2 },
     ],
   },
   {
     id: 7,
-    prompt: 'Ha quanto tempo voce avalia que isso tem sido um problema?',
-    factor: 'Cronicidade',
+    prompt: 'Já chegou a gastar dinheiro ou esconder gastos com esse tipo de conteúdo?',
+    factor: 'Impacto financeiro',
     answers: [
-      { label: 'Nao considero um problema', points: 0 },
-      { label: 'Menos de 6 meses', points: 1 },
-      { label: '1 ano', points: 3 },
-      { label: 'Mais de 1 ano', points: 4 },
+      { label: 'Nunca gastei um centavo', points: 0 },
+      { label: 'Já comprei algo pontual', points: 1 },
+      { label: 'Gasto com frequência ou escondo gastos', points: 2 },
     ],
   },
   {
     id: 8,
-    prompt: 'O consumo de pornografia afeta seu desempenho sexual?',
-    factor: 'Disfuncao sexual',
+    prompt: 'Sente que o pornô está atrapalhando o seu desejo ou desempenho no sexo real?',
+    factor: 'Disfunção sexual',
     answers: [
-      { label: 'Nao', points: 0 },
-      { label: 'Raramente', points: 2 },
-      { label: 'As vezes, e eu percebo esse impacto', points: 5 },
-      { label: 'Frequentemente', points: 9 },
-      { label: 'Muito, a ponto de evitar sexo ou me atrapalhar bastante', points: 12 },
+      { label: 'Zero impacto, tudo normal', points: 0 },
+      { label: 'Às vezes sinto uma oscilação', points: 1 },
+      { label: 'Atrapalha muito, prefiro o vídeo ao real', points: 2 },
     ],
   },
   {
     id: 9,
-    prompt: 'Como voce se sente logo apos o consumo desse tipo de conteudo?',
-    factor: 'Reforco negativo / ciclo vicioso',
+    prompt: 'Você continua assistindo mesmo quando se sente culpado ou insatisfeito depois?',
+    factor: 'Ciclo vicioso',
     answers: [
-      { label: 'Normal ou relaxado', points: 0 },
-      { label: 'Com leve culpa ou desconforto', points: 2 },
-      { label: 'Arrependimento frequente', points: 5 },
-      { label: 'Ansioso, triste ou irritado depois', points: 8 },
-      { label: 'Muito mal, com vergonha forte, vazio ou aversao a mim mesmo', points: 10 },
+      { label: 'Não me sinto mal', points: 0 },
+      { label: 'Bate um arrependimento às vezes', points: 1 },
+      { label: 'Sinto um vazio enorme, mas não paro', points: 2 },
     ],
   },
   {
     id: 10,
-    prompt: 'Voce sente que precisa de conteudos mais extremos para se satisfazer?',
-    factor: 'Escalada / tolerancia',
+    prompt: 'Você já tentou dar um tempo ou parar de vez, mas acabou voltando atrás?',
+    factor: 'Recaída',
     answers: [
-      { label: 'Nao', points: 0 },
-      { label: 'As vezes procuro novidade', points: 3 },
-      { label: 'Tenho percebido uma escalada aos poucos', points: 6 },
-      { label: 'Preciso de coisas bem diferentes do que via no inicio', points: 8 },
-      { label: 'Sim, so consigo me satisfazer com conteudos muito mais extremos', points: 10 },
+      { label: 'Nunca senti necessidade', points: 0 },
+      { label: 'Tentei e foi difícil segurar', points: 1 },
+      { label: 'Já tentei várias vezes e sempre volto', points: 2 },
     ],
   },
   {
     id: 11,
-    prompt: 'Voce ja gastou dinheiro com esse tipo de conteudo?',
-    factor: 'Comprometimento financeiro',
+    prompt: 'Você se sente "fissurado" ou fica com pensamentos pornográficos martelando na cabeça?',
+    factor: 'Compulsão',
     answers: [
-      { label: 'Nunca', points: 0 },
-      { label: 'Ja gastei uma vez, em valor pequeno', points: 1 },
-      { label: 'As vezes, com pequenos gastos', points: 2 },
-      { label: 'Gasto com certa regularidade', points: 4 },
-      { label: 'Ja me trouxe prejuizo, como divida ou gastos escondidos', points: 5 },
+      { label: 'Só quando decido assistir', points: 0 },
+      { label: 'Vira e mexe eu penso nisso', points: 1 },
+      { label: 'Fica martelando na cabeça o dia todo', points: 2 },
     ],
   },
   {
     id: 12,
-    prompt: 'Voce ja realizou tentativas de parar de assistir conteudo adulto?',
-    factor: 'Recaida / manutencao',
+    prompt: 'No fundo, você sente que já perdeu o controle sobre esse consumo?',
+    factor: 'Perda de controle',
     answers: [
-      { label: 'Nunca tentei (nao senti necessidade)', points: 0 },
-      { label: 'Tentei e foi facil', points: 2 },
-      { label: 'Tentei 1 ou 2 vezes, mas voltei', points: 5 },
-      { label: 'Tentei varias vezes, mas recaio rapido', points: 8 },
-      { label: 'Tento com frequencia, mas nao consigo sustentar', points: 10 },
-    ],
-  },
-  {
-    id: 13,
-    prompt: 'Voce sente que ja perdeu o controle em relacao ao seu consumo de pornografia?',
-    factor: 'Compulsao',
-    answers: [
-      { label: 'Nao', points: 0 },
-      { label: 'Sim', points: 16 },
+      { label: 'Está sob controle', points: 0 },
+      { label: 'Sim, já perdi o controle para o vício', points: 2 },
     ],
   },
 ]
@@ -274,73 +251,68 @@ export const planOptions: PlanOption[] = [
   },
 ]
 
+// Regras ordenadas por prioridade (gravidade decrescente).
+// "Opção C" = answerIndex 2 para Q2–Q11; answerIndex 1 para Q12 (só tem A e C).
+// buildDiagnosisReport retorna os 3 primeiros que o usuário ativou.
 export const markerRules: MarkerRule[] = [
   {
     id: 'perda-controle',
-    title: 'Perda de controle em momentos-chave',
-    matches: (answers: Map<number, number>) =>
-      answers.get(13) === 1 || answers.get(6) === 4,
-    copy:
-      'Suas respostas mostram momentos em que interromper ou regular esse comportamento tem ficado dificil demais.',
+    title: 'Perda de controle sobre si mesmo',
+    matches: (answers) => answers.get(12) === 1,
+    copy: 'Você sente que já perdeu o controle sobre você mesmo. Você sabe que precisa parar, mas não consegue. Você já perdeu o controle sobre suas próprias ações.',
   },
   {
-    id: 'interferencia-vida',
-    title: 'Impacto no dia a dia',
-    matches: (answers: Map<number, number>) => {
-      const answer = answers.get(6)
-      return answer === 3 || answer === 4
-    },
-    copy:
-      'Isso ja esta encostando em areas importantes da sua rotina, e por isso merece ser tratado com seriedade agora.',
+    id: 'pensamentos-compulsivos',
+    title: 'Pensamentos compulsivos diários',
+    matches: (answers) => answers.get(11) === 2,
+    copy: 'Pensar sobre pornografia durante o dia não pode se tornar um comportamento normal.',
   },
   {
-    id: 'tentativas-frustradas',
-    title: 'Dificuldade para sustentar tentativas',
-    matches: (answers: Map<number, number>) => {
-      const answer = answers.get(12)
-      return answer === 3 || answer === 4
-    },
-    copy:
-      'Voce ja tentou reduzir ou parar, mas nao conseguiu manter isso por muito tempo sozinho.',
+    id: 'recaidas-constantes',
+    title: 'Recaídas constantes',
+    matches: (answers) => answers.get(10) === 2,
+    copy: 'Suas recaídas constantes mostram que sua força de vontade sozinha não é mais suficiente.',
   },
   {
-    id: 'impacto-sexual',
-    title: 'Impacto na vida sexual',
-    matches: (answers: Map<number, number>) => {
-      const answer = answers.get(8)
-      return answer !== undefined && answer >= 2
-    },
-    copy:
-      'Esse padrao tambem esta aparecendo na sua vida sexual, o que mostra que o problema nao ficou isolado.',
+    id: 'ciclo-culpa',
+    title: 'Ciclo de culpa sem controle',
+    matches: (answers) => answers.get(9) === 2,
+    copy: 'Continuar assistindo mesmo sentindo culpa é o sinal mais claro de que sua autonomia foi sequestrada.',
   },
   {
-    id: 'escalada',
-    title: 'Escalada do padrao',
-    matches: (answers: Map<number, number>) => {
-      const answer = answers.get(10)
-      return answer !== undefined && answer >= 2
-    },
-    copy:
-      'Ha sinais de que o que antes bastava ja nao tem o mesmo efeito, e a busca por estimulo tem aumentado.',
+    id: 'desconexao-sexual',
+    title: 'Desconexão sexual grave',
+    matches: (answers) => answers.get(8) === 2,
+    copy: 'Seu corpo está parando de responder ao prazer real. Isso é um sinal grave de desconexão biológica.',
   },
   {
-    id: 'impacto-emocional',
-    title: 'Peso emocional depois do consumo',
-    matches: (answers: Map<number, number>) => {
-      const answer = answers.get(9)
-      return answer !== undefined && answer >= 2
-    },
-    copy:
-      'O que acontece depois tambem importa: culpa, vazio ou ansiedade costumam alimentar o retorno ao mesmo ciclo.',
+    id: 'escalada-extrema',
+    title: 'Escalada para conteúdos extremos',
+    matches: (answers) => answers.get(5) === 2,
+    copy: 'A necessidade de conteúdos extremos mostra que seu cérebro está anestesiado e exige doses perigosas.',
   },
   {
-    id: 'gasto-financeiro',
-    title: 'Impacto financeiro',
-    matches: (answers: Map<number, number>) => {
-      const answer = answers.get(11)
-      return answer === 3 || answer === 4
-    },
-    copy:
-      'Voce tambem sinalizou impacto no dinheiro, o que mostra que esse padrao ja esta cobrando um preco concreto.',
+    id: 'consumo-excessivo',
+    title: 'Consumo além do desejado',
+    matches: (answers) => answers.get(4) === 2,
+    copy: 'Você consome pornografia mais do que gostaria. Você sabe que precisa parar e precisa de ajuda para isso.',
+  },
+  {
+    id: 'escape-emocional',
+    title: 'Armadilha emocional',
+    matches: (answers) => answers.get(6) === 2,
+    copy: 'Usar pornô como remédio para o estresse é criar uma armadilha emocional onde você sempre sai perdendo.',
+  },
+  {
+    id: 'impacto-financeiro',
+    title: 'Impacto no bolso',
+    matches: (answers) => answers.get(7) === 2,
+    copy: 'O vício já está afetando seu bolso. Quando o dinheiro vai embora, o prejuízo deixa de ser apenas mental.',
+  },
+  {
+    id: 'contato-precoce',
+    title: 'Raízes desde a infância',
+    matches: (answers) => answers.get(2) === 2,
+    copy: 'Seu contato precoce criou raízes profundas. Você está lutando contra um hábito moldado na sua infância.',
   },
 ]

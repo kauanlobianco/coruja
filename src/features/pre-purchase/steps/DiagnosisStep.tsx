@@ -1,50 +1,74 @@
+import { useEffect, useRef, useState } from 'react'
+import { motion } from 'framer-motion'
+import { ChevronLeft } from 'lucide-react'
 import type { QuizAnswer } from '../types'
 import { markerRules } from '../data'
 
+interface RiskBand {
+  label: string
+  short: string
+  color: string
+  badgeClass: string
+}
+
 interface DiagnosisReport {
-  band: { label: string; short: string }
+  band: RiskBand
+  scorePercent: number
   markers: Array<{ id: string; title: string; copy: string }>
 }
 
-function getRiskBand(score: number) {
-  if (score >= 78) {
+function getRiskBand(scorePercent: number): RiskBand {
+  if (scorePercent >= 86) {
     return {
-      label: 'Nivel em que esse padrao ja esta pesando em partes importantes da sua rotina',
-      short: 'O que voce respondeu mostra um ciclo mais entranhado, com impacto real e dificuldade de interromper em alguns momentos.',
+      label: 'Risco Crítico',
+      short: 'Suas respostas indicam um padrão severo de dependência, com perda de controle real e impacto em múltiplas áreas da sua vida.',
+      color: '#B14343',
+      badgeClass: 'diagnosis-badge-critical',
     }
   }
-
-  if (score >= 56) {
+  if (scorePercent >= 66) {
     return {
-      label: 'Nivel em que esse padrao ja comeca a tomar espaco demais no seu dia',
-      short: 'Suas respostas mostram dificuldade crescente de controle, desgaste e tentativas que nao se sustentaram.',
+      label: 'Risco Alto',
+      short: 'O que você respondeu mostra um ciclo entranhado, com dificuldade crescente de interromper e impacto concreto no dia a dia.',
+      color: '#E35B2E',
+      badgeClass: 'diagnosis-badge-high',
     }
   }
-
-  if (score >= 16) {
+  if (scorePercent >= 41) {
     return {
-      label: 'Nivel que merece atencao antes que esse padrao ganhe mais forca',
-      short: 'Ja existem sinais de repeticao automatica e impacto emocional, mesmo que isso ainda pareca administravel em alguns dias.',
+      label: 'Risco Moderado',
+      short: 'Suas respostas mostram sinais de repetição automática e desgaste emocional. Agir agora evita que o padrão se consolide.',
+      color: '#EC9E32',
+      badgeClass: 'diagnosis-badge-moderate',
     }
   }
-
   return {
-    label: 'Nivel com poucos sinais de peso agora, mas que ainda merece cuidado',
-    short: 'Seu resultado nao mostra um padrao dominante neste momento, mas vale proteger sua rotina para isso nao ganhar espaco.',
+    label: 'Referência Saudável',
+    short: 'Seu resultado não mostra um padrão dominante neste momento, mas vale proteger sua rotina para isso não ganhar espaço.',
+    color: '#409672',
+    badgeClass: 'diagnosis-badge-safe',
   }
 }
 
+const MAX_SCORE = 20
+const PROBLEMATIC_THRESHOLD = 20
+const COUNT_UP_DURATION = 2800
+
+const LINE1 = '⚠ ATENÇÃO'
+const LINE2 = 'Acima de 20% já é'
+const LINE3 = 'consumo problemático'
+
 export function buildDiagnosisReport(
-  score: number,
+  rawScore: number,
   quizAnswers: QuizAnswer[],
 ): DiagnosisReport {
-  const band = getRiskBand(score)
+  const scorePercent = Math.round((rawScore / MAX_SCORE) * 100)
+  const band = getRiskBand(scorePercent)
   const answersByQuestion = new Map<number, number>(
-    quizAnswers.map((answer) => [answer.questionId, answer.answerIndex]),
+    quizAnswers.map((a) => [a.questionId, a.answerIndex]),
   )
   const markers = markerRules.filter((rule) => rule.matches(answersByQuestion)).slice(0, 3)
-
-  return { band, markers }
+  return { band, scorePercent, markers }
 }
 
 interface DiagnosisStepProps {
@@ -54,55 +78,174 @@ interface DiagnosisStepProps {
   onContinue: () => void
 }
 
-export function DiagnosisStep({ score, diagnosis, onBack, onContinue }: DiagnosisStepProps) {
+export function DiagnosisStep({ diagnosis, onBack, onContinue }: DiagnosisStepProps) {
+  const { band, scorePercent, markers } = diagnosis
+
+  const [typedL1] = useState(LINE1)
+  const [typedL2, setTypedL2] = useState('')
+  const [typedL3, setTypedL3] = useState('')
+  const [cursorLine, setCursorLine] = useState<2 | 3 | null>(null)
+  const [showScore, setShowScore] = useState(false)
+  const [displayCount, setDisplayCount] = useState(0)
+  const [showBadge, setShowBadge] = useState(false)
+  const [showRest, setShowRest] = useState(false)
+
+  const timeoutsRef = useRef<ReturnType<typeof setTimeout>[]>([])
+  const rafRef = useRef<number | null>(null)
+
+  useEffect(() => {
+    function addTimeout(fn: () => void, delay: number) {
+      const id = setTimeout(fn, delay)
+      timeoutsRef.current.push(id)
+    }
+
+    function typeString(
+      str: string,
+      speed: number,
+      setter: (s: string) => void,
+      onDone: () => void,
+      index = 0,
+    ) {
+      if (index >= str.length) {
+        onDone()
+        return
+      }
+      addTimeout(() => {
+        setter(str.slice(0, index + 1))
+        typeString(str, speed, setter, onDone, index + 1)
+      }, speed)
+    }
+
+    // LINE1 já aparece imediato — digita LINE2 → LINE3 → score → badge → rest
+    addTimeout(() => {
+      setCursorLine(2)
+      typeString(LINE2, 80, setTypedL2, () => {
+        setCursorLine(null)
+        addTimeout(() => {
+          setCursorLine(3)
+          typeString(LINE3, 60, setTypedL3, () => {
+              setCursorLine(null)
+              setShowScore(true)
+              const startTime = performance.now()
+              const tick = (now: number) => {
+                const elapsed = now - startTime
+                const progress = Math.min(elapsed / COUNT_UP_DURATION, 1)
+                const eased = 1 - Math.pow(1 - progress, 3)
+                setDisplayCount(Math.round(eased * scorePercent))
+                if (progress < 1) {
+                  rafRef.current = requestAnimationFrame(tick)
+                } else {
+                  addTimeout(() => {
+                    setShowBadge(true)
+                    addTimeout(() => setShowRest(true), 600)
+                  }, 400)
+                }
+              }
+              rafRef.current = requestAnimationFrame(tick)
+            })
+          }, 120)
+        })
+      }, 120)
+
+    return () => {
+      timeoutsRef.current.forEach(clearTimeout)
+      timeoutsRef.current = []
+      if (rafRef.current !== null) cancelAnimationFrame(rafRef.current)
+    }
+  }, [scorePercent])
+
+  const aboveThreshold = scorePercent > PROBLEMATIC_THRESHOLD
+    ? scorePercent - PROBLEMATIC_THRESHOLD
+    : null
+
   return (
-    <section style={{ display: 'flex', flexDirection: 'column', height: '100%', minHeight: 0, padding: '0', background: 'transparent' }}>
-      <div className="quiz-custom-header">
-        <button onClick={onBack}>
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+    <section className="diagnosis">
+      <div className="prepurchase-quiz-header-row" style={{ marginBottom: 0 }}>
+        <button type="button" className="prepurchase-quiz-back" onClick={onBack}>
+          <ChevronLeft size={20} strokeWidth={2.4} />
         </button>
-        <div style={{ flex: 1 }}></div>
-        <div className="lang-badge">🇺🇸 EN</div>
+        <div style={{ flex: 1 }} />
+        <div className="prepurchase-quiz-badge">PT-BR</div>
       </div>
 
-      <div style={{ padding: '0 20px', flex: 1, display: 'flex', flexDirection: 'column', overflowY: 'auto' }}>
-        <h2 style={{ fontSize: '1.6rem', fontWeight: '700', color: '#fff', textAlign: 'center', marginTop: '16px', marginBottom: '16px', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '8px' }}>
-          Análise Concluída{' '}
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="#1fa24e" stroke="#1fa24e" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10" stroke="none"></circle><polyline points="8 12 11 15 16 9" stroke="#fff"></polyline></svg>
-        </h2>
-        <p style={{ color: '#e0e0e0', textAlign: 'center', fontSize: '1.05rem', marginBottom: '32px' }}>
-          Temos algumas notícias para dar a você...<br/><br/>
-          {diagnosis.band.short}*
-        </p>
+      <div className="diagnosis-scroll">
 
-        <div className="diagnosis-bar-chart">
-          <div className="bar-wrapper">
-            <div className="bar-fill bar-fill-red" style={{ height: `${Math.min(Math.max(score, 20), 100)}%` }}>
-              {score > 20 ? `${Math.round(score)}%` : ''}
-            </div>
-            <div className="bar-label">sua pontuação</div>
-          </div>
-          <div className="bar-wrapper">
-            <div className="bar-fill bar-fill-green" style={{ height: '40%' }}>
-              40%
-            </div>
-            <div className="bar-label">Média</div>
-          </div>
+        <div className="diagnosis-context-block">
+          <span className="diagnosis-attention">
+            {typedL1}
+          </span>
+          {(typedL2.length > 0 || cursorLine === 2) && (
+            <span className="diagnosis-context-text">
+              {typedL2}
+              {cursorLine === 2 && <span className="diagnosis-cursor">|</span>}
+            </span>
+          )}
+          {(typedL3.length > 0 || cursorLine === 3) && (
+            <span className="diagnosis-context-text">
+              {typedL3}
+              {cursorLine === 3 && <span className="diagnosis-cursor">|</span>}
+            </span>
+          )}
         </div>
 
-        <p style={{ color: '#d7191d', textAlign: 'center', fontSize: '1rem', fontWeight: '600', marginBottom: '24px' }}>
-          {Math.round(score)}% maior dependência de pornografia 📈
-        </p>
+        {showScore && (
+          <div className="diagnosis-score-block">
+            <p className="diagnosis-you-label">VOCÊ PONTUOU:</p>
+            <p className="diagnosis-score-number" style={{ color: band.color }}>
+              {displayCount}<span className="diagnosis-compare-unit">%</span>
+            </p>
+          </div>
+        )}
 
-        <p style={{ color: 'rgba(255,255,255,0.4)', textAlign: 'center', fontSize: '0.8rem', marginBottom: '32px' }}>
-          * este resultado é apenas uma indicação, não um diagnóstico médico.
-        </p>
+        {showBadge && (
+          <motion.div
+            className="diagnosis-badge-row"
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, ease: 'easeOut' }}
+          >
+            <span className={`diagnosis-badge ${band.badgeClass}`}>
+              {band.label.toUpperCase()}
+            </span>
+            {aboveThreshold !== null && (
+              <p className="diagnosis-impact-line">
+                Você está {aboveThreshold}% acima do consumo problemático
+              </p>
+            )}
+            <p className="diagnosis-band-short">{band.short}</p>
+          </motion.div>
+        )}
 
-        <div style={{ paddingBottom: '24px', marginTop: 'auto' }}>
-          <button className="button-blue-pill" onClick={onContinue}>
-            Verificar seus sintomas
-          </button>
-        </div>
+        {showRest && (
+          <motion.div
+            className="diagnosis-rest"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, ease: 'easeOut' }}
+          >
+            <div className="diagnosis-markers">
+              {markers.map((marker) => (
+                <div
+                  key={marker.id}
+                  className="diagnosis-marker-card"
+                  style={{ borderLeftColor: band.color }}
+                >
+                  <span className="diagnosis-marker-icon">⚠</span>
+                  <p className="diagnosis-marker-copy">{marker.copy}</p>
+                </div>
+              ))}
+            </div>
+
+            <p className="diagnosis-disclaimer">
+              * Este resultado é apenas uma indicação, não um diagnóstico médico.
+            </p>
+
+            <button type="button" className="diagnosis-cta" onClick={onContinue}>
+              Verificar seus sintomas
+            </button>
+          </motion.div>
+        )}
+
       </div>
     </section>
   )

@@ -67,4 +67,5 @@ export interface PrePurchaseState {
   selectedPlan: PlanOption['id']
   painSlide: number
   solutionSlide: number
+  darkMode: boolean
 }
