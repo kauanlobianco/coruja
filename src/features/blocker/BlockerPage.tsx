@@ -1,4 +1,7 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useMemo, useEffect, useState } from 'react'
+import { motion } from 'framer-motion'
+import { Globe, Plus, ShieldCheck, ShieldOff, Trash2 } from 'lucide-react'
+import { Capacitor } from '@capacitor/core'
 import { AppShell } from '../../shared/layout/AppShell'
 import { useAppState } from '../../app/state/use-app-state'
 import {
@@ -13,258 +16,246 @@ import {
   DEFAULT_BLOCKED_DOMAINS,
   normalizeDomainInput,
 } from './blocked-domains'
+import { BackgroundCircles } from '../../components/ui/BackgroundCircles'
 
 export function BlockerPage() {
   const { state, setBlockerEnabled, setBlockedDomains } = useAppState()
   const [customInput, setCustomInput] = useState('')
   const [permissionGranted, setPermissionGranted] = useState(false)
-  const [vpnActive, setVpnActive] = useState(false)
+  // Inicializa com o valor persistido para evitar flash de "inativo" ao navegar
+  const [vpnActive, setVpnActive] = useState(state.blocker.isEnabled)
   const [loadingStatus, setLoadingStatus] = useState(true)
   const [busy, setBusy] = useState(false)
-  const [message, setMessage] = useState('')
   const [error, setError] = useState('')
 
-  const blockedDomains =
-    state.blocker.blockedDomains.length > 0
-      ? state.blocker.blockedDomains
-      : DEFAULT_BLOCKED_DOMAINS
-
-  const customDomains = useMemo(
-    () => blockedDomains.filter((domain) => !DEFAULT_BLOCKED_DOMAINS.includes(domain)),
-    [blockedDomains],
+  const userDomains = useMemo(
+    () => state.blocker.blockedDomains.filter((d) => !DEFAULT_BLOCKED_DOMAINS.includes(d)),
+    [state.blocker.blockedDomains],
   )
+
+  // Domínios reais a enviar para o VPN = personalizados + padrões
+  const allDomains = useMemo(() => {
+    const custom = state.blocker.blockedDomains.filter((d) => !DEFAULT_BLOCKED_DOMAINS.includes(d))
+    return [...DEFAULT_BLOCKED_DOMAINS, ...custom]
+  }, [state.blocker.blockedDomains])
 
   useEffect(() => {
     let active = true
-
-    async function loadStatus() {
+    async function syncNativeStatus() {
       setLoadingStatus(true)
-
       try {
         const [permission, vpnStatus, running] = await Promise.all([
           checkBlockerPermission(),
           getBlockerVpnStatus(),
           isBlockerVpnRunning(),
         ])
-
-        if (!active) {
-          return
-        }
-
+        if (!active) return
         setPermissionGranted(permission.granted)
-        setVpnActive(vpnStatus.active || running.running)
+        // No web, a VPN nativa sempre retorna false — confiar no estado persistido
+        if (!Capacitor.isNativePlatform()) return
+        const nativeActive = vpnStatus.active || running.running
+        setVpnActive(nativeActive)
+        if (nativeActive !== state.blocker.isEnabled) {
+          await setBlockerEnabled(nativeActive)
+        }
       } catch {
-        if (!active) {
-          return
-        }
-
-        setError('Nao foi possivel ler o estado atual do bloqueador.')
+        if (!active) return
+        setError('Não foi possível ler o estado do bloqueador.')
       } finally {
-        if (active) {
-          setLoadingStatus(false)
-        }
+        if (active) setLoadingStatus(false)
       }
     }
-
-    void loadStatus()
-
-    return () => {
-      active = false
-    }
+    void syncNativeStatus()
+    return () => { active = false }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
-
-  function toggleDefaultDomain(domain: string) {
-    const nextDomains = blockedDomains.includes(domain)
-      ? blockedDomains.filter((item) => item !== domain)
-      : [...blockedDomains, domain]
-
-    void setBlockedDomains(nextDomains)
-  }
 
   function addCustomDomain() {
     const normalized = normalizeDomainInput(customInput)
-    if (!normalized || blockedDomains.includes(normalized)) {
+    if (!normalized || allDomains.includes(normalized)) {
       setCustomInput('')
       return
     }
-
-    void setBlockedDomains([...blockedDomains, normalized])
+    void setBlockedDomains([...allDomains, normalized])
     setCustomInput('')
   }
 
   function removeDomain(domain: string) {
-    void setBlockedDomains(blockedDomains.filter((item) => item !== domain))
+    void setBlockedDomains(allDomains.filter((d) => d !== domain))
   }
 
   async function handleRequestPermission() {
     setBusy(true)
     setError('')
-    setMessage('')
-
     try {
       const result = await requestBlockerPermission()
       setPermissionGranted(result.granted)
-
-      if (result.granted) {
-        setMessage('Permissao VPN concedida.')
-      } else {
-        setError('A permissao VPN ainda nao foi concedida.')
-      }
+      if (!result.granted) setError('A permissão VPN ainda não foi concedida.')
     } catch {
-      setError('Nao foi possivel solicitar a permissao VPN.')
+      setError('Não foi possível solicitar a permissão VPN.')
     } finally {
       setBusy(false)
     }
   }
 
   async function handleToggleProtection() {
+    if (busy || loadingStatus) return
     setBusy(true)
     setError('')
-    setMessage('')
-
     try {
       if (!permissionGranted) {
         const permission = await requestBlockerPermission()
         setPermissionGranted(permission.granted)
-
         if (!permission.granted) {
-          setError('Sem permissao VPN, o bloqueador nao pode ser ativado.')
+          setError('Sem permissão VPN, o bloqueador não pode ser ativado.')
           return
         }
       }
-
       if (vpnActive) {
         await stopBlockerVpn()
         await setBlockerEnabled(false)
         setVpnActive(false)
-        setMessage('Bloqueador Android desativado.')
         return
       }
-
-      const domainsToStart = blockedDomains.length > 0 ? blockedDomains : DEFAULT_BLOCKED_DOMAINS
-      await setBlockedDomains(domainsToStart)
-      await startBlockerVpn(domainsToStart)
+      await startBlockerVpn(allDomains)
       await setBlockerEnabled(true)
       setVpnActive(true)
-      setMessage('Bloqueador Android ativado.')
     } catch {
-      setError('Nao foi possivel alternar o bloqueador agora.')
+      setError('Não foi possível alternar o bloqueador agora.')
     } finally {
       setBusy(false)
     }
   }
 
   return (
-    <AppShell title="Bloqueador Android" eyebrow="Infra critica">
-      <section className="info-card highlight-card">
-        <span className="section-label">Status</span>
-        <h2>{vpnActive ? 'Protecao ativa' : 'Protecao desligada'}</h2>
-        <p>
-          Esta feature usa uma VPN local no Android para interceptar DNS e bloquear os
-          dominios configurados.
-        </p>
-        <p>
-          Permissao VPN: {permissionGranted ? 'concedida' : 'pendente'} | Dominios:{' '}
-          {blockedDomains.length}
-        </p>
-        <div className="hero-actions">
+    <AppShell title="Bloqueador">
+
+      {/* 1 ── Círculos + escudo ──────────────────────────── */}
+      <div className="blocker-circles-wrap">
+        <BackgroundCircles variant={vpnActive ? 'active' : 'inactive'}>
+          {vpnActive
+            ? <ShieldCheck size={64} strokeWidth={1.4} />
+            : <ShieldOff  size={64} strokeWidth={1.4} />
+          }
+          <p className="bg-circles-status-label">
+            {loadingStatus ? 'VERIFICANDO…' : vpnActive ? 'PROTEÇÃO ATIVA' : 'DESPROTEGIDO'}
+          </p>
+          <p className="bg-circles-status-sub">
+            {vpnActive
+              ? 'Sites bloqueados em segundo plano'
+              : 'Ative para bloquear conteúdo indesejado'}
+          </p>
+        </BackgroundCircles>
+      </div>
+
+      {/* 2 ── Toggle switch ──────────────────────────────── */}
+      <div className="blocker-toggle-row">
+        <button
+          type="button"
+          role="switch"
+          aria-checked={vpnActive ? 'true' : 'false'}
+          aria-label={vpnActive ? 'Desativar proteção' : 'Ativar proteção'}
+          className={`blocker-switch-track ${vpnActive ? 'blocker-switch-track--on' : 'blocker-switch-track--off'}`}
+          onClick={() => void handleToggleProtection()}
+          disabled={busy || loadingStatus}
+        >
+          <motion.div
+            className="blocker-switch-thumb"
+            animate={{ x: vpnActive ? 34 : 0 }}
+            transition={{ type: 'spring', stiffness: 500, damping: 30 }}
+          />
+        </button>
+        <div className="blocker-toggle-label">
+          <span className="blocker-toggle-label-title">Proteção</span>
+          <span className={`blocker-toggle-label-state ${vpnActive ? 'blocker-toggle-label-state--on' : 'blocker-toggle-label-state--off'}`}>
+            {vpnActive ? 'Ativa' : 'Inativa'}
+          </span>
+        </div>
+      </div>
+
+      {/* 3 ── Cards de info ──────────────────────────────── */}
+      <div className="blocker-info-row">
+        <div className="blocker-info-card">
+          <span className="blocker-info-value">{userDomains.length}</span>
+          <span className="blocker-info-label">PERSONALIZADOS</span>
+        </div>
+        <div className="blocker-info-card">
+          <span className={`blocker-info-value ${vpnActive ? 'blocker-info-value--on' : 'blocker-info-value--off'}`}>
+            {loadingStatus ? '—' : vpnActive ? 'Ativa' : 'Inativa'}
+          </span>
+          <span className="blocker-info-label">STATUS</span>
+        </div>
+      </div>
+
+      {/* ── Permissão VPN pendente ─────────────────────── */}
+      {!permissionGranted && !loadingStatus && (
+        <div className="blocker-permission-banner">
+          <p className="blocker-permission-text">
+            Permissão VPN necessária para ativar o bloqueador.
+          </p>
           <button
-            className="button button-secondary"
+            type="button"
+            className="blocker-permission-btn"
             onClick={() => void handleRequestPermission()}
             disabled={busy}
           >
-            Solicitar permissao
-          </button>
-          <button
-            className="button button-primary"
-            onClick={() => void handleToggleProtection()}
-            disabled={busy || loadingStatus}
-          >
-            {busy ? 'Processando...' : vpnActive ? 'Desativar bloqueador' : 'Ativar bloqueador'}
+            Conceder permissão
           </button>
         </div>
-        {message ? <p className="toast toast-success">{message}</p> : null}
-        {error ? <p className="toast toast-error">{error}</p> : null}
-      </section>
+      )}
 
-      <section className="info-card">
-        <span className="section-label">Sites padrao</span>
-        <h2>Lista base do app</h2>
-        <div className="chip-row">
-          {DEFAULT_BLOCKED_DOMAINS.map((domain) => (
-            <button
-              key={domain}
-              className={blockedDomains.includes(domain) ? 'chip active' : 'chip'}
-              onClick={() => toggleDefaultDomain(domain)}
-            >
-              {domain}
-            </button>
-          ))}
+      {error ? <p className="toast toast-error">{error}</p> : null}
+
+      {/* 4 ── Sites personalizados ────────────────────── */}
+      <div className="blocker-domains-card">
+        <div className="blocker-domains-header">
+          <p className="blocker-domains-title">Sites Personalizados</p>
+          <p className="blocker-domains-sub">Sites extras adicionados por você</p>
         </div>
-      </section>
 
-      <section className="info-card">
-        <span className="section-label">Sites personalizados</span>
-        <h2>Complementos da sua lista</h2>
-        <div className="hero-actions">
+        <div className="blocker-add-row">
           <input
+            className="blocker-input"
             value={customInput}
-            onChange={(event) => setCustomInput(event.target.value)}
-            onKeyDown={(event) => {
-              if (event.key === 'Enter') {
-                event.preventDefault()
-                addCustomDomain()
-              }
+            onChange={(e) => setCustomInput(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') { e.preventDefault(); addCustomDomain() }
             }}
             placeholder="ex: reddit.com"
           />
-          <button className="button button-secondary" onClick={addCustomDomain}>
-            Adicionar dominio
+          <button
+            type="button"
+            className="blocker-add-btn"
+            onClick={addCustomDomain}
+            disabled={!customInput.trim()}
+            aria-label="Adicionar site"
+          >
+            <Plus size={18} strokeWidth={2.4} />
           </button>
         </div>
 
-        {customDomains.length === 0 ? (
-          <div className="empty-state">
-            <p>Nenhum dominio personalizado adicionado.</p>
-          </div>
+        {userDomains.length === 0 ? (
+          <p className="blocker-empty-inline">Nenhum site adicionado ainda.</p>
         ) : (
-          <div className="timeline-list">
-            {customDomains.map((domain) => (
-              <div key={domain} className="timeline-item">
-                <strong>{domain}</strong>
+          <div className="blocker-domain-list">
+            {userDomains.map((domain) => (
+              <div key={domain} className="blocker-domain-item">
+                <Globe size={13} className="blocker-domain-globe" />
+                <span className="blocker-domain-name">{domain}</span>
                 <button
-                  className="text-link"
+                  type="button"
+                  className="blocker-domain-remove"
                   onClick={() => removeDomain(domain)}
+                  aria-label={`Remover ${domain}`}
                 >
-                  Remover
+                  <Trash2 size={14} />
                 </button>
               </div>
             ))}
           </div>
         )}
-      </section>
+      </div>
 
-      <section className="info-card">
-        <span className="section-label">Historico</span>
-        <h2>Tentativas bloqueadas</h2>
-        {state.blocker.blockedAttempts.length === 0 ? (
-          <div className="empty-state">
-            <p>Nenhuma tentativa registrada ainda.</p>
-          </div>
-        ) : (
-          <div className="timeline-list">
-            {[...state.blocker.blockedAttempts]
-              .slice(-5)
-              .reverse()
-              .map((attempt) => (
-                <div key={attempt.id} className="timeline-item">
-                  <strong>{attempt.url}</strong>
-                  <p>{new Date(attempt.createdAt).toLocaleString('pt-BR')}</p>
-                </div>
-              ))}
-          </div>
-        )}
-      </section>
     </AppShell>
   )
 }

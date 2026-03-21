@@ -5,7 +5,7 @@ import { appShellNavItems } from '../../core/config/routes'
 
 interface AppShellProps extends PropsWithChildren {
   title: ReactNode
-  eyebrow: string
+  eyebrow?: string
   subtitle?: string
   actions?: ReactNode
   shellMode?: 'entry' | 'app' | 'system'

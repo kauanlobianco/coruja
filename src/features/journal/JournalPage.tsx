@@ -1,202 +1,203 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
-import { animate, motion, useMotionValue } from 'framer-motion'
-import { Plus } from 'lucide-react'
+import { useMemo, useState } from 'react'
+import { AnimatePresence, motion } from 'framer-motion'
+import { BookOpen, Plus, Search, Trash2, X } from 'lucide-react'
 import { AppShell } from '../../shared/layout/AppShell'
 import { useAppState } from '../../app/state/use-app-state'
 
-function formatDate(value: string) {
+function formatCardDate(value: string) {
   return new Intl.DateTimeFormat('pt-BR', {
-    dateStyle: 'short',
-    timeStyle: 'short',
-  }).format(new Date(value))
-}
-
-function formatToday(value: Date) {
-  return new Intl.DateTimeFormat('pt-BR', {
-    weekday: 'long',
-    day: 'numeric',
-    month: 'long',
-  }).format(value)
+    day: '2-digit',
+    month: 'short',
+    year: 'numeric',
+  })
+    .format(new Date(value))
+    .toUpperCase()
+    .replace(/\./g, '')
 }
 
 export function JournalPage() {
-  const { state, demoNow, saveJournalEntry, deleteJournalEntry } = useAppState()
+  const { state, saveJournalEntry, deleteJournalEntry } = useAppState()
+  const [search, setSearch] = useState('')
+  const [expandedId, setExpandedId] = useState<string | null>(null)
+  const [showComposer, setShowComposer] = useState(false)
   const [title, setTitle] = useState('')
   const [content, setContent] = useState('')
-  const [isExpanded, setIsExpanded] = useState(false)
-  const [collapsedOffset, setCollapsedOffset] = useState(0)
-  const [dragBounds, setDragBounds] = useState(0)
-  const textareaRef = useRef<HTMLTextAreaElement | null>(null)
-  const y = useMotionValue(0)
 
   const entries = useMemo(
     () =>
       [...state.journalEntries].sort(
-        (left, right) => Date.parse(right.createdAt) - Date.parse(left.createdAt),
+        (a, b) => Date.parse(b.createdAt) - Date.parse(a.createdAt),
       ),
     [state.journalEntries],
   )
 
-  useEffect(() => {
-    function computeSheetMetrics() {
-      const viewportHeight = window.innerHeight
-      const sheetHeight = Math.min(viewportHeight * 0.9, 720)
-      const collapsed = Math.max(sheetHeight - 120, 0)
+  const filteredEntries = useMemo(() => {
+    if (!search.trim()) return entries
+    const q = search.toLowerCase()
+    return entries.filter(
+      (e) => e.title.toLowerCase().includes(q) || e.content.toLowerCase().includes(q),
+    )
+  }, [entries, search])
 
-      setCollapsedOffset(collapsed)
-      setDragBounds(collapsed)
-      y.set(isExpanded ? 0 : collapsed)
-    }
-
-    computeSheetMetrics()
-    window.addEventListener('resize', computeSheetMetrics)
-
-    return () => {
-      window.removeEventListener('resize', computeSheetMetrics)
-    }
-  }, [isExpanded, y])
-
-  function snapTo(expanded: boolean) {
-    animate(y, expanded ? 0 : collapsedOffset, {
-      type: 'spring',
-      stiffness: 300,
-      damping: 35,
-    })
-    setIsExpanded(expanded)
-  }
-
-  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
-    event.preventDefault()
-
-    if (!content.trim()) {
-      return
-    }
-
+  async function handleSubmit(e: React.SyntheticEvent<HTMLFormElement>) {
+    e.preventDefault()
+    if (!content.trim()) return
     await saveJournalEntry({
       title: title.trim() || 'Nova entrada',
       content: content.trim(),
       type: 'freeform',
     })
-
     setTitle('')
     setContent('')
+    setShowComposer(false)
   }
 
-  function handleNewEntryFocus() {
-    textareaRef.current?.focus()
+  function toggleExpand(id: string) {
+    setExpandedId((prev) => (prev === id ? null : id))
   }
 
   return (
-    <AppShell title="" eyebrow="" hideTopbar>
-      <section className="journal-screen">
-        <div className="journal-static">
-          <header className="journal-header">
-            <div>
-              <p className="journal-date">{formatToday(demoNow)}</p>
-              <h1>Jornal</h1>
-            </div>
-            <button
-              className="button button-orange shimmer journal-new-button"
-              onClick={handleNewEntryFocus}
-              type="button"
-            >
-              <Plus size={16} />
-              <span>Nova entrada</span>
-            </button>
-          </header>
+    <AppShell title="Jornal">
 
-          <article className="info-card journal-composer-card">
-            <span className="section-label">Nova entrada</span>
-            <h2>Escreva para clarear o momento</h2>
-            <form className="form-card journal-form" onSubmit={handleSubmit}>
-              <div className="field">
-                <label htmlFor="journal-title">Titulo</label>
-                <input
-                  id="journal-title"
-                  value={title}
-                  onChange={(event) => setTitle(event.target.value)}
-                  placeholder="Resumo curto do momento"
-                />
-              </div>
-              <div className="field">
-                <label htmlFor="journal-content">Conteudo</label>
-                <textarea
-                  id="journal-content"
-                  ref={textareaRef}
-                  className="textarea"
-                  value={content}
-                  onChange={(event) => setContent(event.target.value)}
-                  placeholder="Comece a escrever aqui..."
-                />
-              </div>
-              <button className="button button-primary" type="submit">
-                Salvar entrada
-              </button>
-            </form>
-          </article>
+      {/* Busca */}
+      <div className="journal-search-wrap">
+        <Search size={15} className="journal-search-icon" />
+        <input
+          className="journal-search-input"
+          placeholder="Buscar reflexões..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+        />
+      </div>
+
+      {/* Heading */}
+      <div className="journal-heading">
+        <h1 className="journal-heading-title">Seu Diário</h1>
+        <p className="journal-heading-sub">Registre os pensamentos da sua jornada.</p>
+      </div>
+
+      {/* Cards ou estado vazio */}
+      {filteredEntries.length === 0 ? (
+        <div className="journal-empty-new">
+          <BookOpen size={44} strokeWidth={1.2} className="journal-empty-icon" />
+          <p className="journal-empty-title">
+            {search ? 'Nenhuma entrada encontrada' : 'Nenhum registro ainda'}
+          </p>
+          <p className="journal-empty-sub">
+            {search
+              ? 'Tente buscar por outra palavra.'
+              : 'Toque em + para começar sua jornada.'}
+          </p>
         </div>
-
-        <motion.div
-          className="journal-sheet"
-          style={{ y }}
-          drag="y"
-          dragConstraints={{ top: 0, bottom: dragBounds }}
-          dragElastic={0.1}
-          onDragEnd={(_, info) => {
-            if (info.velocity.y > 300 || info.offset.y > 150) {
-              snapTo(false)
-            } else {
-              snapTo(true)
-            }
-          }}
-        >
-          <div className="journal-sheet-handle" />
-          <div className="journal-sheet-head">
-            <span>entradas</span>
-            {!isExpanded ? (
-              <button
-                className="journal-sheet-trigger"
-                onClick={() => snapTo(true)}
-                type="button"
-              >
-                ver tudo ↑
-              </button>
-            ) : null}
-          </div>
-          <div className="journal-sheet-content">
-            {entries.length === 0 ? (
-              <article className="info-card empty-state journal-empty">
-                <h2>Nenhuma entrada ainda</h2>
-                <p>
-                  Quando voce escrever aqui, o app passa a guardar reflexoes livres e
-                  aprendizados do seu processo.
-                </p>
-              </article>
-            ) : (
-              <div className="journal-entry-list">
-                {entries.map((entry) => (
-                  <article key={entry.id} className="info-card journal-entry-card">
-                    <span className="section-label">
-                      {entry.type === 'relapse' ? 'Reflexao de recaida' : 'Entrada livre'}
-                    </span>
-                    <h2>{entry.title}</h2>
-                    <p className="journal-entry-date">{formatDate(entry.createdAt)}</p>
-                    <p>{entry.content}</p>
-                    {entry.type !== 'relapse' ? (
-                      <button
-                        className="button button-danger"
-                        onClick={() => void deleteJournalEntry(entry.id)}
-                      >
-                        Excluir
-                      </button>
-                    ) : null}
-                  </article>
-                ))}
+      ) : (
+        <div className="journal-cards">
+          {filteredEntries.map((entry) => (
+            <article key={entry.id} className={`journal-card journal-card--${entry.type}`}>
+              <div className="journal-card-top">
+                <span className="journal-card-date">{formatCardDate(entry.createdAt)}</span>
+                <span className={`journal-card-badge journal-card-badge--${entry.type}`}>
+                  {entry.type === 'relapse' ? 'RECAÍDA' : 'REFLEXÃO'}
+                </span>
               </div>
-            )}
-          </div>
-        </motion.div>
-      </section>
+              <h2 className="journal-card-title">{entry.title}</h2>
+              <p
+                className={`journal-card-preview${expandedId === entry.id ? ' journal-card-preview--open' : ''}`}
+              >
+                {entry.content}
+              </p>
+              <div className="journal-card-footer">
+                <div className={`journal-card-line journal-card-line--${entry.type}`} />
+                <div className="journal-card-actions">
+                  <button
+                    type="button"
+                    className="journal-card-readmore"
+                    onClick={() => toggleExpand(entry.id)}
+                  >
+                    {expandedId === entry.id ? 'Fechar' : 'Ler mais'}
+                  </button>
+                  {entry.type !== 'relapse' && (
+                    <button
+                      type="button"
+                      className="journal-card-delete"
+                      onClick={() => void deleteJournalEntry(entry.id)}
+                      aria-label="Excluir entrada"
+                    >
+                      <Trash2 size={14} />
+                    </button>
+                  )}
+                </div>
+              </div>
+            </article>
+          ))}
+        </div>
+      )}
+
+      {/* FAB */}
+      <button
+        type="button"
+        className="journal-fab"
+        onClick={() => setShowComposer(true)}
+        aria-label="Nova entrada"
+      >
+        <Plus size={24} strokeWidth={2.2} />
+      </button>
+
+      {/* Composer bottom sheet */}
+      <AnimatePresence>
+        {showComposer && (
+          <>
+            <motion.div
+              className="journal-overlay"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setShowComposer(false)}
+            />
+            <motion.div
+              className="journal-composer"
+              initial={{ y: '100%' }}
+              animate={{ y: 0 }}
+              exit={{ y: '100%' }}
+              transition={{ type: 'spring', stiffness: 320, damping: 36 }}
+            >
+              <div className="journal-composer-handle" />
+              <div className="journal-composer-head">
+                <span className="journal-composer-title">Nova entrada</span>
+                <button
+                  type="button"
+                  className="journal-composer-close"
+                  onClick={() => setShowComposer(false)}
+                  aria-label="Fechar"
+                >
+                  <X size={18} />
+                </button>
+              </div>
+              <form className="journal-composer-form" onSubmit={(e) => void handleSubmit(e)}>
+                <input
+                  className="journal-composer-input"
+                  value={title}
+                  onChange={(e) => setTitle(e.target.value)}
+                  placeholder="Título (opcional)"
+                />
+                <textarea
+                  className="journal-composer-textarea"
+                  value={content}
+                  onChange={(e) => setContent(e.target.value)}
+                  placeholder="Escreva sua reflexão..."
+                  rows={6}
+                />
+                <button
+                  type="submit"
+                  className="button button-primary journal-composer-submit"
+                  disabled={!content.trim()}
+                >
+                  Salvar
+                </button>
+              </form>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
     </AppShell>
   )
 }
