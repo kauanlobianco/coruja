@@ -735,11 +735,23 @@ dt {
 }
 
 .button-primary {
-  background: var(--ds-gradient-primary);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--ds-space-3);
+  min-height: 58px;
+  border-radius: var(--ds-radius-pill);
+  background: var(--ds-gradient-ember-brand);
   color: var(--ds-color-text-inverted);
-  font-weight: 700;
+  font-weight: var(--ds-font-weight-extrabold);
   border: none;
-  box-shadow: var(--ds-shadow-primary);
+  box-shadow:
+    0 18px 30px rgba(236, 151, 49, 0.22),
+    inset 0 1px 0 rgba(255, 255, 255, 0.12);
+}
+
+.button-primary:active {
+  transform: scale(0.985);
 }
 
 .button-orange {

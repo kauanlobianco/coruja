@@ -24,10 +24,6 @@ function resolveFlowDestination(state: ReturnType<typeof useAppState>['state']) 
     return state.hasCompletedOnboarding ? appRoutes.accountRequired : appRoutes.prePurchase
   }
 
-  if (!state.hasCompletedOnboarding) {
-    return appRoutes.onboarding
-  }
-
   return appRoutes.home
 }
 
@@ -66,11 +62,11 @@ function RequireAccountLink({ children }: { children: ReactNode }) {
     return <Navigate to={appRoutes.prePurchase} replace />
   }
 
-  if (state.account && !state.hasCompletedOnboarding) {
-    return <Navigate to={appRoutes.onboarding} replace />
+  if (state.account && state.hasCompletedOnboarding) {
+    return <Navigate to={appRoutes.home} replace />
   }
 
-  if (state.account && state.hasCompletedOnboarding) {
+  if (state.account) {
     return <Navigate to={appRoutes.home} replace />
   }
 
@@ -86,10 +82,6 @@ function RequireOnboarding({ children }: { children: ReactNode }) {
 
   if (!state.account) {
     return <Navigate to={resolveFlowDestination(state)} replace />
-  }
-
-  if (state.hasCompletedOnboarding) {
-    return <Navigate to={appRoutes.home} replace />
   }
 
   return <>{children}</>
@@ -116,7 +108,7 @@ function RequireAppAccess({ children }: { children: ReactNode }) {
     return <IntroPage />
   }
 
-  if (!state.account || !state.hasCompletedOnboarding) {
+  if (!state.account) {
     return <Navigate to={resolveFlowDestination(state)} replace />
   }
 
