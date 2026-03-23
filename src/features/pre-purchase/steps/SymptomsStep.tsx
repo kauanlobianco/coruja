@@ -158,11 +158,11 @@ export function SymptomsStep({ symptoms, onToggleSymptom, onBack, onContinue }: 
 
           <button
             type="button"
-            className="prepurchase-symptoms-submit"
+            className="button-ember-brand prepurchase-symptoms-submit"
             disabled={symptoms.length === 0}
             onClick={onContinue}
           >
-            Continuar analise
+            Ver resultado do diagnostico
           </button>
         </div>
       </div>

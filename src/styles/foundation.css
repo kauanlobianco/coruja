@@ -754,6 +754,44 @@ dt {
   transform: scale(0.985);
 }
 
+.button-ember-brand {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--ds-space-3);
+  min-height: 56px;
+  border: 0;
+  border-radius: 18px;
+  background: var(--ds-gradient-ember-brand);
+  color: var(--ds-color-text-inverted);
+  font-size: var(--ds-type-body-size);
+  line-height: 1.2;
+  font-weight: var(--ds-font-weight-extrabold);
+  cursor: pointer;
+  box-shadow:
+    0 12px 22px rgba(236, 151, 49, 0.16),
+    0 2px 8px rgba(236, 151, 49, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.12);
+  transition:
+    transform var(--ds-transition-fast),
+    opacity var(--ds-transition-fast),
+    box-shadow var(--ds-transition-fast);
+}
+
+.button-ember-brand:hover:not(:disabled) {
+  transform: translateY(-1px);
+}
+
+.button-ember-brand:active:not(:disabled) {
+  transform: scale(0.985);
+}
+
+.button-ember-brand:disabled {
+  opacity: 0.48;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
 .button-orange {
   background-image: var(--ds-gradient-ember);
   color: var(--ds-color-text-dark);

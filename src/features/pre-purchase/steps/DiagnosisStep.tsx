@@ -3,7 +3,6 @@ import { motion } from 'framer-motion'
 import { ChevronLeft, Clock, Frown, Zap } from 'lucide-react'
 import type { QuizAnswer } from '../types'
 import { markerRules } from '../data'
-import { TypewriterLine } from '../../../components/ui/TypewriterLine'
 
 interface RiskBand {
   label: string
@@ -75,17 +74,27 @@ interface DiagnosisStepProps {
   onContinue: () => void
 }
 
-// activeLine: 0 = L1 revelando, 1 = L2 revelando, 2 = L3 revelando, 3 = tudo pronto
 export function DiagnosisStep({ diagnosis, onBack, onContinue }: DiagnosisStepProps) {
   const { band, scorePercent, markers } = diagnosis
+  const aboveThreshold = Math.max(scorePercent - PROBLEMATIC_THRESHOLD, 0)
+  const referencePercent = PROBLEMATIC_THRESHOLD
+  const referenceBarHeight = 30
+  const userBarHeight =
+    scorePercent <= referencePercent
+      ? Math.max(18, Math.round((scorePercent / referencePercent) * referenceBarHeight))
+      : Math.min(100, referenceBarHeight + aboveThreshold * 2)
 
-  const [activeLine, setActiveLine] = useState(0)
   const [showScore, setShowScore] = useState(false)
   const [displayCount, setDisplayCount] = useState(0)
   const [showBadge, setShowBadge] = useState(false)
+  const [showComparison, setShowComparison] = useState(false)
   const [showRest, setShowRest] = useState(false)
 
   const rafRef = useRef<number | null>(null)
+
+  useEffect(() => {
+    setShowScore(true)
+  }, [])
 
   useEffect(() => {
     if (!showScore) return
@@ -101,7 +110,10 @@ export function DiagnosisStep({ diagnosis, onBack, onContinue }: DiagnosisStepPr
       } else {
         setTimeout(() => {
           setShowBadge(true)
-          setTimeout(() => setShowRest(true), 600)
+          setTimeout(() => {
+            setShowComparison(true)
+            setTimeout(() => setShowRest(true), 1800)
+          }, 350)
         }, 400)
       }
     }
@@ -111,10 +123,6 @@ export function DiagnosisStep({ diagnosis, onBack, onContinue }: DiagnosisStepPr
       if (rafRef.current !== null) cancelAnimationFrame(rafRef.current)
     }
   }, [showScore, scorePercent])
-
-  const aboveThreshold = scorePercent > PROBLEMATIC_THRESHOLD
-    ? scorePercent - PROBLEMATIC_THRESHOLD
-    : null
 
   return (
     <section className="diagnosis">
@@ -129,40 +137,18 @@ export function DiagnosisStep({ diagnosis, onBack, onContinue }: DiagnosisStepPr
       <div className={`diagnosis-scroll ${band.badgeClass.replace('badge', 'band')}`}>
 
         <div className="diagnosis-context-block">
-          {/* L1 — digita imediatamente ao montar */}
-          <TypewriterLine
-            text="⚠ ATENÇÃO"
-            charDelay={80}
-            onComplete={() => setTimeout(() => setActiveLine(1), 150)}
-            className="diagnosis-attention"
-          />
-
-          {/* L2 — monta quando L1 termina */}
-          {activeLine >= 1 && (
-            <TypewriterLine
-              text="Acima de 20% já é"
-              charDelay={70}
-              onComplete={() => setTimeout(() => setActiveLine(2), 150)}
-              className="diagnosis-context-text"
-            />
-          )}
-
-          {/* L3 — monta quando L2 termina */}
-          {activeLine >= 2 && (
-            <TypewriterLine
-              text="consumo problemático"
-              charDelay={60}
-              onComplete={() => {
-                setActiveLine(3)
-                setShowScore(true)
-              }}
-              className="diagnosis-context-text diagnosis-context-text--orange"
-            />
-          )}
+          <p className="diagnosis-context-text">
+            Seu resultado indica como esse consumo esta impactando sua rotina hoje.
+          </p>
         </div>
 
         {showScore && (
-          <div className="diagnosis-score-card">
+          <motion.div
+            className="diagnosis-score-card"
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, ease: 'easeOut' }}
+          >
             <p className="diagnosis-you-label">RESULTADO DA AVALIAÇÃO</p>
             <p className="diagnosis-score-number">
               {displayCount}<span className="diagnosis-compare-unit">%</span>
@@ -177,15 +163,68 @@ export function DiagnosisStep({ diagnosis, onBack, onContinue }: DiagnosisStepPr
                 <span className={`diagnosis-badge ${band.badgeClass}`}>
                   ⚠ {band.label.toUpperCase()}
                 </span>
-                {aboveThreshold !== null && (
-                  <p className="diagnosis-impact-line">
-                    Você está {aboveThreshold}% acima<br />do consumo problemático
-                  </p>
-                )}
               </motion.div>
             )}
-          </div>
+          </motion.div>
         )}
+
+        {showComparison ? (
+          <motion.div
+            className="diagnosis-compare-card"
+            initial={{ opacity: 0, y: 18 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.45, ease: 'easeOut' }}
+          >
+            <div className="diagnosis-compare-card-copy">
+              <span className="diagnosis-compare-card-kicker">Comparacao com a referencia</span>
+              <p className="diagnosis-compare-card-title">
+                Seu padrao esta {aboveThreshold}% acima da linha de consumo problematico.
+              </p>
+            </div>
+
+            <div className="diagnosis-compare-chart" aria-label="Comparacao entre seu resultado e a referencia de risco">
+              <div className="diagnosis-compare-column">
+                <div className="diagnosis-compare-track">
+                  <motion.div
+                    className="diagnosis-compare-bar diagnosis-compare-bar-user"
+                    initial={{ height: 12, opacity: 0.5 }}
+                    animate={{ height: `${userBarHeight}%`, opacity: 1 }}
+                    transition={{ duration: 2.2, ease: [0.22, 1, 0.36, 1], delay: 0.35 }}
+                  >
+                    <span className="diagnosis-compare-bar-value">{scorePercent}%</span>
+                  </motion.div>
+                </div>
+                <span className="diagnosis-compare-bar-label">Seu resultado</span>
+              </div>
+
+              <div className="diagnosis-compare-column">
+                <div className="diagnosis-compare-track">
+                  <motion.div
+                    className="diagnosis-compare-bar diagnosis-compare-bar-reference"
+                    initial={{ height: 12, opacity: 0.5 }}
+                    animate={{ height: `${referenceBarHeight}%`, opacity: 1 }}
+                    transition={{ duration: 1.45, ease: [0.22, 1, 0.36, 1], delay: 0.05 }}
+                  >
+                    <span className="diagnosis-compare-bar-value">{referencePercent}%</span>
+                  </motion.div>
+                </div>
+                <span className="diagnosis-compare-bar-label">Referencia</span>
+              </div>
+            </div>
+
+            <div className="diagnosis-compare">
+              <div className="diagnosis-compare-item">
+                <p className="diagnosis-compare-number">{scorePercent}<span className="diagnosis-compare-unit">%</span></p>
+              </div>
+              <div className="diagnosis-compare-divider" />
+              <div className="diagnosis-compare-item">
+                <p className="diagnosis-compare-number diagnosis-compare-number-safe">
+                  {referencePercent}<span className="diagnosis-compare-unit">%</span>
+                </p>
+              </div>
+            </div>
+          </motion.div>
+        ) : null}
 
         {showRest && (
           <motion.div
@@ -220,7 +259,7 @@ export function DiagnosisStep({ diagnosis, onBack, onContinue }: DiagnosisStepPr
             </p>
 
             <button type="button" className="diagnosis-cta" onClick={onContinue}>
-              Verificar seus sintomas
+              Entender consequencias
             </button>
           </motion.div>
         )}

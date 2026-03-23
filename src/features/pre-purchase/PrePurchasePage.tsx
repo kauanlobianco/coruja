@@ -1,3 +1,4 @@
+import { AnimatePresence, motion } from 'framer-motion'
 import { useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAppState } from '../../app/state/use-app-state'
@@ -54,6 +55,9 @@ export function PrePurchasePage() {
   const [loadingProgress, setLoadingProgress] = useState(0)
   const [showPaywallSheet, setShowPaywallSheet] = useState(false)
   const [quizTransitionDirection, setQuizTransitionDirection] = useState<1 | -1>(1)
+  const [painTransitionDirection, setPainTransitionDirection] = useState<1 | -1>(1)
+  const [solutionTransitionDirection, setSolutionTransitionDirection] = useState<1 | -1>(1)
+  const [carouselFlowDirection, setCarouselFlowDirection] = useState<1 | -1>(1)
 
   // Persist state on every change
   useEffect(() => {
@@ -157,18 +161,47 @@ export function PrePurchasePage() {
   }
 
   function nextPainSlide() {
+    setPainTransitionDirection(1)
+    if (state.painSlide >= painSlides.length - 1) {
+      setCarouselFlowDirection(1)
+      setSolutionTransitionDirection(1)
+    }
     setState((current) => ({
       ...current,
-      painSlide: current.painSlide + 1,
+      painSlide: Math.min(current.painSlide + 1, painSlides.length - 1),
       step: current.painSlide >= painSlides.length - 1 ? 'solution-carousel' : 'pain-carousel',
     }))
   }
 
-  function nextSolutionSlide() {
+  function previousPainSlide() {
+    setPainTransitionDirection(-1)
     setState((current) => ({
       ...current,
-      solutionSlide: current.solutionSlide + 1,
+      painSlide: Math.max(current.painSlide - 1, 0),
+      step: current.painSlide <= 0 ? 'diagnosis' : 'pain-carousel',
+    }))
+  }
+
+  function nextSolutionSlide() {
+    setSolutionTransitionDirection(1)
+    setState((current) => ({
+      ...current,
+      solutionSlide: Math.min(current.solutionSlide + 1, solutionSlides.length - 1),
       step: current.solutionSlide >= solutionSlides.length - 1 ? 'social-proof' : 'solution-carousel',
+    }))
+  }
+
+  function previousSolutionSlide() {
+    setSolutionTransitionDirection(-1)
+    if (state.solutionSlide <= 0) {
+      setCarouselFlowDirection(-1)
+      setPainTransitionDirection(-1)
+    }
+    setState((current) => ({
+      ...current,
+      solutionSlide: Math.max(current.solutionSlide - 1, 0),
+      step: current.solutionSlide <= 0 ? 'pain-carousel' : 'solution-carousel',
+      painSlide: current.solutionSlide <= 0 ? painSlides.length - 1 : current.painSlide,
     }))
   }
 
@@ -188,14 +221,20 @@ export function PrePurchasePage() {
     'pain-carousel', 'solution-carousel', 'social-proof',
   ].includes(state.step)
 
+  const usesSolutionMood = state.step === 'solution-carousel' || state.step === 'social-proof'
+
   const funnelFrameClassName = [
     usesImmersiveFrame
       ? 'funnel-frame funnel-phone-frame funnel-phone-frame-quiz prepurchase-shell'
       : 'funnel-frame funnel-phone-frame prepurchase-shell',
-    state.darkMode ? 'prepurchase-dark-mode' : '',
+    state.darkMode && !usesSolutionMood ? 'prepurchase-dark-mode' : '',
+    state.step === 'pain-carousel' || state.step === 'solution-carousel' ? 'prepurchase-carousel-mode' : '',
+    state.step === 'pain-carousel' ? 'prepurchase-pain-mode' : '',
+    state.step === 'solution-carousel' || state.step === 'social-proof' ? 'prepurchase-solution-mode' : '',
   ].filter(Boolean).join(' ')
 
   const showDefaultHeader = !steps.includes(state.step)
+  const isCarouselFlowStep = state.step === 'pain-carousel' || state.step === 'solution-carousel'
 
   return (
     <div className="app-shell">
@@ -277,12 +316,49 @@ export function PrePurchasePage() {
               />
             )}
 
-            {state.step === 'pain-carousel' && (
-              <PainCarouselStep slideIndex={state.painSlide} onNext={nextPainSlide} />
-            )}
-
-            {state.step === 'solution-carousel' && (
-              <SolutionCarouselStep slideIndex={state.solutionSlide} onNext={nextSolutionSlide} />
+            {isCarouselFlowStep && (
+              <AnimatePresence mode="wait" initial={false} custom={carouselFlowDirection}>
+                <motion.div
+                  key={state.step}
+                  className="prepurchase-carousel-switch"
+                  custom={carouselFlowDirection}
+                  initial={{
+                    x: carouselFlowDirection > 0 ? 44 : -44,
+                    opacity: 0,
+                    scale: 0.986,
+                    filter: 'blur(8px)',
+                  }}
+                  animate={{
+                    x: 0,
+                    opacity: 1,
+                    scale: 1,
+                    filter: 'blur(0px)',
+                  }}
+                  exit={{
+                    x: carouselFlowDirection > 0 ? -36 : 36,
+                    opacity: 0,
+                    scale: 0.992,
+                    filter: 'blur(6px)',
+                  }}
+                  transition={{ duration: 0.42, ease: [0.22, 1, 0.36, 1] }}
+                >
+                  {state.step === 'pain-carousel' ? (
+                    <PainCarouselStep
+                      slideIndex={state.painSlide}
+                      transitionDirection={painTransitionDirection}
+                      onBack={previousPainSlide}
+                      onNext={nextPainSlide}
+                    />
+                  ) : (
+                    <SolutionCarouselStep
+                      slideIndex={state.solutionSlide}
+                      transitionDirection={solutionTransitionDirection}
+                      onBack={previousSolutionSlide}
+                      onNext={nextSolutionSlide}
+                    />
+                  )}
+                </motion.div>
+              </AnimatePresence>
             )}
 
             {state.step === 'social-proof' && (

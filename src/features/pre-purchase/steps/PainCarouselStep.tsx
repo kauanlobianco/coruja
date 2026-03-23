@@ -1,52 +1,112 @@
-import { Brain, HeartCrack, Unplug, Frown } from 'lucide-react'
+import type { ComponentType } from 'react'
+import { AnimatePresence, motion } from 'framer-motion'
 import { painSlides } from '../data'
+import { CarouselProgressNav } from '../../../shared/components/CarouselProgressNav'
+import {
+  BrainChemistryIllustration,
+  CoupleStressIllustration,
+  DepressionIllustration,
+  FeelingSorryIllustration,
+  type IllustrationProps,
+} from '../../../components/illustrations'
 
 interface PainCarouselStepProps {
   slideIndex: number
+  transitionDirection: 1 | -1
   onNext: () => void
+  onBack: () => void
 }
 
-function renderPainIcon(iconName: string) {
-  if (iconName === 'Brain') return <Brain color="#fff" fill="#fbb6ce" size={100} strokeWidth={1} />
-  if (iconName === 'HeartCrack') return <HeartCrack color="#fff" fill="#e2e8f0" size={100} strokeWidth={1} />
-  if (iconName === 'Unplug') return <Unplug color="#fff" size={100} strokeWidth={1} />
-  if (iconName === 'Frown') return <Frown color="#fff" fill="#60a5fa" size={100} strokeWidth={1} />
-  return null
-}
+const editorialPainSlides = [
+  {
+    titleLines: ['A pornografia', 'vicia.'],
+    lead: 'A linha entre o habito e a compulsao e invisivel ate voce tentar parar.',
+    support: 'Voce promete que sera a ultima vez, mas volta em pouco tempo. Ela sequestra sua capacidade de escolha.',
+    illustration: FeelingSorryIllustration,
+    bubbleClassName: 'is-brain',
+  },
+  {
+    titleLines: ['A morte da', 'intimidade.'],
+    lead: 'Onde a comparacao comeca, a conexao real morre.',
+    support: 'Voce troca a presenca real por uma imagem editada. Aos poucos, o afeto vira distancia e a solidao ocupa o lugar do encontro.',
+    illustration: CoupleStressIllustration,
+    bubbleClassName: 'is-heart',
+  },
+  {
+    titleLines: ['Seu cerebro fica', 'diferente.'],
+    lead: 'Voce nao busca mais prazer; busca apenas alivio para uma sede que nunca acaba.',
+    support: 'A dopamina artificial vai anestesiando seus sensores. O que antes bastava perde a forca e seu cerebro passa a exigir estimulos cada vez maiores.',
+    illustration: BrainChemistryIllustration,
+    bubbleClassName: 'is-unplug',
+  },
+  {
+    titleLines: ['O brilho da vida', 'some.'],
+    lead: 'A tela que promete conforto e a mesma que entrega um vazio permanente.',
+    support: 'Esse habito drena sua energia, apaga seu interesse e empurra sua mente para um estado de apatia, ansiedade e culpa silenciosa.',
+    illustration: DepressionIllustration,
+    bubbleClassName: 'is-frown',
+  },
+] as const satisfies ReadonlyArray<{
+  titleLines: readonly [string, string]
+  lead: string
+  support: string
+  illustration: ComponentType<IllustrationProps>
+  bubbleClassName: string
+}>
 
-export function PainCarouselStep({ slideIndex, onNext }: PainCarouselStepProps) {
-  const slide = painSlides[slideIndex]
+export function PainCarouselStep({
+  slideIndex,
+  transitionDirection,
+  onNext,
+  onBack,
+}: PainCarouselStepProps) {
+  const editorialSlide = editorialPainSlides[slideIndex]
+  const SlideIllustration = editorialSlide.illustration
 
   return (
-    <section style={{ display: 'flex', flexDirection: 'column', height: '100%', minHeight: 0, padding: '0', background: 'transparent' }}>
+    <section className="pain-carousel-screen">
       <div className="pain-carousel-logo">Coruja</div>
 
-      <div style={{ padding: '0 20px', flex: 1, display: 'flex', flexDirection: 'column', overflowY: 'auto' }}>
-        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', flex: 1, textAlign: 'center' }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: '32px' }}>
-            {renderPainIcon(slide.icon)}
-          </div>
+      <div className="pain-carousel-body">
+        <div className="pain-carousel-stage">
+          <AnimatePresence mode="wait" initial={false} custom={transitionDirection}>
+            <motion.div
+              key={slideIndex}
+              className="pain-carousel-content pain-carousel-content-editorial"
+              custom={transitionDirection}
+              initial={{ x: transitionDirection > 0 ? 56 : -56, opacity: 0 }}
+              animate={{ x: 0, opacity: 1 }}
+              exit={{ x: transitionDirection > 0 ? -56 : 56, opacity: 0 }}
+              transition={{ duration: 0.34, ease: [0.22, 1, 0.36, 1] }}
+            >
+              <div className={`pain-carousel-brain-bubble ${editorialSlide.bubbleClassName}`} aria-hidden="true">
+                <div className="pain-carousel-brain-core">
+                  <SlideIllustration className="pain-carousel-illustration-image" />
+                </div>
+              </div>
 
-          <h2 style={{ fontSize: '1.6rem', fontWeight: '700', color: '#fff', marginBottom: '16px', lineHeight: '1.2' }}>
-            {slide.title}
-          </h2>
-          <p style={{ color: '#fff', fontSize: '1.05rem', lineHeight: '1.5' }}>
-            {slide.body}
-          </p>
+              <div className="pain-carousel-editorial-copy">
+                <h2 className="pain-carousel-title pain-carousel-title-editorial">
+                  <span className="pain-carousel-title-line">{editorialSlide.titleLines[0]}</span>
+                  <br />
+                  <span className="pain-carousel-title-line">{editorialSlide.titleLines[1]}</span>
+                </h2>
+                <p className="pain-carousel-lead">{editorialSlide.lead}</p>
+                <p className="pain-carousel-support">{editorialSlide.support}</p>
+              </div>
+            </motion.div>
+          </AnimatePresence>
         </div>
 
-        <div style={{ paddingBottom: '24px', paddingTop: '16px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-          <div className="pain-carousel-dots">
-            {painSlides.map((item, index) => (
-              <span
-                key={item.title}
-                className={`pain-carousel-dot ${index === slideIndex ? 'active' : ''}`}
-              />
-            ))}
-          </div>
-          <button className="button-white-pill" style={{ width: 'fit-content', padding: '12px 32px' }} onClick={onNext}>
-            Próximo &gt;
-          </button>
+        <div className="pain-carousel-footer">
+          <CarouselProgressNav
+            currentStep={slideIndex + 1}
+            totalSteps={painSlides.length}
+            onBack={onBack}
+            onNext={onNext}
+            nextLabel="Continuar"
+            finishLabel="Avancar"
+          />
         </div>
       </div>
     </section>

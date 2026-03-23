@@ -1,4 +1,5 @@
 import { useRef } from 'react'
+import { motion } from 'framer-motion'
 import { BadgeCheck } from 'lucide-react'
 import { testimonials } from '../data'
 
@@ -7,88 +8,249 @@ interface SocialProofStepProps {
   onContinue: () => void
 }
 
+const sectionTransition = {
+  duration: 0.52,
+  ease: [0.22, 1, 0.36, 1] as const,
+}
+
 export function SocialProofStep({ onBack, onContinue }: SocialProofStepProps) {
   const scrollerRef = useRef<HTMLDivElement>(null)
 
   return (
-    <section style={{ display: 'flex', flexDirection: 'column', height: '100%', minHeight: 0, minWidth: 0, width: '100%', padding: '0', background: 'transparent' }}>
+    <section className="social-proof-screen">
       <div className="quiz-custom-header">
-        <button onClick={onBack}>
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+        <button onClick={onBack} aria-label="Voltar">
+          <svg
+            width="20"
+            height="20"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <line x1="19" y1="12" x2="5" y2="12" />
+            <polyline points="12 19 5 12 12 5" />
+          </svg>
         </button>
-        <div className="title" style={{ fontSize: '0.9rem', color: '#fff' }}>O Coruja ajuda você a parar a porn...</div>
-        <div style={{ flex: 1 }}></div>
+        <div className="title social-proof-header-title">Resultados reais</div>
+        <div style={{ flex: 1 }} />
       </div>
 
-      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflowY: 'auto', overflowX: 'hidden', width: '100%', minWidth: 0, maxWidth: '100vw' }}>
-        {/* Custom Graph */}
-        <div className="social-proof-graph-container" style={{ flexShrink: 0 }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '16px', alignItems: 'flex-start' }}>
-            <div style={{ color: '#fff' }}>
-              <div style={{ fontWeight: '700', fontSize: '1rem', lineHeight: '1.2' }}>Porn Recovery</div>
-              <div style={{ fontSize: '0.75rem', color: '#ef4444', fontWeight: '400', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                <span style={{ fontSize: '1.2rem', lineHeight: '0' }}>×</span> relapse
-              </div>
+      <div className="social-proof-scroll">
+        <motion.div
+          className="social-proof-intro"
+          initial={{ opacity: 0, y: 18 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={sectionTransition}
+        >
+          <p className="social-proof-eyebrow">Prova social</p>
+          <h2 className="social-proof-title">
+            Seu resultado acelera quando o <span className="social-proof-title-accent">metodo certo</span> entra no jogo.
+          </h2>
+          <p className="social-proof-subtitle">
+            A diferenca entre o esforco aleatorio e a evolucao cientifica em uma unica visao.
+          </p>
+        </motion.div>
+
+        <motion.div
+          className="social-proof-graph-container"
+          initial={{ opacity: 0, y: 24, scale: 0.985 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          transition={{ ...sectionTransition, delay: 0.08 }}
+        >
+          <div className="social-proof-graph-header">
+            <div className="social-proof-graph-copy">
+              <strong>Progresso mensal</strong>
+              <span className="social-proof-graph-kicker">Performance baseada em consistencia</span>
             </div>
-            <span style={{ color: '#fff', fontWeight: '800', fontSize: '1.2rem', letterSpacing: '0.05em' }}>Coruja</span>
+            <div className="social-proof-graph-boost">
+              <strong>+240%</strong>
+            </div>
           </div>
 
-          <div style={{ width: '100%', position: 'relative', height: '160px' }}>
-            <svg viewBox="0 0 400 200" preserveAspectRatio="none" style={{ display: 'block', width: '100%', height: '100%', overflow: 'visible' }}>
-              <line x1="0" y1="180" x2="400" y2="180" stroke="rgba(255,255,255,0.15)" strokeWidth="1" />
-              <path d="M 0 160 C 40 165, 60 145, 80 155 S 120 175, 140 160 S 180 135, 220 155 S 260 175, 290 140 S 330 110, 350 145 S 380 160, 390 165" fill="none" stroke="#ef4444" strokeWidth="3" strokeLinecap="round" />
-              <path d="M 0 160 C 40 165, 60 145, 80 155 S 120 175, 140 160 S 180 135, 220 155 S 260 175, 290 140 S 330 110, 350 145 S 380 160, 390 165 L 390 180 L 0 180 Z" fill="url(#redGrad)" opacity="0.3" />
-              <circle cx="0" cy="160" r="5" fill="#fff" />
-              <circle cx="390" cy="165" r="5" fill="#ef4444" />
-              <path d="M 0 140 C 60 140, 120 90, 180 85 S 280 40, 360 30" fill="none" stroke="#10b981" strokeWidth="4" strokeLinecap="round" />
-              <circle cx="0" cy="140" r="5" fill="#fff" />
-              <circle cx="360" cy="30" r="6" fill="#10b981" />
-              <g transform="translate(320, 45)">
-                <rect x="0" y="0" width="65" height="22" rx="11" fill="rgba(16, 185, 129, 0.15)" />
-                <text x="32" y="15" fill="#10b981" fontSize="11" fontWeight="700" textAnchor="middle">Recovery</text>
-              </g>
-              <g transform="translate(280, 115)">
-                <rect x="0" y="0" width="85" height="22" rx="11" fill="rgba(239, 68, 68, 0.1)" />
-                <text x="42" y="15" fill="#ef4444" fontSize="11" fontWeight="600" textAnchor="middle">Conventional</text>
-              </g>
-              <text x="60" y="198" fill="rgba(255,255,255,0.4)" fontSize="11" textAnchor="middle">Week 1</text>
-              <text x="200" y="198" fill="rgba(255,255,255,0.4)" fontSize="11" textAnchor="middle">Week 2</text>
-              <text x="340" y="198" fill="rgba(255,255,255,0.4)" fontSize="11" textAnchor="middle">Week 3</text>
+          <div className="social-proof-graph-stage">
+            <svg
+              viewBox="0 0 400 200"
+              preserveAspectRatio="none"
+              className="social-proof-graph-svg"
+              aria-label="Grafico comparativo de recuperacao"
+            >
+              <line x1="18" y1="176" x2="382" y2="176" stroke="rgba(255,255,255,0.11)" strokeWidth="1.2" />
+              <line x1="18" y1="128" x2="382" y2="128" stroke="rgba(255,255,255,0.06)" strokeWidth="1" strokeDasharray="3 8" />
+
+              <motion.path
+                d="M 20 154 C 54 154, 74 160, 96 160 C 122 160, 138 148, 160 148 C 182 148, 198 170, 220 170 C 242 170, 262 118, 286 118 C 310 118, 326 166, 352 166 C 366 166, 374 160, 380 158"
+                fill="none"
+                stroke="url(#socialProofEmberStroke)"
+                strokeWidth="3.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                initial={{ pathLength: 0, opacity: 0.9 }}
+                animate={{ pathLength: 1, opacity: 1 }}
+                transition={{ duration: 1.2, delay: 0.42, ease: 'easeInOut' }}
+              />
+              <motion.path
+                d="M 20 154 C 54 154, 74 160, 96 160 C 122 160, 138 148, 160 148 C 182 148, 198 170, 220 170 C 242 170, 262 118, 286 118 C 310 118, 326 166, 352 166 C 366 166, 374 160, 380 158 L 380 176 L 20 176 Z"
+                fill="url(#socialProofEmberGrad)"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 0.08 }}
+                transition={{ duration: 0.7, delay: 1.02, ease: 'easeInOut' }}
+              />
+              <motion.circle
+                cx="20"
+                cy="154"
+                r="5"
+                fill="#fff"
+                initial={{ opacity: 0, scale: 0.6 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.32, delay: 0.34, ease: 'easeInOut' }}
+              />
+              <motion.circle
+                cx="380"
+                cy="158"
+                r="5.5"
+                fill="#d77432"
+                initial={{ opacity: 0, scale: 0.6 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.32, delay: 1.42, ease: 'easeInOut' }}
+              />
+
+              <motion.path
+                d="M 20 148 C 46 146, 62 126, 84 110 C 106 94, 128 86, 154 78 C 176 72, 198 66, 224 62 C 248 58, 276 52, 304 46 C 332 40, 354 36, 380 34"
+                fill="none"
+                stroke="url(#socialProofCyanStroke)"
+                strokeWidth="4"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                initial={{ pathLength: 0, opacity: 0.9 }}
+                animate={{ pathLength: 1, opacity: 1 }}
+                transition={{ duration: 1.35, delay: 0.18, ease: 'easeInOut' }}
+              />
+              <motion.path
+                d="M 20 148 C 46 146, 62 126, 84 110 C 106 94, 128 86, 154 78 C 176 72, 198 66, 224 62 C 248 58, 276 52, 304 46 C 332 40, 354 36, 380 34 L 380 176 L 20 176 Z"
+                fill="url(#socialProofCyanGrad)"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 0.05 }}
+                transition={{ duration: 0.72, delay: 0.86, ease: 'easeInOut' }}
+              />
+              <motion.circle
+                cx="20"
+                cy="148"
+                r="5"
+                fill="#fff"
+                initial={{ opacity: 0, scale: 0.6 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.32, delay: 0.12, ease: 'easeInOut' }}
+              />
+              <motion.circle
+                cx="380"
+                cy="34"
+                r="6.5"
+                fill="#58d0e4"
+                initial={{ opacity: 0, scale: 0.6 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.32, delay: 1.28, ease: 'easeInOut' }}
+              />
+
+              <text x="84" y="194" fill="rgba(255,255,255,0.32)" fontSize="11" textAnchor="middle">
+                Semana 1
+              </text>
+              <text x="202" y="194" fill="rgba(255,255,255,0.32)" fontSize="11" textAnchor="middle">
+                Semana 2
+              </text>
+              <text x="320" y="194" fill="rgba(255,255,255,0.32)" fontSize="11" textAnchor="middle">
+                Semana 3
+              </text>
+
               <defs>
-                <linearGradient id="redGrad" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="#ef4444" stopOpacity="0.8" />
-                  <stop offset="100%" stopColor="#ef4444" stopOpacity="0" />
+                <linearGradient id="socialProofEmberGrad" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor="#d77432" stopOpacity="0.78" />
+                  <stop offset="100%" stopColor="#d77432" stopOpacity="0" />
+                </linearGradient>
+                <linearGradient id="socialProofEmberStroke" x1="20" y1="106" x2="380" y2="160" gradientUnits="userSpaceOnUse">
+                  <stop offset="0%" stopColor="#e79244" />
+                  <stop offset="100%" stopColor="#d77432" />
+                </linearGradient>
+                <linearGradient id="socialProofCyanGrad" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor="#58d0e4" stopOpacity="0.4" />
+                  <stop offset="100%" stopColor="#58d0e4" stopOpacity="0" />
+                </linearGradient>
+                <linearGradient id="socialProofCyanStroke" x1="20" y1="136" x2="372" y2="10" gradientUnits="userSpaceOnUse">
+                  <stop offset="0%" stopColor="#63d8eb" />
+                  <stop offset="100%" stopColor="#58d0e4" />
                 </linearGradient>
               </defs>
             </svg>
           </div>
-        </div>
 
-        {/* Testimonials */}
-        <div className="testimonials-scroller" ref={scrollerRef} style={{ flexShrink: 0, width: '100%', minWidth: 0 }}>
-          {testimonials.map((item) => (
-            <div key={item.name} className="testimonial-card-horizontal">
-              <div className="testimonial-card-header">
-                <div className="testimonial-avatar">{item.name.charAt(0)}</div>
-                <div className="testimonial-name-wrap">
-                  <span className="testimonial-name">{item.name}</span>
-                  <BadgeCheck size={16} fill="#10b981" color="#fff" />
-                </div>
-              </div>
-              <h4 className="testimonial-title">{item.role}</h4>
-              <p className="testimonial-quote">{item.quote}</p>
+          <motion.div
+            className="social-proof-graph-legend"
+            aria-hidden="true"
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ ...sectionTransition, delay: 0.26 }}
+          >
+            <span className="social-proof-legend-pill is-coruja">Com Coruja</span>
+            <span className="social-proof-legend-pill is-willpower">So na forca de vontade</span>
+          </motion.div>
+        </motion.div>
+
+        <motion.div
+          className="social-proof-feedback-section"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ ...sectionTransition, delay: 0.22 }}
+        >
+          <div className="social-proof-feedback-head">
+            <div>
+              <p className="social-proof-eyebrow">Feedbacks</p>
             </div>
-          ))}
-        </div>
-      </div>
+          </div>
 
-      <div style={{ flexShrink: 0, padding: '16px 20px 24px', background: 'transparent', width: '100%', minWidth: 0, maxWidth: '100vw', boxSizing: 'border-box' }}>
-        <p style={{ color: '#fff', textAlign: 'center', fontSize: '0.90rem', lineHeight: '1.4', marginBottom: '16px' }}>
-          O Coruja ajuda você a parar a pornografia 76% mais rápido do que apenas força de vontade. 📈
-        </p>
-        <button className="button-white-pill" onClick={onContinue}>
-          Continuar
-        </button>
+          <div className="testimonials-scroller social-proof-testimonials" ref={scrollerRef}>
+            {testimonials.map((item, index) => (
+              <motion.div
+                key={item.name}
+                className="testimonial-card-horizontal"
+                initial={{ opacity: 0, y: 18, scale: 0.98 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                transition={{
+                  duration: 0.46,
+                  delay: 0.3 + index * 0.08,
+                  ease: [0.22, 1, 0.36, 1],
+                }}
+              >
+                <div className="testimonial-card-header">
+                  <div className="testimonial-avatar">{item.name.charAt(0)}</div>
+                  <div className="testimonial-name-wrap">
+                    <span className="testimonial-name">{item.name}</span>
+                    <BadgeCheck size={16} fill="#10b981" color="#fff" />
+                  </div>
+                </div>
+                <h4 className="testimonial-title">{item.role}</h4>
+                <p className="testimonial-quote">{item.quote}</p>
+              </motion.div>
+            ))}
+          </div>
+        </motion.div>
+
+        <motion.div
+          className="social-proof-cta"
+          initial={{ opacity: 0, y: 18 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ ...sectionTransition, delay: 0.38 }}
+        >
+          <p className="social-proof-cta-text">
+            O Coruja ajuda voce a parar a pornografia
+            <br />
+            76% mais rapido do que depender so da forca de vontade.
+          </p>
+          <button className="button-primary social-proof-cta-button" onClick={onContinue}>
+            Continuar
+          </button>
+        </motion.div>
       </div>
     </section>
   )

@@ -128,7 +128,7 @@ export const quizQuestions: QuizQuestion[] = [
     factor: 'Perda de controle',
     answers: [
       { label: 'Está sob controle', points: 0 },
-      { label: 'Sim, já perdi o controle para o vício', points: 2 },
+      { label: 'Perdi o controle', points: 2 },
     ],
   },
 ]
@@ -259,7 +259,7 @@ export const markerRules: MarkerRule[] = [
     id: 'perda-controle',
     title: 'Perda de controle sobre si mesmo',
     matches: (answers) => answers.get(12) === 1,
-    copy: 'Você sente que já perdeu o controle sobre você mesmo. Você sabe que precisa parar, mas não consegue. Você já perdeu o controle sobre suas próprias ações.',
+    copy: 'Você perdeu o controle. Sua consciência sabe que é preciso parar, mas o impulso sempre te vence. Hoje, a pornografia dita as regras e você apenas obedece.',
   },
   {
     id: 'pensamentos-compulsivos',
