@@ -5,7 +5,8 @@ import { SelectionPill } from './SelectionPill'
 
 export interface SelectionOption {
   label: string
-  emoji: string
+  emoji?: string
+  icon?: string
 }
 
 interface SelectionScreenProps {
@@ -14,10 +15,10 @@ interface SelectionScreenProps {
   contextIcon: string
   contextMessage: string
   options: SelectionOption[]
-  progress: number // 0–1
-  step: string    // ex: "2 de 4"
-  /** When true: single select (radio behavior), no counter. Default: false (multi) */
+  progress: number
+  step: string
   singleSelect?: boolean
+  compact?: boolean
   onContinue: (selected: string[]) => void
 }
 
@@ -30,6 +31,7 @@ export function SelectionScreen({
   progress,
   step,
   singleSelect = false,
+  compact = false,
   onContinue,
 }: SelectionScreenProps) {
   const [selected, setSelected] = useState<string[]>([])
@@ -37,11 +39,13 @@ export function SelectionScreen({
   function toggle(label: string) {
     if (singleSelect) {
       setSelected([label])
-    } else {
-      setSelected((prev) =>
-        prev.includes(label) ? prev.filter((i) => i !== label) : [...prev, label],
-      )
+      setTimeout(() => onContinue([label]), 150)
+      return
     }
+
+    setSelected((prev) =>
+      prev.includes(label) ? prev.filter((item) => item !== label) : [...prev, label],
+    )
   }
 
   const hasSelection = selected.length > 0
@@ -54,7 +58,6 @@ export function SelectionScreen({
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.25, ease: 'easeOut' }}
       >
-        {/* Header */}
         <div className="ob-header">
           <div className="ob-step-row">
             <span className="ob-step-label">{step}</span>
@@ -77,40 +80,45 @@ export function SelectionScreen({
           </div>
         </div>
 
-        {/* Empathy context card */}
         <div className="ob-context-card">
-          <span className="ob-context-icon" aria-hidden="true">{contextIcon}</span>
+          <span className="ob-context-icon" aria-hidden="true">
+            {contextIcon}
+          </span>
           <p className="ob-context-message">{contextMessage}</p>
         </div>
 
-        {/* Pill grid — 2-col by default, 1-col for goal */}
-        <div className={`ob-pills-area${singleSelect ? ' ob-pills-area--single' : ''}`}>
-          {options.map((opt, i) => {
-            const isLast = i === options.length - 1
+        <div
+          className={`ob-pills-area${singleSelect ? ' ob-pills-area--single' : ''}${
+            compact ? ' ob-pills-area--compact' : ''
+          }`}
+        >
+          {options.map((option, index) => {
+            const isLast = index === options.length - 1
             const isOdd = options.length % 2 !== 0
-            // Last pill in odd list spans 2 columns (only in 2-col layout)
-            const spanFull = !singleSelect && isLast && isOdd
+            const spanFull = !singleSelect && !compact && isLast && isOdd
+
             return (
               <SelectionPill
-                key={opt.label}
-                label={opt.label}
-                emoji={opt.emoji}
-                selected={selected.includes(opt.label)}
-                onClick={() => toggle(opt.label)}
+                key={option.label}
+                label={option.label}
+                icon={option.icon}
+                selected={selected.includes(option.label)}
+                onClick={() => toggle(option.label)}
                 spanFull={spanFull}
+                compact={compact}
               />
             )
           })}
         </div>
 
-        {/* Bottom bar */}
         <div className="ob-bottom-bar">
-          {!singleSelect && hasSelection && (
+          {!singleSelect && hasSelection ? (
             <p className="ob-count-label">
               {selected.length} {selected.length === 1 ? 'selecionado' : 'selecionados'}
             </p>
-          )}
-          <AnimatePresence mode="wait">
+          ) : null}
+
+          <AnimatePresence mode="sync">
             {hasSelection ? (
               <motion.button
                 key="cta-active"
