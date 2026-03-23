@@ -1,8 +1,10 @@
 import { useMemo, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { AnimatePresence, motion } from 'framer-motion'
-import { BookOpen, Plus, Search, Trash2, X } from 'lucide-react'
+import { BookOpen, ChevronLeft, Plus, Search, Trash2, X } from 'lucide-react'
 import { AppShell } from '../../shared/layout/AppShell'
 import { useAppState } from '../../app/state/use-app-state'
+import { appRoutes } from '../../core/config/routes'
 
 function formatCardDate(value: string) {
   return new Intl.DateTimeFormat('pt-BR', {
@@ -16,6 +18,7 @@ function formatCardDate(value: string) {
 }
 
 export function JournalPage() {
+  const navigate = useNavigate()
   const { state, saveJournalEntry, deleteJournalEntry } = useAppState()
   const [search, setSearch] = useState('')
   const [expandedId, setExpandedId] = useState<string | null>(null)
@@ -57,7 +60,14 @@ export function JournalPage() {
   }
 
   return (
-    <AppShell title="Jornal">
+    <AppShell
+      title="Jornal"
+      leading={
+        <button className="app-back-button" type="button" onClick={() => navigate(appRoutes.home)}>
+          <ChevronLeft size={18} strokeWidth={2.2} />
+        </button>
+      }
+    >
 
       {/* Busca */}
       <div className="journal-search-wrap">

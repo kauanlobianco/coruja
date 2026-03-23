@@ -33,6 +33,13 @@ export function StreakSnapshot({
 }: StreakSnapshotProps) {
   const navigate = useNavigate()
 
+  const snapshotTitle =
+    evolutionScore >= 75
+      ? 'Mais clareza mental'
+      : evolutionScore >= 50
+        ? 'Mais consistencia'
+        : 'Em construcao'
+
   return (
     <motion.section
       className="analytics-streak-snapshot"
@@ -47,38 +54,34 @@ export function StreakSnapshot({
               <Flame size={18} strokeWidth={2.2} />
             </div>
             <div className="analytics-snapshot-streak-number">{streak}</div>
-            <div className="analytics-snapshot-streak-label">Sequência diária</div>
+            <div className="analytics-snapshot-streak-label">Sequencia atual</div>
+          </div>
+
+          <div className="analytics-snapshot-hero-copy">
+            <div className="analytics-snapshot-kicker">Visao geral</div>
+            <div className="analytics-snapshot-hero-copy-title">{snapshotTitle}</div>
+            <div className="analytics-snapshot-hero-copy-body">
+              {evolutionBody.replace(/^Seu\s+/i, `${userFirstName}, `)}
+            </div>
             <button
               type="button"
               className="analytics-relapse-quick"
               onClick={() => navigate('/relapse')}
             >
-              Registrar recaída &gt;
+              Registrar recaida &gt;
             </button>
-          </div>
-
-          <div className="analytics-snapshot-hero-copy">
-            <div className="analytics-snapshot-hero-copy-title">
-              {evolutionScore >= 75
-                ? 'Mais clareza mental'
-                : evolutionScore >= 50
-                  ? 'Mais consistência'
-                  : 'Em construção'}
-            </div>
-            <div className="analytics-snapshot-hero-copy-body">
-              {evolutionBody.replace(/^Seu\s+/i, `${userFirstName}, `)}
-            </div>
           </div>
         </div>
 
         <div className="analytics-snapshot-calendar">
+          <div className="analytics-snapshot-calendar-head">Atividade da semana</div>
           <div className="analytics-snapshot-calendar-days">
-            {weeklyMoodDays.map((d) => (
-              <div key={d.label} className="analytics-snapshot-day">
-                <span className="analytics-snapshot-day-label">{d.label}</span>
+            {weeklyMoodDays.map((day) => (
+              <div key={day.label} className="analytics-snapshot-day">
+                <span className="analytics-snapshot-day-label">{day.label}</span>
                 <span
                   className={
-                    d.entry
+                    day.entry
                       ? 'analytics-snapshot-day-icon analytics-snapshot-day-icon-active'
                       : 'analytics-snapshot-day-icon analytics-snapshot-day-icon-inactive'
                   }
@@ -94,22 +97,19 @@ export function StreakSnapshot({
           <div className="analytics-snapshot-stats">
             <div className="analytics-snapshot-stat">
               <div className="analytics-snapshot-stat-value">{totalPeriodDays}</div>
-              <div className="analytics-snapshot-stat-label">Dias desde o onboarding</div>
+              <div className="analytics-snapshot-stat-label">Dias de jornada</div>
             </div>
-            <div className="analytics-snapshot-divider" aria-hidden="true" />
             <div className="analytics-snapshot-stat">
               <div className="analytics-snapshot-stat-value">{periodCheckInsCount}</div>
               <div className="analytics-snapshot-stat-label">Check-ins</div>
             </div>
-            <div className="analytics-snapshot-divider" aria-hidden="true" />
             <div className="analytics-snapshot-stat">
               <div className="analytics-snapshot-stat-value">{periodRelapsesCount}</div>
-              <div className="analytics-snapshot-stat-label">Recaídas no período</div>
+              <div className="analytics-snapshot-stat-label">Recaidas</div>
             </div>
-            <div className="analytics-snapshot-divider" aria-hidden="true" />
             <div className="analytics-snapshot-stat">
               <div className="analytics-snapshot-stat-value">{evolutionScore}</div>
-              <div className="analytics-snapshot-stat-label">Score de evolução</div>
+              <div className="analytics-snapshot-stat-label">Score atual</div>
             </div>
           </div>
         </div>
@@ -118,5 +118,4 @@ export function StreakSnapshot({
   )
 }
 
-// Re-export the type so the orchestrator doesn't need to reference the domain directly
 export type { AnalyticsReport }

@@ -491,6 +491,22 @@ dt {
   gap: 16px;
 }
 
+.app-topbar:has(.toolbar-leading) .hero-copy {
+  flex: 1;
+}
+
+.app-topbar:has(.toolbar-leading) {
+  align-items: center;
+}
+
+.app-topbar:has(.toolbar-leading) .hero-copy {
+  gap: 2px;
+}
+
+.app-topbar:has(.toolbar-leading) .hero-copy h1 {
+  line-height: 1;
+}
+
 .app-topbar .hero-copy h1 {
   margin: 0;
   font-size: 22px;
@@ -520,6 +536,45 @@ dt {
   display: flex;
   justify-content: end;
   align-items: start;
+}
+
+.toolbar-leading {
+  justify-content: start;
+  flex-shrink: 0;
+}
+
+.app-back-button {
+  width: 42px;
+  height: 42px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 14px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.03) 100%);
+  color: var(--ds-color-text-primary);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  box-shadow:
+    0 10px 22px rgba(0, 0, 0, 0.16),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  transition:
+    transform 0.16s ease,
+    border-color 0.16s ease,
+    background 0.16s ease;
+}
+
+.app-back-button:hover {
+  transform: translateY(-1px);
+  border-color: rgba(255, 255, 255, 0.12);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.04) 100%);
+}
+
+.app-back-button:active {
+  transform: scale(0.98);
 }
 
 .app-content {

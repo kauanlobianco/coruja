@@ -1,7 +1,7 @@
 import { type CSSProperties, type PointerEvent, useEffect, useMemo, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { AnimatePresence, motion } from 'framer-motion'
-import { Check, Sun } from 'lucide-react'
+import { Check, ChevronLeft, Sun } from 'lucide-react'
 import { AppShell } from '../../shared/layout/AppShell'
 import { useAppState } from '../../app/state/use-app-state'
 import { buildCheckInStrategy, hasCheckInToday } from '../../core/domain/check-in'
@@ -492,8 +492,13 @@ export function CheckInPage() {
     <AppShell title="" eyebrow="" hideTopbar>
       <section className="checkin-screen">
         <header className="checkin-header">
-          <p className="checkin-date">{formatPtDay(demoNow)}</p>
-          <h1>Check-in de hoje</h1>
+          <button className="app-back-button" type="button" onClick={() => navigate(appRoutes.home)}>
+            <ChevronLeft size={18} strokeWidth={2.2} />
+          </button>
+          <div className="checkin-header-copy">
+            <p className="checkin-date">{formatPtDay(demoNow)}</p>
+            <h1>Check-in de hoje</h1>
+          </div>
         </header>
 
         {alreadyCheckedIn && !isSaving ? (

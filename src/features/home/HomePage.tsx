@@ -226,6 +226,15 @@ export function HomePage() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4, ease: 'easeOut', delay: motionCards[1] * 0.08 }}
           style={{ width: '100%' }}
+          onClick={() => navigate(appRoutes.checkIn)}
+          role="button"
+          tabIndex={0}
+          onKeyDown={(event) => {
+            if (event.key === 'Enter' || event.key === ' ') {
+              event.preventDefault()
+              navigate(appRoutes.checkIn)
+            }
+          }}
         >
           <div className="home-checkin-row">
             <div className="home-checkin-main">
@@ -250,10 +259,14 @@ export function HomePage() {
 
             {hasCheckInDoneToday ? null : (
               <button
-                className="button button-primary shimmer home-card-button"
+                className="home-card-button"
+                type="button"
                 onClick={() => navigate(appRoutes.checkIn)}
               >
-                Registrar
+                <span>Registrar</span>
+                <span className="home-card-button-chevron" aria-hidden="true">
+                  ›
+                </span>
               </button>
             )}
           </div>
@@ -295,6 +308,14 @@ export function HomePage() {
             <article
               className={`tool-card-journal tool-card-full ${state.blocker.isEnabled ? 'tool-card-blocker' : 'tool-card-blocker-off'}`}
               onClick={() => navigate(appRoutes.blocker)}
+              role="button"
+              tabIndex={0}
+              onKeyDown={(event) => {
+                if (event.key === 'Enter' || event.key === ' ') {
+                  event.preventDefault()
+                  navigate(appRoutes.blocker)
+                }
+              }}
             >
               <div className="tool-card-journal-head">
                 <div className="tool-card-journal-head-main">
@@ -306,14 +327,12 @@ export function HomePage() {
                   <strong>Bloqueador</strong>
                 </div>
                 <button
-                  className="tool-card-journal-cta tool-card-journal-cta-compact tool-card-blocker-cta"
+                  className="tool-card-inline-arrow tool-card-inline-arrow--blocker"
                   type="button"
-                  onClick={(event) => {
-                    event.stopPropagation()
-                    navigate(appRoutes.blocker)
-                  }}
+                  aria-label="Abrir bloqueador"
+                  onClick={() => navigate(appRoutes.blocker)}
                 >
-                  Abrir
+                  <span className="tool-card-inline-arrow-glyph" aria-hidden="true" />
                 </button>
               </div>
               <div className="tool-card-journal-copy">
@@ -335,7 +354,18 @@ export function HomePage() {
             </article>
           </div>
 
-          <article className="tool-card-journal tool-card-full">
+          <article
+            className="tool-card-journal tool-card-full"
+            onClick={() => navigate(appRoutes.journal)}
+            role="button"
+            tabIndex={0}
+            onKeyDown={(event) => {
+              if (event.key === 'Enter' || event.key === ' ') {
+                event.preventDefault()
+                navigate(appRoutes.journal)
+              }
+            }}
+          >
             <div className="tool-card-journal-head">
               <div className="tool-card-journal-head-main">
                 <div className="tool-card-journal-icon-shell">
@@ -346,11 +376,12 @@ export function HomePage() {
                 <strong>Jornal</strong>
               </div>
               <button
-                className="tool-card-journal-cta tool-card-journal-cta-compact"
+                className="tool-card-inline-arrow tool-card-inline-arrow--journal"
                 type="button"
+                aria-label="Abrir jornal"
                 onClick={() => navigate(appRoutes.journal)}
               >
-                Nova entrada
+                <span className="tool-card-inline-arrow-glyph" aria-hidden="true" />
               </button>
             </div>
             <div className="tool-card-journal-copy">

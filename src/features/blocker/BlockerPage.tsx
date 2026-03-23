@@ -1,9 +1,11 @@
 import { useMemo, useEffect, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
-import { Globe, Plus, ShieldCheck, ShieldOff, Trash2 } from 'lucide-react'
+import { ChevronLeft, Globe, Plus, ShieldCheck, ShieldOff, Trash2 } from 'lucide-react'
 import { Capacitor } from '@capacitor/core'
 import { AppShell } from '../../shared/layout/AppShell'
 import { useAppState } from '../../app/state/use-app-state'
+import { appRoutes } from '../../core/config/routes'
 import {
   checkBlockerPermission,
   getBlockerVpnStatus,
@@ -19,6 +21,7 @@ import {
 import { BackgroundCircles } from '../../components/ui/BackgroundCircles'
 
 export function BlockerPage() {
+  const navigate = useNavigate()
   const { state, setBlockerEnabled, setBlockedDomains } = useAppState()
   const [customInput, setCustomInput] = useState('')
   const [permissionGranted, setPermissionGranted] = useState(false)
@@ -128,7 +131,14 @@ export function BlockerPage() {
   }
 
   return (
-    <AppShell title="Bloqueador">
+    <AppShell
+      title="Bloqueador"
+      leading={
+        <button className="app-back-button" type="button" onClick={() => navigate(appRoutes.home)}>
+          <ChevronLeft size={18} strokeWidth={2.2} />
+        </button>
+      }
+    >
 
       {/* 1 ── Círculos + escudo ──────────────────────────── */}
       <div className="blocker-circles-wrap">

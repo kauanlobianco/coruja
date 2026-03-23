@@ -8,6 +8,7 @@ interface AppShellProps extends PropsWithChildren {
   eyebrow?: string
   subtitle?: string
   actions?: ReactNode
+  leading?: ReactNode
   shellMode?: 'entry' | 'app' | 'system'
   hideTopbar?: boolean
   contentClassName?: string
@@ -28,6 +29,7 @@ export function AppShell({
   eyebrow,
   subtitle,
   actions,
+  leading,
   children,
   shellMode = 'app',
   hideTopbar = false,
@@ -56,6 +58,7 @@ export function AppShell({
               >
                 {hideTopbar ? null : (
                   <header className="app-topbar">
+                    {leading ? <div className="toolbar toolbar-mobile toolbar-leading">{leading}</div> : null}
                     <div className="hero-copy">
                       {eyebrow ? <span className="eyebrow">{eyebrow}</span> : null}
                       <h1>{title}</h1>
