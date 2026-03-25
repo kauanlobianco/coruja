@@ -1,16 +1,21 @@
 import {
-  Activity,
   ArrowLeft,
   BarChart2,
   BookOpen,
   Brain,
+  CalendarCheck,
   CheckCircle2,
   Flame,
-  Shield,
+  ShieldCheck,
   Star,
   Target,
   Trophy,
+  TrendingUp,
+  Zap,
 } from 'lucide-react'
+import { useEffect, useRef } from 'react'
+import { MultiPhoneMockup } from '../../../shared/components/MultiPhoneMockup'
+import { MindfulnessIllustration } from '../../../components/illustrations/MindfulnessIllustration'
 
 interface PlanPreviewStepProps {
   name: string
@@ -25,31 +30,101 @@ function getPlanDate(now: Date) {
   return date.toLocaleDateString('pt-BR', { day: '2-digit', month: 'long' })
 }
 
-const selfMasteryBenefits = [
-  { text: 'Construa um autocontrole inabalável', accent: 'cyan' },
-  { text: 'Torne-se mais atraente e confiante', accent: 'amber' },
-  { text: 'Experimente intimidade real e conexão', accent: 'success' },
-  { text: 'Preencha cada dia com orgulho e felicidade', accent: 'cyan' },
+function getPlanDateShort(now: Date) {
+  const date = new Date(now)
+  date.setDate(date.getDate() + 30)
+  return date.toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' }).replace('.', '')
+}
+
+const transformations = [
+  {
+    before: 'Compulsão silenciosa',
+    after: 'Controle consciente',
+    Icon: Zap,
+    accent: 'amber',
+  },
+  {
+    before: 'Vergonha acumulada',
+    after: 'Orgulho genuíno',
+    Icon: TrendingUp,
+    accent: 'cyan',
+  },
+  {
+    before: 'Relacionamentos vazios',
+    after: 'Presença e conexão real',
+    Icon: Trophy,
+    accent: 'success',
+  },
 ] as const
 
-const relationshipBenefits = [
-  { text: 'Fortaleça sua inteligência emocional', accent: 'purple' },
-  { text: 'Seja mais confiável e responsável', accent: 'cyan' },
-  { text: 'Experimente intimidade real e conexão', accent: 'success' },
-  { text: 'Torne-se a pessoa que eles merecem', accent: 'amber' },
+const appFeatures = [
+  {
+    title: 'Monitoramento de Progresso',
+    desc: 'Acompanhe seus dias limpos e marcos de recuperação com precisão.',
+    Icon: Flame,
+    color: 'var(--color-accent-amber)'
+  },
+  {
+    title: 'Análise de Gatilhos',
+    desc: 'Identifique padrões emocionais e situações de risco para evitar recaídas.',
+    Icon: BarChart2,
+    color: 'var(--color-accent-purple)'
+  },
+  {
+    title: 'Bloqueador Inteligente',
+    desc: 'Proteção em tempo real para manter você focado no que importa.',
+    Icon: ShieldCheck,
+    color: 'var(--color-accent-cyan)'
+  },
+  {
+    title: 'Diário de Jornada',
+    desc: 'Registre seus pensamentos e sentimentos para fortalecer sua mentalidade.',
+    Icon: BookOpen,
+    color: 'var(--color-warning)'
+  },
+  {
+    title: 'Modo SOS',
+    desc: 'Ferramentas de emergência para momentos críticos de urgência.',
+    Icon: Brain,
+    color: 'var(--color-danger)'
+  },
+  {
+    title: 'Metas Personalizadas',
+    desc: 'Defina objetivos claros e celebre cada pequena vitória no seu ritmo.',
+    Icon: Target,
+    color: 'var(--color-success)'
+  }
 ] as const
 
-const features = [
-  { Icon: BarChart2, label: 'Dashboard', accent: 'purple' },
-  { Icon: Shield, label: 'Bloqueador', accent: 'cyan' },
-  { Icon: Activity, label: 'Check-in', accent: 'success' },
-  { Icon: BookOpen, label: 'Jornal', accent: 'amber' },
-  { Icon: Target, label: 'Metas', accent: 'danger' },
-  { Icon: Brain, label: 'SOS', accent: 'purple' },
-] as const
 
 export function PlanPreviewStep({ name, demoNow, onBack, onContinue }: PlanPreviewStepProps) {
   const planDate = getPlanDate(demoNow)
+  const planDateShort = getPlanDateShort(demoNow)
+  const displayName = name || 'Você'
+  const scrollRef = useRef<HTMLDivElement>(null)
+
+  // Scroll-triggered reveal animations
+  useEffect(() => {
+    const root = scrollRef.current
+    if (!root) return
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('pp-revealed')
+            observer.unobserve(entry.target)
+          }
+        })
+      },
+      { root, threshold: 0.15 }
+    )
+
+    const targets = root.querySelectorAll('.pp-reveal')
+    targets.forEach((el) => observer.observe(el))
+
+    return () => observer.disconnect()
+  }, [])
 
   return (
     <section className="pp-page">
@@ -59,129 +134,160 @@ export function PlanPreviewStep({ name, demoNow, onBack, onContinue }: PlanPrevi
         </button>
       </div>
 
-      <div className="pp-scroll">
+      <div className="pp-scroll" ref={scrollRef}>
 
-        {/* ── Section 1: Hero ── */}
-        <div className="plan-scroll-section pp-section">
-          <div className="pp-created-badge">
-            <CheckCircle2 size={13} />
-            <span>Plano criado</span>
+        {/* ── MOMENTO 1: HERO DRAMÁTICO ── */}
+        <div className="plan-scroll-section pp-hero-moment">
+          <div className="pp-hero-aura" aria-hidden="true" />
+
+          <div className="pp-plan-ready-badge">
+            <CheckCircle2 size={12} />
+            <span>Plano personalizado pronto</span>
           </div>
 
-          <h1 className="pp-headline">
-            {name
-              ? `${name}, criamos um plano personalizado para você.`
-              : 'Criamos um plano personalizado para você.'}
+          <h1 className="pp-hero-name">
+            {displayName}
+            <span className="pp-hero-name-accent">,</span>
           </h1>
 
-          <p className="pp-body-muted">Você vai parar a pornografia até:</p>
+          <p className="pp-hero-subtitle">você vai parar a pornografia até:</p>
 
-          <div className="pp-plan-date-chip">
-            <span>{planDate}</span>
+          <div className="pp-hero-date-block">
+            <CalendarCheck size={18} className="pp-hero-date-icon" />
+            <span className="pp-hero-date-text">{planDate}</span>
           </div>
 
-          <div className="pp-rating-row">
-            <span className="pp-rating-value">4.9</span>
-            <div className="pp-stars">
+          <div className="pp-hero-rating">
+            <span className="pp-hero-rating-value">4.9</span>
+            <div className="pp-hero-stars">
               {[1, 2, 3, 4, 5].map((i) => (
-                <Star key={i} size={11} className="pp-star-icon" aria-hidden="true" />
+                <Star key={i} size={11} className="pp-hero-star-icon" aria-hidden="true" />
               ))}
             </div>
-            <span className="pp-stars-label">10 mil avaliações</span>
+            <span className="pp-hero-rating-label">10 mil avaliações</span>
           </div>
-
-          <p className="pp-tagline">Torne-se a melhor versão de si mesmo com Coruja</p>
-          <p className="pp-tagline-sub">Mais forte. Mais saudável. Mais feliz.</p>
         </div>
 
         <div className="plan-scroll-divider" />
 
-        {/* ── Section 2: Domine a si mesmo ── */}
-        <div className="plan-scroll-section pp-section">
-          <div className="pp-section-header">
-            <div className="pp-section-icon pp-section-icon--ember">
-              <Trophy size={20} />
-            </div>
-            <h2 className="pp-section-title">Domine a si mesmo</h2>
-          </div>
-          {selfMasteryBenefits.map((item, i) => (
-            <div key={i} className={`pp-benefit-row pp-benefit-row--${item.accent}`}>
-              <div className="pp-benefit-icon-shell">
-                <CheckCircle2 size={13} />
+        {/* ── MOMENTO 2: CARTÃO DE IDENTIDADE (hero visual) ── */}
+        <div className="plan-scroll-section pp-identity-moment pp-reveal">
+          <p className="pp-identity-intro">Seu cartão de progresso pessoal</p>
+
+          <div className="pp-identity-card">
+            <div className="pp-identity-card-shine" aria-hidden="true" />
+
+            <div className="pp-identity-card-header">
+              <div className="pp-identity-brand">
+                <Flame size={14} />
+                <span>CORUJA</span>
               </div>
-              <span className="pp-benefit-text">{item.text}</span>
+              <div className="pp-identity-card-badge">
+                <span>Premium</span>
+              </div>
             </div>
-          ))}
-        </div>
 
-        <div className="plan-scroll-divider" />
+            <div className="pp-identity-streak-block">
+              <p className="pp-identity-streak-label">Sequência ativa</p>
+              <div className="pp-identity-streak-row">
+                <span className="pp-identity-streak-number">0</span>
+                <span className="pp-identity-streak-unit">dias</span>
+              </div>
+            </div>
 
-        {/* ── Section 3: Profile card ── */}
-        <div className="plan-scroll-section pp-section">
-          <p className="pp-card-intro">
-            Bem-vindo ao Coruja. Este é o cartão do seu perfil para acompanhar o progresso.
+            <div className="pp-identity-card-footer">
+              <div className="pp-identity-meta">
+                <p className="pp-identity-meta-label">Nome</p>
+                <p className="pp-identity-meta-value">{displayName}</p>
+              </div>
+              <div className="pp-identity-meta pp-identity-meta--right">
+                <p className="pp-identity-meta-label">Meta</p>
+                <p className="pp-identity-meta-value">{planDateShort}</p>
+              </div>
+              <div className="pp-identity-meta pp-identity-meta--right">
+                <p className="pp-identity-meta-label">Livre desde</p>
+                <p className="pp-identity-meta-value">hoje</p>
+              </div>
+            </div>
+          </div>
+
+          <p className="pp-identity-outro">
+            Construído em torno de você. Cada dia registrado aqui.
           </p>
-          <div className="pp-profile-card">
-            <div className="pp-profile-card-top">
-              <div className="pp-profile-brand">CORUJA</div>
-              <div className="pp-profile-streak-icon">
-                <Flame size={15} />
-              </div>
-            </div>
-            <p className="pp-profile-streak-label">Sequência ativa</p>
-            <p className="pp-profile-streak-value">0 dias</p>
-            <div className="pp-profile-footer">
-              <div>
-                <p className="pp-profile-meta-label">Nome</p>
-                <p className="pp-profile-meta-value">{name || 'Usuário'}</p>
-              </div>
-              <div className="pp-profile-footer-right">
-                <p className="pp-profile-meta-label">Livre desde</p>
-                <p className="pp-profile-meta-value">hoje</p>
-              </div>
-            </div>
-          </div>
-          <p className="pp-card-outro">Agora, vamos construir o aplicativo em torno de você.</p>
         </div>
 
         <div className="plan-scroll-divider" />
 
-        {/* ── Section 4: Tudo em um lugar ── */}
-        <div className="plan-scroll-section pp-section">
-          <h2 className="pp-section-title pp-section-title--spaced">Tudo em um só lugar</h2>
-          <div className="pp-features-grid">
-            {features.map(({ Icon, label, accent }, i) => (
-              <div key={i} className={`pp-feature-card pp-feature-card--${accent}`}>
-                <div className="pp-feature-icon-shell">
-                  <Icon size={17} />
+        {/* ── MOMENTO 3: TRANSFORMAÇÃO ── */}
+        <div className="plan-scroll-section pp-transform-moment pp-reveal">
+          <div className="pp-transform-header">
+            <h2 className="pp-transform-title">Sua transformação</h2>
+            <p className="pp-transform-sub">Em 30 dias com o plano</p>
+          </div>
+
+          <div className="pp-transform-glass-card pp-reveal">
+            <div className="pp-transform-illustration">
+              <MindfulnessIllustration />
+            </div>
+
+            <div className="pp-transform-list">
+              {transformations.map(({ before, after, Icon, accent }, i) => (
+                <div key={i} className={`pp-transform-row pp-transform-row--${accent} pp-reveal`}>
+                  <div className="pp-transform-icon-shell">
+                    <Icon size={15} />
+                  </div>
+                  <div className="pp-transform-text-cols">
+                    <span className="pp-transform-before">{before}</span>
+                    <span className="pp-transform-arrow" aria-hidden="true">→</span>
+                    <span className="pp-transform-after">{after}</span>
+                  </div>
                 </div>
-                <span className="pp-feature-label">{label}</span>
+              ))}
+            </div>
+          </div>
+
+          <div className="pp-mockup-wrapper pp-reveal">
+            <div className="pp-features-container">
+              <p className="pp-features-row-label">Ferramentas incluídas</p>
+              
+              <div className="pp-features-grid">
+                {appFeatures.map((f, i) => (
+                  <div key={i} className="pp-feature-card">
+                    <div className="pp-feature-icon-wrapper" style={{ backgroundColor: `color-mix(in srgb, ${f.color} 15%, transparent)`, color: f.color }}>
+                      <f.Icon size={20} />
+                    </div>
+                    <div className="pp-feature-info">
+                      <h3 className="pp-feature-title">{f.title}</h3>
+                      <p className="pp-feature-desc">{f.desc}</p>
+                    </div>
+                  </div>
+                ))}
               </div>
-            ))}
+            </div>
+
+            <div className="pp-mockup-frame pp-reveal pp-reveal--slow">
+              <MultiPhoneMockup
+                leftImage="/images/mockup-analytics.png"
+                rightImage="/images/mockup-blocker.png"
+                centerImage="/images/mockup-home.png"
+                centerScreen={null}
+              />
+            </div>
           </div>
         </div>
 
         <div className="plan-scroll-divider" />
 
-        {/* ── Section 5: Relacionamentos reais ── */}
-        <div className="plan-scroll-section pp-section">
-          <h2 className="pp-section-title pp-section-title--spaced">Construa relacionamentos reais</h2>
-          {relationshipBenefits.map((item, i) => (
-            <div key={i} className={`pp-benefit-row pp-benefit-row--${item.accent}`}>
-              <div className="pp-benefit-icon-shell">
-                <CheckCircle2 size={13} />
-              </div>
-              <span className="pp-benefit-text">{item.text}</span>
-            </div>
-          ))}
-          <blockquote className="pp-quote">
-            &quot;A pornografia estava prejudicando minha capacidade de amar e de me relacionar.
-            Ainda bem que consegui virar o jogo a tempo.&quot;
+        {/* ── MOMENTO 4: CTA ── */}
+        <div className="plan-scroll-section pp-cta-section pp-reveal">
+          <blockquote className="pp-testimonial">
+            <p className="pp-testimonial-text">
+              &quot;A pornografia estava destruindo minha capacidade de amar de verdade.
+              O Coruja me deu estrutura quando eu mais precisava.&quot;
+            </p>
+            <footer className="pp-testimonial-author">— Rafael, 28 anos</footer>
           </blockquote>
-        </div>
 
-        {/* ── Section 6: CTA ── */}
-        <div className="plan-scroll-section pp-section pp-cta-section">
           <div className="pp-cta-guarantee">
             <CheckCircle2 size={13} />
             <span>Cancele quando quiser · Sem compromisso</span>
