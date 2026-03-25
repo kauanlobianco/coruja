@@ -1,121 +1,161 @@
-import { CheckCircle2, Star, Activity, BarChart2, Shield, BookOpen, Target, Brain, Trophy } from 'lucide-react'
-
-function getPlanDate() {
-  const date = new Date()
-  date.setDate(date.getDate() + 30)
-  return date.toLocaleDateString('pt-BR', { day: '2-digit', month: 'long' })
-}
+import {
+  Activity,
+  ArrowLeft,
+  BarChart2,
+  BookOpen,
+  Brain,
+  CheckCircle2,
+  Flame,
+  Shield,
+  Star,
+  Target,
+  Trophy,
+} from 'lucide-react'
 
 interface PlanPreviewStepProps {
   name: string
+  demoNow: Date
   onBack: () => void
   onContinue: () => void
 }
 
-export function PlanPreviewStep({ name, onBack, onContinue }: PlanPreviewStepProps) {
+function getPlanDate(now: Date) {
+  const date = new Date(now)
+  date.setDate(date.getDate() + 30)
+  return date.toLocaleDateString('pt-BR', { day: '2-digit', month: 'long' })
+}
+
+const selfMasteryBenefits = [
+  { text: 'Construa um autocontrole inabalável', accent: 'cyan' },
+  { text: 'Torne-se mais atraente e confiante', accent: 'amber' },
+  { text: 'Experimente intimidade real e conexão', accent: 'success' },
+  { text: 'Preencha cada dia com orgulho e felicidade', accent: 'cyan' },
+] as const
+
+const relationshipBenefits = [
+  { text: 'Fortaleça sua inteligência emocional', accent: 'purple' },
+  { text: 'Seja mais confiável e responsável', accent: 'cyan' },
+  { text: 'Experimente intimidade real e conexão', accent: 'success' },
+  { text: 'Torne-se a pessoa que eles merecem', accent: 'amber' },
+] as const
+
+const features = [
+  { Icon: BarChart2, label: 'Dashboard', accent: 'purple' },
+  { Icon: Shield, label: 'Bloqueador', accent: 'cyan' },
+  { Icon: Activity, label: 'Check-in', accent: 'success' },
+  { Icon: BookOpen, label: 'Jornal', accent: 'amber' },
+  { Icon: Target, label: 'Metas', accent: 'danger' },
+  { Icon: Brain, label: 'SOS', accent: 'purple' },
+] as const
+
+export function PlanPreviewStep({ name, demoNow, onBack, onContinue }: PlanPreviewStepProps) {
+  const planDate = getPlanDate(demoNow)
+
   return (
-    <section style={{ display: 'flex', flexDirection: 'column', height: '100%', minHeight: 0 }}>
-      <div className="quiz-custom-header" style={{ flexShrink: 0 }}>
-        <button onClick={onBack}>
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+    <section className="pp-page">
+      <div className="quiz-custom-header">
+        <button onClick={onBack} aria-label="Voltar" className="cp-back-button">
+          <ArrowLeft size={18} />
         </button>
-        <div style={{ flex: 1 }} />
       </div>
 
-      <div style={{ flex: 1, overflowY: 'auto', overflowX: 'hidden', padding: '0 2px 8px' }}>
+      <div className="pp-scroll">
 
-        {/* Section 1: Personalised plan header */}
-        <div className="plan-scroll-section" style={{ marginBottom: '28px' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px' }}>
-            <CheckCircle2 size={16} color="#10b981" />
-            <span style={{ color: '#10b981', fontSize: '0.78rem', fontWeight: '600' }}>Plano criado</span>
+        {/* ── Section 1: Hero ── */}
+        <div className="plan-scroll-section pp-section">
+          <div className="pp-created-badge">
+            <CheckCircle2 size={13} />
+            <span>Plano criado</span>
           </div>
-          <h1 style={{ color: '#fff', fontSize: '1.65rem', fontWeight: '800', lineHeight: '1.2', marginBottom: '16px' }}>
-            {name ? `${name}, criamos um plano personalizado para você.` : 'Criamos um plano personalizado para você.'}
+
+          <h1 className="pp-headline">
+            {name
+              ? `${name}, criamos um plano personalizado para você.`
+              : 'Criamos um plano personalizado para você.'}
           </h1>
-          <p style={{ color: 'rgba(255,255,255,0.65)', fontSize: '0.9rem', marginBottom: '16px' }}>Você vai parar a pornografia até:</p>
-          <div style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.2)', borderRadius: '12px', padding: '12px 18px', marginBottom: '20px', display: 'inline-block' }}>
-            <span style={{ color: '#fff', fontWeight: '700', fontSize: '1rem' }}>{getPlanDate()}</span>
+
+          <p className="pp-body-muted">Você vai parar a pornografia até:</p>
+
+          <div className="pp-plan-date-chip">
+            <span>{planDate}</span>
           </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '5px', marginBottom: '16px' }}>
-            {[1,2,3,4,5].map(i => <Star key={i} size={16} fill="#f59e0b" color="#f59e0b" />)}
-            <span style={{ color: 'rgba(255,255,255,0.6)', fontSize: '0.78rem', marginLeft: '4px' }}>4.9 · 10 mil avaliações</span>
+
+          <div className="pp-rating-row">
+            <span className="pp-rating-value">4.9</span>
+            <div className="pp-stars">
+              {[1, 2, 3, 4, 5].map((i) => (
+                <Star key={i} size={11} className="pp-star-icon" aria-hidden="true" />
+              ))}
+            </div>
+            <span className="pp-stars-label">10 mil avaliações</span>
           </div>
-          <p style={{ color: '#fff', fontSize: '0.95rem', fontWeight: '700' }}>Torne-se a melhor versão de si mesmo com Coruja</p>
-          <p style={{ color: 'rgba(255,255,255,0.55)', fontSize: '0.82rem', marginTop: '4px' }}>Mais forte. Mais saudável. Mais feliz.</p>
+
+          <p className="pp-tagline">Torne-se a melhor versão de si mesmo com Coruja</p>
+          <p className="pp-tagline-sub">Mais forte. Mais saudável. Mais feliz.</p>
         </div>
 
         <div className="plan-scroll-divider" />
 
-        {/* Section 2: Domine a si mesmo */}
-        <div className="plan-scroll-section" style={{ marginBottom: '28px' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '14px', marginBottom: '20px' }}>
-            <div style={{ width: 52, height: 52, borderRadius: '50%', background: 'linear-gradient(135deg, #7c3aed, #4f46e5)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-              <Trophy size={26} color="#fff" />
+        {/* ── Section 2: Domine a si mesmo ── */}
+        <div className="plan-scroll-section pp-section">
+          <div className="pp-section-header">
+            <div className="pp-section-icon pp-section-icon--ember">
+              <Trophy size={20} />
             </div>
-            <h2 style={{ color: '#fff', fontSize: '1.3rem', fontWeight: '800' }}>Domine a si mesmo</h2>
+            <h2 className="pp-section-title">Domine a si mesmo</h2>
           </div>
-          {[
-            { icon: <CheckCircle2 size={16} color="#10b981" />, text: 'Construa um autocontrole inabalável' },
-            { icon: <CheckCircle2 size={16} color="#a855f7" />, text: 'Torne-se mais atraente e confiante' },
-            { icon: <CheckCircle2 size={16} color="#f59e0b" />, text: 'Experimente intimidade real e conexão' },
-            { icon: <CheckCircle2 size={16} color="#10b981" />, text: 'Preencha cada dia com orgulho e felicidade' },
-          ].map((item, i) => (
-            <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '10px', background: 'rgba(255,255,255,0.05)', borderRadius: '10px', padding: '12px' }}>
-              {item.icon}
-              <span style={{ color: '#fff', fontSize: '0.9rem' }}>{item.text}</span>
+          {selfMasteryBenefits.map((item, i) => (
+            <div key={i} className={`pp-benefit-row pp-benefit-row--${item.accent}`}>
+              <div className="pp-benefit-icon-shell">
+                <CheckCircle2 size={13} />
+              </div>
+              <span className="pp-benefit-text">{item.text}</span>
             </div>
           ))}
         </div>
 
         <div className="plan-scroll-divider" />
 
-        {/* Section 3: Profile card */}
-        <div className="plan-scroll-section" style={{ marginBottom: '28px' }}>
-          <p style={{ color: 'rgba(255,255,255,0.55)', fontSize: '0.82rem', textAlign: 'center', marginBottom: '14px' }}>Bem-vindo ao Coruja. Este é o cartão do seu perfil para acompanhar o progresso.</p>
-          <div style={{ background: 'linear-gradient(135deg, #f97316, #9333ea, #2563eb)', borderRadius: '18px', padding: '20px', boxShadow: '0 16px 40px rgba(0,0,0,0.5)' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '28px' }}>
-              <div style={{ background: 'rgba(255,255,255,0.2)', borderRadius: '8px', padding: '5px 10px' }}>
-                <span style={{ color: '#fff', fontWeight: '800', fontSize: '0.8rem' }}>CORUJA</span>
-              </div>
-              <div style={{ display: 'flex', gap: '6px', opacity: 0.8 }}>
-                <div style={{ width: 24, height: 24, borderRadius: '50%', background: 'rgba(255,255,255,0.3)' }} />
-                <div style={{ width: 24, height: 24, borderRadius: '50%', background: 'rgba(255,255,255,0.5)' }} />
+        {/* ── Section 3: Profile card ── */}
+        <div className="plan-scroll-section pp-section">
+          <p className="pp-card-intro">
+            Bem-vindo ao Coruja. Este é o cartão do seu perfil para acompanhar o progresso.
+          </p>
+          <div className="pp-profile-card">
+            <div className="pp-profile-card-top">
+              <div className="pp-profile-brand">CORUJA</div>
+              <div className="pp-profile-streak-icon">
+                <Flame size={15} />
               </div>
             </div>
-            <p style={{ color: 'rgba(255,255,255,0.65)', fontSize: '0.72rem', marginBottom: '2px' }}>Sequência ativa</p>
-            <p style={{ color: '#fff', fontSize: '2.2rem', fontWeight: '900', marginBottom: '16px' }}>0 days</p>
-            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+            <p className="pp-profile-streak-label">Sequência ativa</p>
+            <p className="pp-profile-streak-value">0 dias</p>
+            <div className="pp-profile-footer">
               <div>
-                <p style={{ color: 'rgba(255,255,255,0.55)', fontSize: '0.67rem' }}>Nome</p>
-                <p style={{ color: '#fff', fontWeight: '600', fontSize: '0.82rem' }}>{name || 'Usuário'}</p>
+                <p className="pp-profile-meta-label">Nome</p>
+                <p className="pp-profile-meta-value">{name || 'Usuário'}</p>
               </div>
-              <div style={{ textAlign: 'right' }}>
-                <p style={{ color: 'rgba(255,255,255,0.55)', fontSize: '0.67rem' }}>Livre desde</p>
-                <p style={{ color: '#fff', fontWeight: '600', fontSize: '0.82rem' }}>11/25</p>
+              <div className="pp-profile-footer-right">
+                <p className="pp-profile-meta-label">Livre desde</p>
+                <p className="pp-profile-meta-value">hoje</p>
               </div>
             </div>
           </div>
-          <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.8rem', textAlign: 'center', marginTop: '14px' }}>Agora, vamos construir o aplicativo em torno de você.</p>
+          <p className="pp-card-outro">Agora, vamos construir o aplicativo em torno de você.</p>
         </div>
 
         <div className="plan-scroll-divider" />
 
-        {/* Section 4: All in one place */}
-        <div className="plan-scroll-section" style={{ marginBottom: '28px' }}>
-          <h2 style={{ color: '#fff', fontSize: '1.2rem', fontWeight: '800', marginBottom: '16px' }}>Tudo em um só lugar</h2>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
-            {[
-              { icon: <BarChart2 size={20} color="#a855f7" />, label: 'Dashboard', color: 'rgba(168,85,247,0.15)' },
-              { icon: <Shield size={20} color="#3b82f6" />, label: 'Bloqueador', color: 'rgba(59,130,246,0.15)' },
-              { icon: <Activity size={20} color="#10b981" />, label: 'Check-in', color: 'rgba(16,185,129,0.15)' },
-              { icon: <BookOpen size={20} color="#f59e0b" />, label: 'Jornal', color: 'rgba(245,158,11,0.15)' },
-              { icon: <Target size={20} color="#ef4444" />, label: 'Metas', color: 'rgba(239,68,68,0.15)' },
-              { icon: <Brain size={20} color="#8b5cf6" />, label: 'SOS', color: 'rgba(139,92,246,0.15)' },
-            ].map((item, i) => (
-              <div key={i} style={{ background: item.color, border: '1px solid rgba(255,255,255,0.08)', borderRadius: '12px', padding: '14px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                {item.icon}
-                <span style={{ color: '#fff', fontWeight: '600', fontSize: '0.82rem' }}>{item.label}</span>
+        {/* ── Section 4: Tudo em um lugar ── */}
+        <div className="plan-scroll-section pp-section">
+          <h2 className="pp-section-title pp-section-title--spaced">Tudo em um só lugar</h2>
+          <div className="pp-features-grid">
+            {features.map(({ Icon, label, accent }, i) => (
+              <div key={i} className={`pp-feature-card pp-feature-card--${accent}`}>
+                <div className="pp-feature-icon-shell">
+                  <Icon size={17} />
+                </div>
+                <span className="pp-feature-label">{label}</span>
               </div>
             ))}
           </div>
@@ -123,29 +163,33 @@ export function PlanPreviewStep({ name, onBack, onContinue }: PlanPreviewStepPro
 
         <div className="plan-scroll-divider" />
 
-        {/* Section 5: Relacionamentos reais */}
-        <div className="plan-scroll-section" style={{ marginBottom: '28px' }}>
-          <h2 style={{ color: '#fff', fontSize: '1.2rem', fontWeight: '800', marginBottom: '16px' }}>Construa relacionamentos reais</h2>
-          {[
-            { icon: <CheckCircle2 size={16} color="#a855f7" />, text: 'Fortaleça sua inteligência emocional' },
-            { icon: <CheckCircle2 size={16} color="#3b82f6" />, text: 'Seja mais confiável e responsável' },
-            { icon: <CheckCircle2 size={16} color="#10b981" />, text: 'Experimente intimidade real e conexão' },
-            { icon: <CheckCircle2 size={16} color="#f59e0b" />, text: 'Torne-se a pessoa que eles merecem' },
-          ].map((item, i) => (
-            <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '10px', background: 'rgba(255,255,255,0.05)', borderRadius: '10px', padding: '12px' }}>
-              {item.icon}
-              <span style={{ color: '#fff', fontSize: '0.9rem' }}>{item.text}</span>
+        {/* ── Section 5: Relacionamentos reais ── */}
+        <div className="plan-scroll-section pp-section">
+          <h2 className="pp-section-title pp-section-title--spaced">Construa relacionamentos reais</h2>
+          {relationshipBenefits.map((item, i) => (
+            <div key={i} className={`pp-benefit-row pp-benefit-row--${item.accent}`}>
+              <div className="pp-benefit-icon-shell">
+                <CheckCircle2 size={13} />
+              </div>
+              <span className="pp-benefit-text">{item.text}</span>
             </div>
           ))}
-          <p style={{ color: 'rgba(255,255,255,0.45)', fontSize: '0.75rem', textAlign: 'center', marginTop: '10px', fontStyle: 'italic', padding: '0 8px' }}>
-            &quot;A pornografia estava prejudicando minha capacidade de amar e de me relacionar. Ainda bem que consegui virar o jogo a tempo.&quot;
-          </p>
+          <blockquote className="pp-quote">
+            &quot;A pornografia estava prejudicando minha capacidade de amar e de me relacionar.
+            Ainda bem que consegui virar o jogo a tempo.&quot;
+          </blockquote>
         </div>
 
-        {/* Section 6: CTA */}
-        <div className="plan-scroll-section" style={{ paddingBottom: '8px' }}>
-          <button className="button-white-pill" onClick={onContinue}>Torne-se um Coruja</button>
-          <p style={{ textAlign: 'center', color: 'rgba(255,255,255,0.35)', fontSize: '0.68rem', marginTop: '10px' }}>A compra aparece discretamente · Cancele quando quiser</p>
+        {/* ── Section 6: CTA ── */}
+        <div className="plan-scroll-section pp-section pp-cta-section">
+          <div className="pp-cta-guarantee">
+            <CheckCircle2 size={13} />
+            <span>Cancele quando quiser · Sem compromisso</span>
+          </div>
+          <button className="button button-ember-brand pp-cta" onClick={onContinue}>
+            Torne-se um Coruja
+          </button>
+          <p className="pp-cta-disclaimer">A compra aparece discretamente</p>
         </div>
 
       </div>

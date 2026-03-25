@@ -12,6 +12,12 @@ dist
 dist-ssr
 *.local
 
+# Skills / external tools
+awesome-claude-code-main/
+get-shit-done-main/
+ui-ux-pro-max-skill-main/
+design-system/
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json

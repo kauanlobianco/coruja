@@ -50,7 +50,7 @@ function getQuizProgress(quizIndex: number) {
 
 export function PrePurchasePage() {
   const navigate = useNavigate()
-  const { state: appState } = useAppState()
+  const { state: appState, demoNow } = useAppState()
   const [state, setState] = useState<PrePurchaseState>(() => loadPrePurchaseState() ?? initialState)
   const [loadingProgress, setLoadingProgress] = useState(0)
   const [showPaywallSheet, setShowPaywallSheet] = useState(false)
@@ -371,6 +371,7 @@ export function PrePurchasePage() {
             {state.step === 'plan-preview' && (
               <PlanPreviewStep
                 name={state.name}
+                demoNow={demoNow}
                 onBack={() => goTo('social-proof')}
                 onContinue={() => goTo('custom-plan')}
               />

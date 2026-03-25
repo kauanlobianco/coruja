@@ -2154,9 +2154,9 @@
   line-height: 1;
 }
 
-.relapse-resilience--high   { color: #4ade80; }
-.relapse-resilience--medium { color: #f0bc70; }
-.relapse-resilience--low    { color: #f08080; }
+.relapse-resilience--high   { color: var(--color-success); }
+.relapse-resilience--medium { color: var(--color-accent-amber); }
+.relapse-resilience--low    { color: var(--color-danger-light); }
 
 .relapse-context-hint {
   font-size: 10px;
