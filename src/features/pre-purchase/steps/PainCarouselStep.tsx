@@ -60,7 +60,18 @@ export function PainCarouselStep({
 
   return (
     <section className="pain-carousel-screen">
-      <div className="pain-carousel-logo">Coruja</div>
+      <div className="pain-carousel-logo foco-brand-logo-mini foco-brand-logo-mini--off">
+        <div className="foco-brand-logo" aria-label="Foco Mode desativado">
+          <div className="foco-brand-top">FOCO</div>
+          <div className="foco-brand-bottom">
+            <span>M</span>
+            <div className="foco-brand-toggle is-off">
+              <div className="foco-brand-toggle-knob"></div>
+            </div>
+            <span>E</span>
+          </div>
+        </div>
+      </div>
 
       <div className="pain-carousel-body">
         <div className="pain-carousel-stage">
@@ -93,7 +104,7 @@ export function PainCarouselStep({
           </AnimatePresence>
         </div>
 
-        <div className="pain-carousel-footer">
+        <div className="pain-carousel-footer pain-carousel-pain-nav">
           <CarouselProgressNav
             currentStep={slideIndex + 1}
             totalSteps={painSlides.length}

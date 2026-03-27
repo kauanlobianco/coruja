@@ -1,5 +1,5 @@
 import { AnimatePresence, motion } from 'framer-motion'
-import { useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAppState } from '../../app/state/use-app-state'
 import { quizQuestions, painSlides, solutionSlides } from './data'
@@ -14,6 +14,7 @@ import { SymptomsStep } from './steps/SymptomsStep'
 import { DiagnosisStep, buildDiagnosisReport } from './steps/DiagnosisStep'
 import { PainCarouselStep } from './steps/PainCarouselStep'
 import { SolutionCarouselStep } from './steps/SolutionCarouselStep'
+import { ToggleActivationStep } from './steps/ToggleActivationStep'
 import { SocialProofStep } from './steps/SocialProofStep'
 import { PlanPreviewStep } from './steps/PlanPreviewStep'
 import { CustomPlanStep } from './steps/CustomPlanStep'
@@ -21,7 +22,7 @@ import { PaywallStep } from './steps/PaywallStep'
 
 const steps: FunnelStep[] = [
   'landing', 'quiz', 'loading', 'identity', 'symptoms', 'diagnosis',
-  'pain-carousel', 'solution-carousel', 'social-proof',
+  'pain-carousel', 'toggle-activation', 'solution-carousel', 'social-proof',
   'plan-preview', 'custom-plan', 'paywall',
 ]
 
@@ -58,6 +59,7 @@ export function PrePurchasePage() {
   const [painTransitionDirection, setPainTransitionDirection] = useState<1 | -1>(1)
   const [solutionTransitionDirection, setSolutionTransitionDirection] = useState<1 | -1>(1)
   const [carouselFlowDirection, setCarouselFlowDirection] = useState<1 | -1>(1)
+  const [toggleActivated, setToggleActivated] = useState(false)
 
   // Persist state on every change
   useEffect(() => {
@@ -169,7 +171,7 @@ export function PrePurchasePage() {
     setState((current) => ({
       ...current,
       painSlide: Math.min(current.painSlide + 1, painSlides.length - 1),
-      step: current.painSlide >= painSlides.length - 1 ? 'solution-carousel' : 'pain-carousel',
+      step: current.painSlide >= painSlides.length - 1 ? 'toggle-activation' : 'pain-carousel',
     }))
   }
 
@@ -218,23 +220,36 @@ export function PrePurchasePage() {
 
   const usesImmersiveFrame = [
     'landing', 'quiz', 'loading', 'identity', 'symptoms', 'diagnosis',
-    'pain-carousel', 'solution-carousel', 'social-proof',
+    'pain-carousel', 'toggle-activation', 'solution-carousel', 'social-proof',
   ].includes(state.step)
 
   const usesSolutionMood = state.step === 'solution-carousel' || state.step === 'social-proof'
+
+  const showSolutionBg = usesSolutionMood || (state.step === 'toggle-activation' && toggleActivated)
+  const showPainBg = (state.step === 'pain-carousel' || (state.step === 'toggle-activation' && !toggleActivated))
 
   const funnelFrameClassName = [
     usesImmersiveFrame
       ? 'funnel-frame funnel-phone-frame funnel-phone-frame-quiz prepurchase-shell'
       : 'funnel-frame funnel-phone-frame prepurchase-shell',
-    state.darkMode && !usesSolutionMood ? 'prepurchase-dark-mode' : '',
-    state.step === 'pain-carousel' || state.step === 'solution-carousel' ? 'prepurchase-carousel-mode' : '',
-    state.step === 'pain-carousel' ? 'prepurchase-pain-mode' : '',
-    state.step === 'solution-carousel' || state.step === 'social-proof' ? 'prepurchase-solution-mode' : '',
+    state.darkMode && !showSolutionBg ? 'prepurchase-dark-mode' : '',
+    state.step === 'pain-carousel' || state.step === 'toggle-activation' || state.step === 'solution-carousel' ? 'prepurchase-carousel-mode' : '',
+    showPainBg ? 'prepurchase-pain-mode' : '',
+    showSolutionBg ? 'prepurchase-solution-mode' : '',
   ].filter(Boolean).join(' ')
 
   const showDefaultHeader = !steps.includes(state.step)
   const isCarouselFlowStep = state.step === 'pain-carousel' || state.step === 'solution-carousel'
+
+  const handleToggleActivate = useCallback(() => {
+    setToggleActivated(true)
+  }, [])
+
+  const handleToggleActivationComplete = useCallback(() => {
+    setCarouselFlowDirection(1)
+    setToggleActivated(false)
+    setState((current) => ({ ...current, step: 'solution-carousel' }))
+  }, [])
 
   return (
     <div className="app-shell">
@@ -323,10 +338,10 @@ export function PrePurchasePage() {
                   className="prepurchase-carousel-switch"
                   custom={carouselFlowDirection}
                   initial={{
-                    x: carouselFlowDirection > 0 ? 44 : -44,
+                    x: toggleActivated ? 0 : carouselFlowDirection > 0 ? 44 : -44,
                     opacity: 0,
-                    scale: 0.986,
-                    filter: 'blur(8px)',
+                    scale: toggleActivated ? 1 : 0.986,
+                    filter: toggleActivated ? 'blur(0px)' : 'blur(8px)',
                   }}
                   animate={{
                     x: 0,
@@ -340,7 +355,7 @@ export function PrePurchasePage() {
                     scale: 0.992,
                     filter: 'blur(6px)',
                   }}
-                  transition={{ duration: 0.42, ease: [0.22, 1, 0.36, 1] }}
+                  transition={{ duration: toggleActivated ? 0.8 : 0.42, ease: [0.22, 1, 0.36, 1] }}
                 >
                   {state.step === 'pain-carousel' ? (
                     <PainCarouselStep
@@ -359,6 +374,13 @@ export function PrePurchasePage() {
                   )}
                 </motion.div>
               </AnimatePresence>
+            )}
+
+            {state.step === 'toggle-activation' && (
+              <ToggleActivationStep
+                onActivate={handleToggleActivate}
+                onComplete={handleToggleActivationComplete}
+              />
             )}
 
             {state.step === 'social-proof' && (

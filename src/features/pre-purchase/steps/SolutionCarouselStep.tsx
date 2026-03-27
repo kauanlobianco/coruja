@@ -98,7 +98,18 @@ export function SolutionCarouselStep({
 
   return (
     <section className="pain-carousel-screen">
-      <div className="pain-carousel-logo">Coruja</div>
+      <div className="pain-carousel-logo foco-brand-logo-mini foco-brand-logo-mini--on">
+        <div className="foco-brand-logo" aria-label="Foco Mode ativado">
+          <div className="foco-brand-top">FOCO</div>
+          <div className="foco-brand-bottom">
+            <span>M</span>
+            <div className="foco-brand-toggle is-on">
+              <div className="foco-brand-toggle-knob"></div>
+            </div>
+            <span>E</span>
+          </div>
+        </div>
+      </div>
 
       <div className="pain-carousel-body">
         <div className="pain-carousel-stage">

@@ -13,6 +13,7 @@ export type FunnelStep =
   | 'symptoms'
   | 'diagnosis'
   | 'pain-carousel'
+  | 'toggle-activation'
   | 'solution-carousel'
   | 'social-proof'
   | 'plan-preview'

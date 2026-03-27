@@ -1,4 +1,4 @@
-import { ArrowRight, Leaf, Star } from 'lucide-react'
+import { ArrowRight, Star } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 
 interface LandingStepProps {
@@ -11,30 +11,43 @@ export function LandingStep({ conflictError, onStart }: LandingStepProps) {
 
   return (
     <section className="prepurchase-landing">
+      <div className="foco-landing-particles" aria-hidden="true">
+        {Array.from({ length: 8 }).map((_, i) => (
+          <div key={i} className="foco-particle" />
+        ))}
+      </div>
+
       <div className="prepurchase-landing-brand">
-        <h1 className="prepurchase-logo">CORUJA</h1>
-
-        <div className="prepurchase-hero-copy">
-          <h2 className="prepurchase-hero-title">Bem-vindo!</h2>
-          <p className="prepurchase-hero-subtitle">
-            Vamos comecar descobrindo se voce esta enfrentando um problema com
-            pornografia.
-          </p>
-        </div>
-
-        <div className="prepurchase-social-proof" aria-label="Avaliacao media dos usuarios">
-          <Leaf className="prepurchase-social-proof-leaf" size={18} />
-          <div className="prepurchase-social-proof-text">
-            <span className="prepurchase-social-proof-rating">
-              {Array.from({ length: 5 }).map((_, index) => (
-                <Star key={index} size={14} fill="currentColor" strokeWidth={1.8} />
-              ))}
-            </span>
-            <span className="prepurchase-social-proof-caption">
-              4.9 de avaliacao entre usuarios em recuperacao
-            </span>
+        <div className="foco-brand-center">
+          <div className="prepurchase-hero-copy foco-hero-center">
+            <h2 className="prepurchase-hero-title">Bem-vindo!</h2>
+            <p className="prepurchase-hero-subtitle">
+              Vamos comecar descobrindo se voce esta enfrentando um problema com
+              pornografia.
+            </p>
           </div>
-          <Leaf className="prepurchase-social-proof-leaf" size={18} />
+
+          <div className="foco-brand-logo" aria-label="Foco Mode">
+            <div className="foco-brand-top">FOCO</div>
+            <div className="foco-brand-bottom">
+              <span>M</span>
+              <div className="foco-brand-toggle">
+                <div className="foco-brand-toggle-knob"></div>
+              </div>
+              <span>E</span>
+            </div>
+            
+            <div className="foco-brand-rating">
+              <span className="foco-brand-rating-stars">
+                {Array.from({ length: 5 }).map((_, index) => (
+                  <Star key={index} size={11} fill="currentColor" strokeWidth={1.8} />
+                ))}
+              </span>
+              <span className="foco-brand-rating-text">
+                4.9 de avaliação
+              </span>
+            </div>
+          </div>
         </div>
       </div>
 

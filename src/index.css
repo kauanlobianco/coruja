@@ -3603,6 +3603,36 @@ dd {
   margin-top: 24px;
 }
 
+/* Foco Mode logo no carousel — sem bolha, centralizado, menor */
+.foco-brand-logo-mini {
+  display: flex;
+  justify-content: center;
+}
+
+.foco-brand-logo-mini .foco-brand-logo {
+  /* Remove a bolha glassmorphism */
+  background: none;
+  border: none;
+  box-shadow: none;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  padding: 0;
+  margin: 0;
+  
+  /* Centraliza internamente */
+  align-items: center;
+  justify-content: center;
+}
+
+.foco-brand-logo-mini .foco-brand-logo::before {
+  display: none; /* Remove o glow de fundo */
+}
+
+.foco-brand-logo-mini .foco-brand-top,
+.foco-brand-logo-mini .foco-brand-bottom {
+  font-size: clamp(1.1rem, 5vw, 1.35rem); /* Menor que a landing page */
+}
+
 .pain-carousel-body {
   padding: 0 20px;
   flex: 1;

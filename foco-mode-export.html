@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Foco Mode - Export</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@500;900&display=swap');
+
+    :root {
+      --ds-color-info-400: #62c3d0;
+      --ds-color-text-inverted: #ffffff;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      /* Fundo mais escuro com gradiente estilo landing page atual */
+      background: radial-gradient(circle at 20% 0%, #173652 0%, #102138 60%, #0d1a2d 100%);
+      font-family: 'Inter', sans-serif;
+      box-sizing: border-box;
+    }
+
+    /* O container puro, sem bolha (apenas as letras do logo) */
+    .export-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      transform: scale(4); /* Escala gigante para captura perfeita */
+      color: var(--ds-color-text-inverted);
+      padding: 24px;
+    }
+
+    /* Halo luminoso sutil da landing page */
+    .foco-brand-logo::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -46%);
+      width: 140px;
+      height: 140px;
+      border-radius: 50%;
+      background: radial-gradient(
+        circle,
+        color-mix(in srgb, var(--ds-color-info-400) 25%, transparent) 0%,
+        color-mix(in srgb, #2d6b8a 12%, transparent) 50%,
+        transparent 80%
+      );
+      filter: blur(16px);
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    .foco-brand-top,
+    .foco-brand-bottom {
+      position: relative;
+      z-index: 1;
+      font-size: 2.2rem; 
+      line-height: 0.95;
+      font-weight: 900;
+      text-transform: uppercase;
+      /* Brilho bem mais sutil e dark */
+      text-shadow: 0 0 16px color-mix(in srgb, var(--ds-color-info-400) 15%, transparent);
+    }
+
+    .foco-brand-top {
+      letter-spacing: 0.08em;
+      margin-left: 0.08em;
+    }
+
+    .foco-brand-bottom {
+      display: flex;
+      align-items: center;
+      gap: 0.12em;
+      letter-spacing: 0;
+    }
+
+    .foco-brand-toggle {
+      width: 1.6em;
+      height: 0.78em;
+      border-radius: 1em;
+      background-color: var(--ds-color-info-400);
+      position: relative;
+      display: flex;
+      align-items: center;
+      margin-top: -0.05em;
+      /* Removemos a box-shadow complexa para focar no flat style clean escuro */
+      box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.15);
+    }
+
+    .foco-brand-toggle-knob {
+      width: 0.58em;
+      height: 0.58em;
+      border-radius: 50%;
+      background-color: var(--ds-color-text-inverted);
+      position: absolute;
+      right: 0.1em;
+      box-shadow: 
+        0 2px 4px rgba(0, 0, 0, 0.25),
+        inset -1px -1px 2px rgba(0,0,0,0.1);
+    }
+
+    .instructions {
+      position: fixed;
+      bottom: 20px;
+      left: 20px;
+      color: white;
+      font-family: inherit;
+      opacity: 0.3;
+      font-size: 13px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="export-container foco-brand-logo">
+    <div class="foco-brand-top">FOCO</div>
+    <div class="foco-brand-bottom">
+      <span>M</span>
+      <div class="foco-brand-toggle">
+        <div class="foco-brand-toggle-knob"></div>
+      </div>
+      <span>E</span>
+    </div>
+  </div>
+
+  <div class="instructions">Use Inspecionar (F12) e capture o elemento pra copiar a logo em fundo limpo e escuro!</div>
+
+</body>
+</html>

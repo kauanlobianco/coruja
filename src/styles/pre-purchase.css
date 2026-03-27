@@ -156,6 +156,11 @@
   opacity: 0;
 }
 
+.funnel-phone-frame.prepurchase-shell.prepurchase-pain-mode,
+.funnel-phone-frame.prepurchase-shell.prepurchase-solution-mode {
+  transition: background 1s ease;
+}
+
 .funnel-phone-frame.prepurchase-shell.prepurchase-pain-mode {
   background:
     radial-gradient(
@@ -251,20 +256,329 @@
   gap: var(--ds-space-8);
 }
 
-.prepurchase-landing-brand {
-  display: grid;
-  gap: var(--ds-space-6);
+.foco-landing-particles {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  overflow: hidden;
 }
 
-.prepurchase-logo {
-  margin: 0;
-  font-size: var(--ds-type-display-size);
-  line-height: var(--ds-type-display-line-height);
-  font-weight: var(--ds-font-weight-black);
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
+.foco-particle {
+  position: absolute;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--ds-color-info-400, #66d0bd) 50%, white);
+  box-shadow: 0 0 12px color-mix(in srgb, var(--ds-color-info-400, #66d0bd) 80%, transparent);
+  animation: float-particle linear infinite;
+  opacity: 0;
+}
+
+@keyframes float-particle {
+  0% { transform: translateY(0) scale(0.6); opacity: 0; }
+  30% { opacity: 0.8; }
+  70% { opacity: 0.8; }
+  100% { transform: translateY(-160px) scale(1.4); opacity: 0; }
+}
+
+.foco-particle:nth-child(1) { width: 4px; height: 4px; left: 15%; top: 85%; animation-duration: 5s; animation-delay: 0s; }
+.foco-particle:nth-child(2) { width: 6px; height: 6px; left: 82%; top: 75%; animation-duration: 7.5s; animation-delay: 1.5s; }
+.foco-particle:nth-child(3) { width: 3px; height: 3px; left: 45%; top: 90%; animation-duration: 6s; animation-delay: 0.8s; }
+.foco-particle:nth-child(4) { width: 5px; height: 5px; left: 88%; top: 55%; animation-duration: 8s; animation-delay: 2s; }
+.foco-particle:nth-child(5) { width: 4px; height: 4px; left: 25%; top: 62%; animation-duration: 5.5s; animation-delay: 3.2s; }
+.foco-particle:nth-child(6) { width: 7px; height: 7px; left: 60%; top: 82%; animation-duration: 9s; animation-delay: 1s; }
+.foco-particle:nth-child(7) { width: 3px; height: 3px; left: 8%; top: 48%; animation-duration: 6.5s; animation-delay: 4s; }
+.foco-particle:nth-child(8) { width: 5px; height: 5px; left: 50%; top: 65%; animation-duration: 7s; animation-delay: 2.5s; }
+
+.prepurchase-landing-brand {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ds-space-6);
+  flex: 1; /* allows the brand area to fill space above CTA */
+}
+
+.foco-brand-center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--ds-space-6);
+  margin-top: auto;
+  margin-bottom: auto;
+  padding: var(--ds-space-6) 0;
+  transform: translateY(-6vh);
+}
+
+.foco-hero-center {
+  text-align: center;
+  align-items: center;
+  justify-items: center;
+}
+
+.foco-brand-logo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: fit-content;
+  position: relative;
+  margin: var(--ds-space-2) 0;
+  padding: 16px 20px;
+  border-radius: 22px;
+  background: 
+    radial-gradient(
+      ellipse at top left,
+      color-mix(in srgb, var(--ds-color-info-400) 18%, transparent) 0%,
+      transparent 60%
+    ),
+    rgba(255, 255, 255, 0.02);
+  border: 1px solid color-mix(in srgb, var(--ds-color-info-500) 22%, rgba(255, 255, 255, 0.08));
+  box-shadow: 
+    0 16px 36px color-mix(in srgb, black 16%, transparent),
+    inset 0 1px 0 color-mix(in srgb, white 14%, transparent),
+    inset 0 0 16px color-mix(in srgb, var(--ds-color-info-500) 6%, transparent);
+  backdrop-filter: blur(28px) saturate(1.15);
+  -webkit-backdrop-filter: blur(28px) saturate(1.15);
   color: var(--ds-color-text-inverted);
-  text-shadow: 0 0 24px color-mix(in srgb, var(--ds-color-ember-500) 12%, transparent);
+}
+
+.foco-brand-logo::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -46%);
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    color-mix(in srgb, var(--ds-color-info-400, #66d0bd) 26%, transparent) 0%,
+    color-mix(in srgb, var(--ds-color-ember-400, #e67e22) 14%, transparent) 45%,
+    transparent 80%
+  );
+  filter: blur(14px);
+  z-index: 0;
+  pointer-events: none;
+}
+
+.foco-brand-top,
+.foco-brand-bottom {
+  position: relative;
+  z-index: 1;
+  font-size: clamp(1.6rem, 8vw, 2.1rem);
+  line-height: 0.95;
+  font-weight: var(--ds-font-weight-black);
+  text-transform: uppercase;
+  text-shadow: 0 0 24px color-mix(in srgb, var(--ds-color-info-400, #66d0bd) 24%, transparent);
+}
+
+.foco-brand-top {
+  letter-spacing: 0.08em;
+  margin-left: 0.08em;
+}
+
+.foco-brand-bottom {
+  display: flex;
+  align-items: center;
+  gap: 0.12em;
+  letter-spacing: 0;
+}
+
+.foco-brand-toggle {
+  width: 1.6em;
+  height: 0.78em;
+  border-radius: 1em;
+  background-color: var(--ds-color-info-400, #66d0bd);
+  position: relative;
+  display: flex;
+  align-items: center;
+  margin-top: -0.05em;
+  box-shadow: 
+    0 4px 18px color-mix(in srgb, var(--ds-color-info-400, #66d0bd) 45%, transparent),
+    inset 0 1px 3px rgba(0, 0, 0, 0.15);
+}
+
+.foco-brand-toggle-knob {
+  width: 0.58em;
+  height: 0.58em;
+  border-radius: 50%;
+  background-color: var(--ds-color-text-inverted, #ffffff);
+  position: absolute;
+  right: 0.1em;
+  box-shadow: 
+    0 2px 8px rgba(0, 0, 0, 0.25),
+    inset -1px -1px 2px rgba(0,0,0,0.05);
+}
+
+/* Toggle estado desligado — laranja/ember, knob à esquerda */
+.foco-brand-toggle.is-off {
+  background: linear-gradient(135deg, var(--ds-color-warning-500, #ec9731) 0%, var(--ds-color-ember-500, #e35b2e) 100%);
+  box-shadow:
+    0 4px 14px color-mix(in srgb, var(--ds-color-ember-500, #e35b2e) 40%, transparent);
+}
+
+.foco-brand-toggle.is-off .foco-brand-toggle-knob {
+  right: auto;
+  left: 0.1em;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.25);
+}
+
+/* Pain carousel (OFF): apenas o toggle muda, texto fica normal */
+
+/* Toggle estado ativado — ciano com glow intenso */
+.foco-brand-toggle.is-on {
+  box-shadow:
+    0 4px 18px color-mix(in srgb, var(--ds-color-info-400, #66d0bd) 60%, transparent),
+    0 0 28px color-mix(in srgb, var(--ds-color-info-400, #66d0bd) 28%, transparent),
+    inset 0 1px 3px rgba(0, 0, 0, 0.15);
+}
+
+/* Solution carousel (ON): texto brilhante com glow */
+.foco-brand-logo-mini--on .foco-brand-top,
+.foco-brand-logo-mini--on .foco-brand-bottom {
+  opacity: 1;
+  text-shadow:
+    0 0 18px color-mix(in srgb, var(--ds-color-info-400, #66d0bd) 35%, transparent),
+    0 0 40px color-mix(in srgb, var(--ds-color-info-400, #66d0bd) 14%, transparent);
+}
+
+/* ── Toggle Activation Step ─────────────────────────────────────────────── */
+
+.toggle-activation-screen {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+  overflow: hidden;
+  /* Sem background próprio — usa o background real do shell */
+}
+
+.toggle-activation-logo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  color: var(--ds-color-text-inverted, #fff);
+  z-index: 2;
+  transition:
+    transform 0.7s cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 0.5s ease;
+}
+
+/* Phase 1: grow */
+.toggle-activation-logo.grow {
+  transform: scale(0.85);
+  opacity: 0.5;
+  animation: toggle-act-grow 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+@keyframes toggle-act-grow {
+  0% { transform: scale(0.85); opacity: 0.5; }
+  100% { transform: scale(1.25); opacity: 1; }
+}
+
+/* Phase 2: activate */
+.toggle-activation-logo.activate {
+  transform: scale(1.25);
+  opacity: 1;
+}
+
+/* Phase 3: glow */
+.toggle-activation-logo.glow {
+  transform: scale(1.25);
+  opacity: 1;
+  animation: toggle-act-pulse 0.6s ease forwards;
+}
+
+@keyframes toggle-act-pulse {
+  0% { transform: scale(1.25); }
+  40% { transform: scale(1.35); }
+  100% { transform: scale(1.25); filter: brightness(1.3); }
+}
+
+/* Toggle animation */
+.toggle-activation-toggle {
+  transition:
+    background 0.4s ease,
+    box-shadow 0.4s ease;
+}
+
+.toggle-activation-toggle .foco-brand-toggle-knob {
+  transition:
+    left 0.4s cubic-bezier(0.22, 1, 0.36, 1),
+    right 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* Texto */
+.toggle-activation-logo .foco-brand-top,
+.toggle-activation-logo .foco-brand-bottom {
+  font-size: clamp(1.6rem, 8vw, 2.1rem);
+  line-height: 0.95;
+  font-weight: var(--ds-font-weight-black, 900);
+  text-transform: uppercase;
+  transition:
+    text-shadow 0.5s ease,
+    opacity 0.5s ease;
+}
+
+.toggle-activation-logo .foco-brand-top {
+  letter-spacing: 0.08em;
+  margin-left: 0.08em;
+}
+
+.toggle-activation-logo .foco-brand-bottom {
+  display: flex;
+  align-items: center;
+  gap: 0.12em;
+  letter-spacing: 0;
+}
+
+/* Quando ativado, texto brilha ciano */
+.toggle-activation-logo.activate .foco-brand-top,
+.toggle-activation-logo.activate .foco-brand-bottom,
+.toggle-activation-logo.glow .foco-brand-top,
+.toggle-activation-logo.glow .foco-brand-bottom {
+  text-shadow:
+    0 0 20px color-mix(in srgb, var(--ds-color-info-400, #66d0bd) 50%, transparent),
+    0 0 50px color-mix(in srgb, var(--ds-color-info-400, #66d0bd) 20%, transparent);
+}
+
+/* Fade-out suave antes de ir para solution */
+.toggle-activation-screen.is-fading {
+  animation: toggle-act-fadeout 1s ease-in-out forwards;
+}
+
+@keyframes toggle-act-fadeout {
+  0% { opacity: 1; }
+  60% { opacity: 0.6; }
+  100% { opacity: 0; }
+}
+
+.foco-brand-rating {
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 12px;
+  padding-top: 8px;
+  border-top: 1px solid color-mix(in srgb, white 15%, transparent);
+}
+
+.foco-brand-rating-stars {
+  display: flex;
+  gap: 2px;
+  color: var(--ds-color-gold-400, #fbc02d);
+}
+
+.foco-brand-rating-text {
+  font-size: 11px;
+  font-weight: var(--ds-font-weight-medium, 500);
+  color: color-mix(in srgb, var(--ds-color-text-inverted) 80%, transparent);
+  text-transform: none;
+  letter-spacing: 0;
+  text-shadow: none;
 }
 
 .prepurchase-hero-copy {
