@@ -73,6 +73,7 @@ interface ChatMessage {
 type OnboardingStep = 'motivations' | 'triggers' | 'goal' | 'done'
 
 const WAVE = '\u{1F44B}'
+const OWL = '\u{1F989}'
 
 function FocoBotAvatar() {
   return (
@@ -562,6 +563,7 @@ export function OnboardingChat() {
     goalOptions.find((goal) => goal.days === state.profile.goalDays) ?? null,
   )
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [submitError, setSubmitError] = useState<string | null>(null)
   const [completionData, setCompletionData] = useState<CompletionData | null>(null)
   const timersRef = useRef<number[]>([])
   const bottomRef = useRef<HTMLDivElement>(null)
@@ -696,6 +698,7 @@ export function OnboardingChat() {
     if (!selectedGoal || isSubmitting) return
 
     setIsSubmitting(true)
+    setSubmitError(null)
     setMessages((current) => [
       ...current,
       {
@@ -710,15 +713,16 @@ export function OnboardingChat() {
     const resolvedAge =
       state.profile.age ?? (prePurchaseAge.trim() ? Number(prePurchaseAge) : null)
 
-    await completeOnboarding({
-      name: name || 'Usuario',
-      age: resolvedAge,
-      goalDays: selectedGoal.days,
-      motivations: selectedMotivations.map((item) => item.label),
-      triggers: selectedTriggers.map((item) => item.label),
-    })
+    try {
+      await completeOnboarding({
+        name: name || 'Usuario',
+        age: resolvedAge,
+        goalDays: selectedGoal.days,
+        motivations: selectedMotivations.map((item) => item.label),
+        triggers: selectedTriggers.map((item) => item.label),
+      })
 
-    queueAppMessage(
+      queueAppMessage(
       `Perfeito. ${OWL} Seu perfil está configurado.`,
       'done',
       () => {
@@ -732,6 +736,22 @@ export function OnboardingChat() {
         timersRef.current.push(timer)
       },
     )
+    } catch (error) {
+      setSubmitError(
+        error instanceof Error ? error.message : 'Nao foi possivel concluir seu onboarding.',
+      )
+      setMessages((current) => [
+        ...current,
+        {
+          id: createId('app'),
+          role: 'app',
+          kind: 'text',
+          text: 'Nao consegui salvar agora. Tente novamente em instantes.',
+        },
+      ])
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   return (
@@ -874,6 +894,7 @@ export function OnboardingChat() {
                       : 'Escolha uma meta'
                   }
                 </button>
+                {submitError ? <p className="ob-chat-submit-error" role="alert">{submitError}</p> : null}
               </motion.div>
             ) : null}
 

@@ -1,10 +1,9 @@
-import { useEffect } from 'react'
-import { bootstrapNativeShell, isNativePlatform, platform } from '../../core/platform/capacitor'
+import { isNativePlatform, platform } from '../../core/platform/capacitor'
 
 export function IntroPage() {
-  useEffect(() => {
-    void bootstrapNativeShell()
-  }, [])
+  if (!isNativePlatform) {
+    return null
+  }
 
   return (
     <div className="intro-screen">

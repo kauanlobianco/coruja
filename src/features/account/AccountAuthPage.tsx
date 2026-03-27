@@ -153,13 +153,6 @@ export function AccountAuthPage() {
       return
     }
 
-    await linkAccount({
-      userId: result.userId,
-      email: result.email,
-      lastBackupAt: null,
-      lastLeaseRefreshAt: session.lastLeaseRefreshAt,
-    })
-
     if (mode === 'login') {
       await setBackupStatus('restoring', null)
       const restored = await restoreBackupForAccount(result.userId)
@@ -172,7 +165,7 @@ export function AccountAuthPage() {
           lastLeaseRefreshAt: session.lastLeaseRefreshAt,
         })
         setLoading(false)
-        navigate('/app', { replace: true })
+        navigate(restored.model.hasCompletedOnboarding ? '/app' : '/onboarding', { replace: true })
         return
       }
 
