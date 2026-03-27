@@ -72,8 +72,22 @@ interface ChatMessage {
 
 type OnboardingStep = 'motivations' | 'triggers' | 'goal' | 'done'
 
-const OWL = '\u{1F989}'
 const WAVE = '\u{1F44B}'
+
+function FocoBotAvatar() {
+  return (
+    <div className="ob-chat-avatar-foco" aria-hidden="true">
+      <div className="ob-chat-avatar-foco-top">FOCO</div>
+      <div className="ob-chat-avatar-foco-bottom">
+        <span>M</span>
+        <div className="ob-chat-avatar-foco-toggle">
+          <div className="ob-chat-avatar-foco-knob" />
+        </div>
+        <span>E</span>
+      </div>
+    </div>
+  )
+}
 
 const iconMap: Record<IconKey, LucideIcon> = {
   brain: Brain,
@@ -151,7 +165,7 @@ function TypewriterBubble() {
       transition={{ duration: 0.4, ease: 'easeOut' }}
     >
       <div className="ob-chat-avatar" aria-hidden="true">
-        {OWL}
+        <FocoBotAvatar />
       </div>
       <motion.div
         className="ob-chat-bubble ob-chat-bubble--app ob-chat-bubble--typing"
@@ -206,7 +220,7 @@ function TextBubble({
     >
       {role === 'app' ? (
         <div className="ob-chat-avatar" aria-hidden="true">
-          {OWL}
+          <FocoBotAvatar />
         </div>
       ) : null}
       <motion.div
@@ -743,7 +757,6 @@ export function OnboardingChat() {
       <div className="ob-chat-screen">
         <div className="ob-chat-header">
           <div className="ob-chat-header-row">
-            <span className="ob-chat-label">Onboarding inicial</span>
             {(currentStep === 'triggers' || currentStep === 'goal') ? (
               <button type="button" className="ob-chat-back" onClick={handleBack}>
                 <ArrowLeft size={14} strokeWidth={2.2} />

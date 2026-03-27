@@ -283,7 +283,7 @@ export function PlanPreviewStep({ name, demoNow, onBack, onContinue }: PlanPrevi
           <blockquote className="pp-testimonial">
             <p className="pp-testimonial-text">
               &quot;A pornografia estava destruindo minha capacidade de amar de verdade.
-              O Coruja me deu estrutura quando eu mais precisava.&quot;
+              O Foco Mode me deu estrutura quando eu mais precisava.&quot;
             </p>
             <footer className="pp-testimonial-author">— Rafael, 28 anos</footer>
           </blockquote>
@@ -293,7 +293,7 @@ export function PlanPreviewStep({ name, demoNow, onBack, onContinue }: PlanPrevi
             <span>Cancele quando quiser · Sem compromisso</span>
           </div>
           <button className="button button-ember-brand pp-cta" onClick={onContinue}>
-            Torne-se um Coruja
+            Ativar Foco Mode
           </button>
           <p className="pp-cta-disclaimer">A compra aparece discretamente</p>
         </div>

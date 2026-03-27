@@ -263,7 +263,7 @@ export function PrePurchasePage() {
               <header className="funnel-header">
                 <div className="funnel-header-main" style={{ width: '100%' }}>
                   <span className="eyebrow">Pre-compra</span>
-                  <h1>Coruja</h1>
+                  <h1>Foco Mode</h1>
                 </div>
                 <div className="funnel-progress">
                   <div className="progress-track">

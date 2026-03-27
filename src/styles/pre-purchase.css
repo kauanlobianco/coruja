@@ -3975,3 +3975,326 @@
 .cp-sheet-cta {
   width: 100%;
 }
+
+/* ─── CustomPlan v2 — multi-step loader style ───────────────────────────────── */
+
+.cp2-hero {
+  padding: 0 var(--space-4) var(--space-3);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.cp2-hero-sub {
+  font-size: var(--font-size-small);
+  color: var(--color-text-muted);
+  margin: 0;
+}
+
+/* Viewport: scrollable, fades naturally at the bottom via mask */
+.cp2-viewport {
+  flex: 1;
+  overflow-y: auto;
+  position: relative;
+  scrollbar-width: none;
+  -webkit-mask-image: linear-gradient(to bottom, black 55%, transparent 100%);
+  mask-image: linear-gradient(to bottom, black 55%, transparent 100%);
+}
+.cp2-viewport::-webkit-scrollbar { display: none; }
+
+.cp2-list {
+  display: flex;
+  flex-direction: column;
+  padding: 60px var(--space-4) 120px;
+}
+
+/* Each step row */
+.cp2-step {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: var(--space-2);
+}
+
+.cp2-step--locked {
+  pointer-events: none;
+}
+
+/* Icon column — aligned to first line of card */
+.cp2-step-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  flex-shrink: 0;
+  padding-top: 12px; /* align with card content top */
+}
+
+/* Glassmorphism card */
+.cp2-step-card {
+  flex: 1;
+  min-width: 0;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 14px;
+  padding: 10px 14px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  transition: background 0.3s ease, border-color 0.3s ease;
+}
+
+.cp2-step-card--active {
+  background: rgba(255, 255, 255, 0.07);
+  border-color: rgba(255, 255, 255, 0.13);
+}
+
+.cp2-step-top {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.cp2-step-day {
+  font-size: 11px;
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+  transition: color 0.3s ease;
+}
+
+.cp2-step-sep {
+  font-size: 11px;
+  color: var(--color-text-muted);
+  opacity: 0.4;
+}
+
+.cp2-step-tool {
+  font-size: 11px;
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-muted);
+  opacity: 0.7;
+}
+
+.cp2-step-headline {
+  font-size: var(--font-size-body);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-secondary);
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transition: color 0.3s ease;
+}
+
+.cp2-step-headline--active {
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-primary);
+}
+
+.cp2-step-body {
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--color-text-muted);
+  margin: 0;
+}
+
+.cp2-step-body--locked {
+  letter-spacing: 0.1em;
+  filter: blur(3px);
+  user-select: none;
+  opacity: 0.5;
+}
+
+
+@media (prefers-reduced-motion: reduce) {
+  .cp2-step,
+  .cp2-step-headline,
+  .cp2-step-day {
+    transition: none !important;
+  }
+}
+
+/* ─── Hero section ─────────────────────────────────────────────────────────── */
+
+.cp-hero {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin-bottom: var(--space-5);
+}
+
+.cp-hero-stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin-top: var(--space-1);
+}
+
+.cp-hero-stat-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 10px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: var(--radius-pill);
+  font-size: var(--font-size-overline);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-secondary);
+  letter-spacing: 0.04em;
+}
+
+/* ─── Item card top row ─────────────────────────────────────────────────────── */
+
+.cp-item-card {
+  border-left-width: 2px;
+}
+
+.cp-item-card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+  margin-bottom: 4px;
+}
+
+.cp-item-tool-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 8px;
+  border-radius: var(--radius-pill);
+  font-size: 10px;
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: 0.04em;
+}
+
+/* ─── Lock boundary ─────────────────────────────────────────────────────────── */
+
+.cp-lock-boundary {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3) 0;
+}
+
+.cp-lock-divider-line {
+  flex: 1;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.cp-lock-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 12px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: var(--radius-pill);
+  font-size: var(--font-size-overline);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-muted);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+/* ─── Locked zone ───────────────────────────────────────────────────────────── */
+
+.cp-locked-zone {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+.cp-locked-item {
+  opacity: 0.38;
+  pointer-events: none;
+}
+
+.cp-item-dot--locked {
+  width: 32px;
+  height: 32px;
+  min-width: 32px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.cp-item-card--locked {
+  border-left-width: 2px;
+  border-color: rgba(255, 255, 255, 0.08) !important;
+  background: rgba(255, 255, 255, 0.03) !important;
+}
+
+.cp-item-day--locked {
+  color: var(--color-text-muted);
+}
+
+.cp-item-body--locked {
+  letter-spacing: 0.15em;
+  color: var(--color-text-muted);
+  filter: blur(3px);
+  user-select: none;
+}
+
+.cp-locked-gradient {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 120px;
+  background: linear-gradient(to bottom, transparent 0%, var(--color-bg-screen, #0a0a0f) 100%);
+  pointer-events: none;
+}
+
+/* ─── Plan name group + popular badge ──────────────────────────────────────── */
+
+.cp-plan-name-group {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.cp-plan-popular-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  background: rgba(43, 181, 196, 0.15);
+  border: 1px solid rgba(43, 181, 196, 0.28);
+  border-radius: var(--radius-pill);
+  font-size: 10px;
+  font-weight: var(--font-weight-bold);
+  letter-spacing: 0.04em;
+  color: var(--color-accent-cyan);
+  text-transform: uppercase;
+}
+
+/* ─── Sheet includes list ───────────────────────────────────────────────────── */
+
+.cp-sheet-includes {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.cp-sheet-includes li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: var(--font-size-small);
+  color: var(--color-text-secondary);
+}
+
+.cp-sheet-includes li svg {
+  color: var(--color-accent-amber);
+  flex-shrink: 0;
+}

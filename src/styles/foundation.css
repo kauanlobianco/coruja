@@ -609,6 +609,13 @@ dt {
   min-height: 0;
 }
 
+.app-content-auth {
+  padding: 0;
+  gap: 0;
+  overflow: hidden;
+  align-content: stretch;
+}
+
 .bottom-nav {
   position: absolute;
   left: 12px;

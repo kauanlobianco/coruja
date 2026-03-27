@@ -4304,11 +4304,6 @@ dd {
 }
 
 .social-proof-graph-container {
-  background:
-    radial-gradient(circle at 14% 12%, rgba(88, 208, 228, 0.2) 0%, transparent 30%),
-    radial-gradient(circle at 84% 90%, rgba(88, 208, 228, 0.14) 0%, transparent 28%),
-    linear-gradient(180deg, rgba(88, 208, 228, 0.09) 0%, rgba(255, 255, 255, 0.035) 100%);
-  border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 24px;
   padding: 18px 16px 14px;
   margin: 0;
@@ -4316,9 +4311,34 @@ dd {
   overflow: hidden;
   backdrop-filter: blur(18px);
   -webkit-backdrop-filter: blur(18px);
+  transition:
+    background 0.5s ease,
+    border-color 0.5s ease,
+    box-shadow 0.5s ease;
+}
+
+.social-proof-graph-container.is-foco-active {
+  background:
+    radial-gradient(circle at 14% 12%, rgba(88, 208, 228, 0.2) 0%, transparent 30%),
+    radial-gradient(circle at 84% 90%, rgba(88, 208, 228, 0.14) 0%, transparent 28%),
+    linear-gradient(180deg, rgba(88, 208, 228, 0.09) 0%, rgba(255, 255, 255, 0.035) 100%);
+  border: 1px solid rgba(88, 208, 228, 0.14);
   box-shadow:
     0 18px 40px rgba(0, 0, 0, 0.18),
+    0 0 32px rgba(88, 208, 228, 0.06),
     inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+.social-proof-graph-container.is-foco-inactive {
+  background:
+    radial-gradient(circle at 14% 12%, rgba(232, 151, 74, 0.18) 0%, transparent 30%),
+    radial-gradient(circle at 84% 90%, rgba(215, 116, 50, 0.12) 0%, transparent 28%),
+    linear-gradient(180deg, rgba(215, 116, 50, 0.08) 0%, rgba(255, 255, 255, 0.025) 100%);
+  border: 1px solid rgba(232, 151, 74, 0.14);
+  box-shadow:
+    0 18px 40px rgba(0, 0, 0, 0.18),
+    0 0 24px rgba(215, 116, 50, 0.06),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06);
 }
 
 .social-proof-screen {
@@ -4396,10 +4416,10 @@ dd {
 
 .social-proof-graph-header {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   justify-content: space-between;
-  gap: 14px;
-  margin-bottom: 16px;
+  gap: 12px;
+  margin-bottom: 0;
 }
 
 .social-proof-graph-legend {
@@ -4430,6 +4450,14 @@ dd {
   color: #58d0e4;
 }
 
+.social-proof-legend-pill.is-foco-on {
+  color: #58d0e4;
+}
+
+.social-proof-legend-pill.is-foco-off {
+  color: #e8974a;
+}
+
 .social-proof-legend-pill.is-willpower {
   color: #63779c;
 }
@@ -4448,6 +4476,16 @@ dd {
 .social-proof-legend-pill.is-coruja::before {
   background: #8cf1f8;
   box-shadow: 0 0 10px rgba(140, 241, 248, 0.45);
+}
+
+.social-proof-legend-pill.is-foco-on::before {
+  background: #8cf1f8;
+  box-shadow: 0 0 10px rgba(140, 241, 248, 0.45);
+}
+
+.social-proof-legend-pill.is-foco-off::before {
+  background: #e8974a;
+  box-shadow: 0 0 10px rgba(232, 151, 74, 0.45);
 }
 
 .social-proof-legend-pill.is-willpower::before {
@@ -4477,23 +4515,38 @@ dd {
 }
 
 .social-proof-graph-boost {
-  display: grid;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   gap: 2px;
-  min-width: 88px;
-  padding: 12px 14px;
-  border-radius: 20px;
+  padding: 10px 14px;
+  border-radius: 18px;
   background:
-    radial-gradient(circle at 20% 20%, rgba(140, 241, 248, 0.12) 0%, transparent 30%),
-    rgba(18, 34, 52, 0.72);
-  border: 1px solid rgba(140, 241, 248, 0.08);
+    radial-gradient(circle at 20% 20%, rgba(140, 241, 248, 0.14) 0%, transparent 30%),
+    rgba(14, 26, 42, 0.82);
+  border: 1px solid rgba(140, 241, 248, 0.14);
+  box-shadow:
+    0 0 18px rgba(88, 208, 228, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
   text-align: center;
+  margin-top: 8px;
 }
 
 .social-proof-graph-boost strong {
-  font-size: 0.92rem;
+  font-size: 1.38rem;
   line-height: 1;
-  letter-spacing: 0.08em;
+  letter-spacing: -0.02em;
   color: #8cf1f8;
+  font-weight: 800;
+}
+
+.social-proof-boost-label {
+  font-size: 0.7rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  font-weight: 700;
+  color: rgba(140, 241, 248, 0.65);
+  line-height: 1;
 }
 
 .social-proof-graph-stage {
@@ -4504,6 +4557,13 @@ dd {
   display: grid;
   align-items: stretch;
   margin-top: 10px;
+  overflow: hidden;
+  border-radius: 12px;
+}
+
+.social-proof-graph-stage.is-blurred .social-proof-graph-svg {
+  filter: blur(5px);
+  opacity: 0.32;
 }
 
 .social-proof-graph-svg {
@@ -4513,6 +4573,114 @@ dd {
   min-height: 224px;
   flex: none;
   overflow: visible;
+  filter: blur(0px);
+  opacity: 1;
+  transition: filter 0.55s ease, opacity 0.55s ease;
+}
+
+/* Overlay de ativacao centralizado sobre o grafico */
+.social-proof-activate-overlay {
+  all: unset;
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  background: radial-gradient(
+    ellipse at 50% 44%,
+    rgba(30, 18, 8, 0.55) 0%,
+    rgba(8, 10, 20, 0.82) 65%
+  );
+}
+
+.social-proof-activate-overlay:active .sp-activate-logo {
+  transform: scale(0.93);
+}
+
+/* Logo grande centralizada no overlay */
+.sp-activate-logo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  color: #fff;
+  font-weight: 800;
+  text-transform: uppercase;
+  font-size: clamp(1.15rem, 5.5vw, 1.4rem);
+  line-height: 0.95;
+  letter-spacing: 0.06em;
+  transition: transform 0.15s ease;
+  animation: sp-logo-enter 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes sp-logo-enter {
+  from { transform: scale(0.78); opacity: 0; }
+  to   { transform: scale(1);    opacity: 1; }
+}
+
+/* Linha inferior da logo no overlay (M [toggle] E) */
+.sp-logo-bottom {
+  display: flex;
+  align-items: center;
+  gap: 0.12em;
+  letter-spacing: 0;
+  font-size: inherit;
+  line-height: inherit;
+  font-weight: inherit;
+}
+
+/* Track do toggle — animado via framer-motion */
+.sp-toggle-track {
+  width: 1.6em;
+  height: 0.78em;
+  border-radius: 1em;
+  position: relative;
+  margin-top: -0.05em;
+  flex-shrink: 0;
+  animation: sp-toggle-pulse 1.8s ease-in-out infinite;
+}
+
+@keyframes sp-toggle-pulse {
+  0%, 100% { box-shadow: 0 4px 16px rgba(227, 91, 46, 0.55), 0 0 28px rgba(227, 91, 46, 0.3); }
+  50%       { box-shadow: 0 4px 22px rgba(227, 91, 46, 0.8), 0 0 44px rgba(227, 91, 46, 0.5); }
+}
+
+/* Knob — posicionado via framer-motion x; top calculado: (0.78em - 0.58em) / 2 = 0.10em */
+.sp-toggle-knob {
+  width: 0.58em;
+  height: 0.58em;
+  border-radius: 50%;
+  background: #fff;
+  position: absolute;
+  top: 0.10em;
+  left: 0.1em;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.28);
+}
+
+/* Label "Toque para ativar" */
+.sp-activate-label {
+  margin: 0;
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.72);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.sp-activate-label::before,
+.sp-activate-label::after {
+  content: '';
+  display: block;
+  width: 18px;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.28);
 }
 
 .social-proof-feedback-head {
@@ -4655,10 +4823,12 @@ dd {
   position: relative;
   min-height: 100%;
   height: 100%;
-  display: grid;
-  align-content: stretch;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
   padding: 0;
   overflow: hidden;
+  background: transparent;
 }
 
 .account-auth-back {
@@ -4716,10 +4886,9 @@ dd {
   position: relative;
   z-index: 1;
   display: grid;
-  gap: 20px;
-  min-height: 100%;
+  gap: 24px;
   align-content: start;
-  padding: calc(env(safe-area-inset-top) + 64px) 24px calc(env(safe-area-inset-bottom) + 36px);
+  padding: 28px 24px calc(env(safe-area-inset-bottom) + 28px);
   border-radius: 0;
   border: 0;
   background: transparent;
@@ -4730,34 +4899,47 @@ dd {
 
 .account-auth-header {
   display: grid;
-  gap: 10px;
+  gap: 0;
   padding: 0 2px;
-}
-
-.account-auth-header .section-label {
-  padding: 0;
-  border-radius: 0;
-  background: transparent;
-  color: rgba(255, 255, 255, 0.5);
-  font-size: 0.74rem;
-  font-weight: 700;
-  letter-spacing: 0.12em;
-  box-shadow: none;
 }
 
 .account-auth-header h1 {
   margin: 0;
-  font-size: clamp(1.7rem, 5.4vw, 2.15rem);
-  line-height: 1.04;
-  letter-spacing: -0.04em;
+  font-size: clamp(1.5rem, 5vw, 1.85rem);
+  line-height: 1.1;
+  letter-spacing: -0.03em;
+  color: var(--color-text-primary, #fff);
 }
 
-.account-auth-header p {
-  margin: 0;
-  color: var(--text-muted);
+/* Step wrapper — used by AnimatePresence */
+.account-auth-step {
+  display: grid;
+  gap: 14px;
+}
+
+/* Email chip shown on password step */
+.account-auth-email-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 14px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  border-radius: 999px;
   font-size: 13px;
-  line-height: 1.55;
-  max-width: 32ch;
+  color: var(--color-text-secondary, rgba(255,255,255,0.7));
+  width: fit-content;
+}
+
+.account-auth-chip-change {
+  border: 0;
+  background: transparent;
+  color: var(--ds-color-warning-500, #ec9e32);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0;
+  margin-left: 4px;
 }
 
 .account-auth-mode-switch {
@@ -5188,6 +5370,6 @@ dd {
   }
 
   .account-auth-card {
-    padding: calc(env(safe-area-inset-top) + 62px) 20px calc(env(safe-area-inset-bottom) + 28px);
+    padding: 24px 20px calc(env(safe-area-inset-bottom) + 24px);
   }
 }

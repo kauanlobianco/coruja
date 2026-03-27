@@ -1,14 +1,12 @@
+import { AnimatePresence, motion } from 'framer-motion'
 import { useMemo, useState } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
 import {
   ArrowLeft,
   Eye,
   EyeOff,
-  Github,
-  Linkedin,
   LockKeyhole,
   Mail,
-  Twitter,
 } from 'lucide-react'
 import { AppShell } from '../../shared/layout/AppShell'
 import {
@@ -23,6 +21,14 @@ import { normalizeAppModel } from '../../core/domain/streak'
 import { establishExclusiveAccountSession } from './services/device-session-service'
 
 type Mode = 'login' | 'signup'
+type AuthStep = 'email' | 'password'
+
+const slide = {
+  initial: (dir: number) => ({ opacity: 0, x: dir * 24 }),
+  animate: { opacity: 1, x: 0 },
+  exit: (dir: number) => ({ opacity: 0, x: dir * -24 }),
+  transition: { duration: 0.22, ease: [0.22, 1, 0.36, 1] as const },
+}
 
 export function AccountAuthPage() {
   const navigate = useNavigate()
@@ -32,6 +38,7 @@ export function AccountAuthPage() {
   const loginOnly = params.get('loginOnly') === '1'
   const forcedMode: Mode | null = signupOnly ? 'signup' : loginOnly ? 'login' : null
   const [mode, setMode] = useState<Mode>(forcedMode ?? ((params.get('mode') as Mode) || 'signup'))
+  const [authStep, setAuthStep] = useState<AuthStep>('email')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
@@ -40,40 +47,62 @@ export function AccountAuthPage() {
   const [error, setError] = useState('')
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
-  const [rememberMe, setRememberMe] = useState(false)
+  const [stepDir, setStepDir] = useState(1)
 
   const normalizedEmail = email.trim()
   const isEmailValid = useMemo(() => {
-    if (!normalizedEmail) {
-      return true
-    }
-
+    if (!normalizedEmail) return true
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normalizedEmail)
   }, [normalizedEmail])
+
+  function handleModeSwitch(newMode: Mode) {
+    setMode(newMode)
+    setAuthStep('email')
+    setPassword('')
+    setConfirmPassword('')
+    setError('')
+    setMessage('')
+  }
+
+  function handleEmailContinue() {
+    setError('')
+    if (!normalizedEmail) {
+      setError('Digite seu e-mail para continuar.')
+      return
+    }
+    if (!isEmailValid) {
+      setError('E-mail inválido.')
+      return
+    }
+    setStepDir(1)
+    setAuthStep('password')
+  }
+
+  function handleBackToEmail() {
+    setStepDir(-1)
+    setAuthStep('email')
+    setError('')
+    setMessage('')
+  }
 
   async function handleForgotPassword() {
     if (!normalizedEmail) {
       setError('Digite seu e-mail para redefinir a senha.')
       return
     }
-
     if (!isEmailValid) {
       setError('Digite um e-mail valido para redefinir a senha.')
       return
     }
-
     setError('')
     setMessage('')
     setLoading(true)
-
     const result = await resetPasswordForEmail(normalizedEmail)
     setLoading(false)
-
     if (!result.success) {
       setError(result.error)
       return
     }
-
     setMessage('Link de redefinicao enviado para o seu e-mail.')
   }
 
@@ -86,12 +115,10 @@ export function AccountAuthPage() {
       setError('Preencha e-mail e senha para continuar.')
       return
     }
-
     if (!isEmailValid) {
       setError('Digite um e-mail valido.')
       return
     }
-
     if (mode === 'signup' && password !== confirmPassword) {
       setError('As senhas nao coincidem.')
       return
@@ -212,193 +239,206 @@ export function AccountAuthPage() {
       contentClassName="app-content-auth"
     >
       <section className="account-auth-screen">
-        <div className="account-auth-orb account-auth-orb-primary" aria-hidden="true" />
-        <div className="account-auth-orb account-auth-orb-secondary" aria-hidden="true" />
+
+        <div className="foco-landing-particles" aria-hidden="true">
+          {Array.from({ length: 8 }).map((_, i) => (
+            <div key={i} className="foco-particle" />
+          ))}
+        </div>
 
         <button
           type="button"
           className="account-auth-back"
-          onClick={() => navigate(-1)}
+          onClick={authStep === 'password' ? handleBackToEmail : () => navigate(-1)}
           aria-label="Voltar"
         >
           <ArrowLeft size={18} />
         </button>
 
         <article className="account-auth-card">
+
+          {/* Header */}
           <div className="account-auth-header">
-            <span className="section-label">
-              {mode === 'signup' ? 'Criar conta' : 'Entrar'}
-            </span>
-            <h1>{mode === 'signup' ? 'Seu progresso merece um lugar seguro.' : 'Volte para o seu progresso.'}</h1>
-            <p>
+            <h1>
               {mode === 'signup'
-                ? 'Crie sua conta para proteger streak, diario, bloqueador e restaurar tudo quando precisar.'
-                : 'Entre com sua conta para recuperar backup, continuar a jornada e manter seu dispositivo protegido.'}
-            </p>
+                ? 'Seu progresso merece um lugar seguro.'
+                : 'Volte para o seu progresso.'}
+            </h1>
           </div>
 
-          {!forcedMode ? (
-            <div className="account-auth-mode-switch" role="tablist" aria-label="Modo de acesso">
+          {/* Mode switch — only on email step */}
+          {!forcedMode && authStep === 'email' && (
+            <div className="account-auth-mode-switch" role="tablist">
               <button
-                className={mode === 'signup' ? 'account-auth-mode-button is-active' : 'account-auth-mode-button'}
+                className={`account-auth-mode-button${mode === 'signup' ? ' is-active' : ''}`}
                 type="button"
-                onClick={() => setMode('signup')}
+                onClick={() => handleModeSwitch('signup')}
               >
                 Criar conta
               </button>
               <button
-                className={mode === 'login' ? 'account-auth-mode-button is-active' : 'account-auth-mode-button'}
+                className={`account-auth-mode-button${mode === 'login' ? ' is-active' : ''}`}
                 type="button"
-                onClick={() => setMode('login')}
+                onClick={() => handleModeSwitch('login')}
               >
                 Entrar
               </button>
             </div>
-          ) : null}
+          )}
 
           <form className="account-auth-form" onSubmit={handleSubmit}>
-            <div className={`account-auth-field ${normalizedEmail && !isEmailValid ? 'is-invalid' : ''}`}>
-              <label className="account-auth-label" htmlFor="account-email">
-                E-mail
-              </label>
-              <div className="account-auth-input-shell">
-                <Mail size={18} className="account-auth-input-icon" />
-                <input
-                  className="account-auth-input"
-                  id="account-email"
-                  type="email"
-                  value={email}
-                  onChange={(event) => setEmail(event.target.value)}
-                  placeholder="voce@exemplo.com"
-                  autoComplete="email"
-                  required
-                />
-              </div>
-              {normalizedEmail && !isEmailValid ? (
-                <span className="account-auth-help account-auth-help-error">
-                  Digite um e-mail valido.
-                </span>
-              ) : (
-                <span className="account-auth-help">Usaremos este e-mail para acesso e recuperacao.</span>
-              )}
-            </div>
-
-            <div className="account-auth-field">
-              <label className="account-auth-label" htmlFor="account-password">
-                Senha
-              </label>
-              <div className="account-auth-input-shell">
-                <LockKeyhole size={18} className="account-auth-input-icon" />
-                <input
-                  className="account-auth-input"
-                  id="account-password"
-                  type={showPassword ? 'text' : 'password'}
-                  value={password}
-                  onChange={(event) => setPassword(event.target.value)}
-                  placeholder="Digite sua senha"
-                  autoComplete={mode === 'signup' ? 'new-password' : 'current-password'}
-                  required
-                />
-                <button
-                  type="button"
-                  className="account-auth-visibility-toggle"
-                  onClick={() => setShowPassword((current) => !current)}
-                  aria-label={showPassword ? 'Ocultar senha' : 'Mostrar senha'}
+            <AnimatePresence mode="wait" custom={stepDir}>
+              {authStep === 'email' ? (
+                <motion.div
+                  key="email"
+                  className="account-auth-step"
+                  custom={stepDir}
+                  variants={slide}
+                  initial="initial"
+                  animate="animate"
+                  exit="exit"
+                  transition={slide.transition}
                 >
-                  {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-                </button>
-              </div>
-            </div>
+                  <div className={`account-auth-field${normalizedEmail && !isEmailValid ? ' is-invalid' : ''}`}>
+                    <div className="account-auth-input-shell">
+                      <Mail size={16} className="account-auth-input-icon" />
+                      <input
+                        className="account-auth-input"
+                        id="account-email"
+                        type="email"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        onKeyDown={(e) => e.key === 'Enter' && (e.preventDefault(), handleEmailContinue())}
+                        placeholder="seu@email.com"
+                        autoComplete="email"
+                        autoFocus
+                      />
+                    </div>
+                    {normalizedEmail && !isEmailValid && (
+                      <span className="account-auth-help account-auth-help-error">E-mail inválido.</span>
+                    )}
+                  </div>
 
-            {mode === 'signup' ? (
-              <div className="account-auth-field">
-                <label className="account-auth-label" htmlFor="account-password-confirm">
-                  Confirmar senha
-                </label>
-                <div className="account-auth-input-shell">
-                  <LockKeyhole size={18} className="account-auth-input-icon" />
-                  <input
-                    className="account-auth-input"
-                    id="account-password-confirm"
-                    type={showConfirmPassword ? 'text' : 'password'}
-                    value={confirmPassword}
-                    onChange={(event) => setConfirmPassword(event.target.value)}
-                    placeholder="Repita sua senha"
-                    autoComplete="new-password"
-                    required
-                  />
+                  {error && <p className="toast toast-error">{error}</p>}
+
                   <button
                     type="button"
-                    className="account-auth-visibility-toggle"
-                    onClick={() => setShowConfirmPassword((current) => !current)}
-                    aria-label={showConfirmPassword ? 'Ocultar confirmacao de senha' : 'Mostrar confirmacao de senha'}
+                    className="button button-primary account-auth-submit"
+                    onClick={handleEmailContinue}
                   >
-                    {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                    Continuar
                   </button>
-                </div>
-              </div>
-            ) : null}
-
-            <div className="account-auth-options">
-              <label className="account-auth-checkbox">
-                <input
-                  type="checkbox"
-                  checked={rememberMe}
-                  onChange={() => setRememberMe((current) => !current)}
-                />
-                <span className="account-auth-checkbox-mark" aria-hidden="true" />
-                <span>Lembrar neste aparelho</span>
-              </label>
-
-              {mode === 'login' ? (
-                <button
-                  className="account-auth-link-button"
-                  type="button"
-                  onClick={() => void handleForgotPassword()}
-                  disabled={loading}
-                >
-                  Esqueci minha senha
-                </button>
+                </motion.div>
               ) : (
-                <span className="account-auth-inline-note">Backup vinculado ao seu e-mail</span>
+                <motion.div
+                  key="password"
+                  className="account-auth-step"
+                  custom={stepDir}
+                  variants={slide}
+                  initial="initial"
+                  animate="animate"
+                  exit="exit"
+                  transition={slide.transition}
+                >
+                  {/* Email chip */}
+                  <div className="account-auth-email-chip">
+                    <Mail size={13} />
+                    <span>{normalizedEmail}</span>
+                    <button type="button" onClick={handleBackToEmail} className="account-auth-chip-change">
+                      Trocar
+                    </button>
+                  </div>
+
+                  {/* Password */}
+                  <div className="account-auth-field">
+                    <div className="account-auth-input-shell">
+                      <LockKeyhole size={16} className="account-auth-input-icon" />
+                      <input
+                        className="account-auth-input"
+                        id="account-password"
+                        type={showPassword ? 'text' : 'password'}
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        placeholder={mode === 'signup' ? 'Crie uma senha' : 'Sua senha'}
+                        autoComplete={mode === 'signup' ? 'new-password' : 'current-password'}
+                        autoFocus
+                      />
+                      <button
+                        type="button"
+                        className="account-auth-visibility-toggle"
+                        onClick={() => setShowPassword((c) => !c)}
+                        aria-label={showPassword ? 'Ocultar senha' : 'Mostrar senha'}
+                      >
+                        {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Confirm password — signup only */}
+                  {mode === 'signup' && (
+                    <div className="account-auth-field">
+                      <div className="account-auth-input-shell">
+                        <LockKeyhole size={16} className="account-auth-input-icon" />
+                        <input
+                          className="account-auth-input"
+                          id="account-password-confirm"
+                          type={showConfirmPassword ? 'text' : 'password'}
+                          value={confirmPassword}
+                          onChange={(e) => setConfirmPassword(e.target.value)}
+                          placeholder="Confirme a senha"
+                          autoComplete="new-password"
+                        />
+                        <button
+                          type="button"
+                          className="account-auth-visibility-toggle"
+                          onClick={() => setShowConfirmPassword((c) => !c)}
+                          aria-label={showConfirmPassword ? 'Ocultar' : 'Mostrar'}
+                        >
+                          {showConfirmPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                        </button>
+                      </div>
+                    </div>
+                  )}
+
+                  {error && <p className="toast toast-error">{error}</p>}
+                  {message && <p className="toast toast-success">{message}</p>}
+
+                  <button
+                    className="button button-primary account-auth-submit"
+                    type="submit"
+                    disabled={loading}
+                  >
+                    {loading
+                      ? 'Processando...'
+                      : mode === 'signup'
+                        ? 'Criar conta'
+                        : 'Entrar'}
+                  </button>
+
+                  {mode === 'login' && (
+                    <button
+                      className="account-auth-link-button"
+                      type="button"
+                      onClick={() => void handleForgotPassword()}
+                      disabled={loading}
+                    >
+                      Esqueci minha senha
+                    </button>
+                  )}
+                </motion.div>
               )}
-            </div>
-
-            {error ? <p className="toast toast-error">{error}</p> : null}
-            {message ? <p className="toast toast-success">{message}</p> : null}
-
-            <button className="button button-primary account-auth-submit" type="submit" disabled={loading}>
-              {loading ? 'Processando...' : mode === 'signup' ? 'Criar conta e seguir' : 'Entrar e restaurar'}
-            </button>
+            </AnimatePresence>
           </form>
 
-          <div className="account-auth-separator">
-            <span>ou continue com</span>
-          </div>
-
-          <div className="account-auth-socials" aria-label="Acessos sociais em breve">
-            <button type="button" className="account-auth-social-button" disabled aria-label="GitHub em breve">
-              <Github size={18} />
-            </button>
-            <button type="button" className="account-auth-social-button" disabled aria-label="Twitter em breve">
-              <Twitter size={18} />
-            </button>
-            <button type="button" className="account-auth-social-button" disabled aria-label="LinkedIn em breve">
-              <Linkedin size={18} />
-            </button>
-          </div>
-
           <p className="account-auth-footer">
-            {mode === 'signup' ? 'Ja tem uma conta?' : 'Ainda nao tem conta?'}{' '}
+            {mode === 'signup' ? 'Já tem uma conta?' : 'Ainda não tem conta?'}{' '}
             {forcedMode ? (
-              <span className="account-auth-footer-muted">
-                {mode === 'signup' ? 'O acesso continua no fluxo atual.' : 'Use o acesso liberado no fluxo atual.'}
-              </span>
+              <span className="account-auth-footer-muted">O acesso continua no fluxo atual.</span>
             ) : (
               <button
                 type="button"
                 className="account-auth-footer-link"
-                onClick={() => setMode(mode === 'signup' ? 'login' : 'signup')}
+                onClick={() => handleModeSwitch(mode === 'signup' ? 'login' : 'signup')}
               >
                 {mode === 'signup' ? 'Entrar' : 'Criar conta'}
               </button>

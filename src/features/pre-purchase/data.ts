@@ -177,8 +177,8 @@ export const painSlides = [
 
 export const solutionSlides = [
   {
-    title: 'Bem-vindo ao Coruja',
-    body: 'Com mais de 1.000.000 de usuários, o Coruja é referência, apoiado em anos de pesquisa e interação com a comunidade.',
+    title: 'Bem-vindo ao Foco Mode',
+    body: 'Com mais de 1.000.000 de usuários, o Foco Mode é referência, apoiado em anos de pesquisa e interação com a comunidade.',
     icon: 'Rocket'
   },
   {
@@ -193,7 +193,7 @@ export const solutionSlides = [
   },
   {
     title: 'Evite recaídas',
-    body: 'O Coruja aprende seus hábitos e gatilhos de tentação, oferecendo proteção 24 horas por dia.',
+    body: 'O Foco Mode aprende seus hábitos e gatilhos de tentação, oferecendo proteção 24 horas por dia.',
     icon: 'ShieldCheck'
   },
   {
