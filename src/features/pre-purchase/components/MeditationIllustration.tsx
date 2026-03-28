@@ -1,4 +1,3 @@
-import React from 'react';
 
 export function MeditationIllustration({ className = '' }: { className?: string }) {
   // SVG injetado direto no DOM para herdar as fontes e propriedades CSS nativas do app (como a famigerada `--font-family`)

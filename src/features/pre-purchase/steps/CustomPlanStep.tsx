@@ -10,7 +10,7 @@ import {
   Shield,
   ShieldCheck,
   Star,
-  Target,
+
   Trophy,
   TrendingUp,
   Wrench,
@@ -147,7 +147,6 @@ const CheckOutline = ({ style }: { style?: React.CSSProperties }) => (
   </svg>
 )
 
-const STEP_HEIGHT = 56
 const LIST_OFFSET = 60
 
 export function CustomPlanStep({

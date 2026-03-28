@@ -27,7 +27,6 @@ export function CravingChart({
   points,
   width,
   height,
-  baseY,
   grid,
   linePath,
   areaPath,

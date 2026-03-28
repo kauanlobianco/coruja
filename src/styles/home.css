@@ -2076,134 +2076,187 @@
 
 /* ── Relapse Page ─────────────────────────────────────────────────────── */
 
+/* ────────────────────────────────────────
+   RELAPSE PAGE
+   ──────────────────────────────────────── */
+
 .relapse-page {
-  display: grid;
-  gap: 20px;
-  padding-bottom: 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding-bottom: 110px;
 }
 
-/* Acolhimento */
-.relapse-welcome {
+/* 1 — Hero de acolhimento */
+.relapse-hero {
+  position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
   text-align: center;
-  gap: 8px;
-  padding: 8px 0 0;
+  gap: 10px;
+  padding: 32px 16px 24px;
+  overflow: hidden;
 }
 
-.relapse-welcome-icon {
-  color: var(--ds-color-warning-500);
-  margin-bottom: 4px;
+.relapse-hero-glow {
+  position: absolute;
+  top: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 260px;
+  height: 260px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(236, 158, 50, 0.16) 0%, transparent 68%);
+  pointer-events: none;
 }
 
-.relapse-welcome-title {
-  margin: 0;
-  font-size: 22px;
+.relapse-hero-icon-ring {
+  position: relative;
+  z-index: 1;
+  width: 68px;
+  height: 68px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: rgba(236, 158, 50, 0.08);
+  border: 1px solid rgba(236, 158, 50, 0.30);
+  color: var(--color-accent-amber);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  box-shadow:
+    0 0 36px rgba(236, 158, 50, 0.14),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+.relapse-hero-title {
+  position: relative;
+  z-index: 1;
+  margin: 4px 0 0;
+  font-size: 20px;
   font-weight: 800;
-  color: var(--ds-color-text-primary);
-  line-height: 1.25;
+  color: var(--color-text-primary);
+  line-height: 1.2;
+  letter-spacing: -0.02em;
 }
 
-.relapse-welcome-sub {
+.relapse-hero-sub {
+  position: relative;
+  z-index: 1;
   margin: 0;
-  font-size: 12px;
-  color: var(--ds-color-text-secondary);
-  line-height: 1.55;
-  max-width: 280px;
+  font-size: var(--font-size-body);
+  color: var(--color-text-secondary);
+  line-height: 1.6;
+  max-width: 252px;
+}
+
+/* 2 — Card de jornada */
+.relapse-journey-card {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 22px;
+  border-radius: var(--radius-card);
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  -webkit-backdrop-filter: blur(18px);
+  backdrop-filter: blur(18px);
+  box-shadow: var(--shadow-card-soft);
+}
+
+.relapse-journey-body {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+}
+
+.relapse-journey-stat {
+  display: flex;
+  align-items: baseline;
+  gap: 5px;
+}
+
+.relapse-journey-number {
+  font-size: 40px;
+  font-weight: 900;
+  color: var(--color-text-primary);
+  line-height: 1;
+  letter-spacing: -0.04em;
+}
+
+.relapse-journey-unit {
+  font-size: var(--font-size-small);
+  font-weight: 600;
+  color: var(--color-text-secondary);
+}
+
+.relapse-journey-right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 5px;
+}
+
+.relapse-resilience-badge {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  padding: 3px 10px;
+  border-radius: var(--radius-pill);
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.relapse-resilience--high   { color: var(--color-success);       border-color: rgba(64, 150, 114, 0.38); }
+.relapse-resilience--medium { color: var(--color-accent-amber);  border-color: rgba(236, 158, 50, 0.38); }
+.relapse-resilience--low    { color: var(--color-danger-light);  border-color: rgba(177, 67, 67, 0.38);  }
+
+.relapse-journey-pct {
+  font-size: var(--font-size-micro);
+  color: var(--color-text-muted);
 }
 
 /* Label uppercase */
 .relapse-label {
   display: block;
-  font-size: 10px;
+  font-size: var(--font-size-overline);
   font-weight: 700;
-  letter-spacing: 0.12em;
-  color: var(--ds-color-text-secondary);
-  margin-bottom: 8px;
+  letter-spacing: 0.10em;
+  color: var(--color-text-muted);
+  text-transform: uppercase;
 }
 
-.relapse-label--accent {
-  color: var(--ds-color-warning-500);
+.relapse-label--amber {
+  color: var(--color-accent-amber);
 }
 
-/* Cards de contexto */
-.relapse-context-row {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 10px;
-}
-
-.relapse-context-card {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  padding: 14px 14px 12px;
-  border-radius: 16px;
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.07);
-  -webkit-backdrop-filter: blur(10px);
-  backdrop-filter: blur(10px);
-  min-height: 70px;
-}
-
-.relapse-context-value {
-  font-size: 20px;
-  font-weight: 800;
-  color: var(--ds-color-text-primary);
-  line-height: 1;
-}
-
-.relapse-resilience--high   { color: var(--color-success); }
-.relapse-resilience--medium { color: var(--color-accent-amber); }
-.relapse-resilience--low    { color: var(--color-danger-light); }
-
-.relapse-context-hint {
-  font-size: 10px;
-  color: var(--ds-color-text-secondary);
-  opacity: 0.6;
-}
-
-/* Barra de progresso */
-.relapse-progress-bar {
-  width: 100%;
-  height: 4px;
-  border-radius: 2px;
-  border: none;
-  background: rgba(255, 255, 255, 0.08);
-  margin-top: 4px;
-  -webkit-appearance: none;
-  appearance: none;
-}
-
-.relapse-progress-bar::-webkit-progress-bar {
-  background: rgba(255, 255, 255, 0.08);
-  border-radius: 2px;
-}
-
-.relapse-progress-bar::-webkit-progress-value {
-  background: var(--ds-gradient-primary);
-  border-radius: 2px;
-}
-
-.relapse-progress-bar::-moz-progress-bar {
-  background: var(--ds-gradient-primary);
-  border-radius: 2px;
-}
-
-/* Seção genérica */
+/* Seções com card */
 .relapse-section {
   display: flex;
   flex-direction: column;
-  gap: 0;
+  gap: 10px;
+  padding: 20px;
+  border-radius: var(--radius-card);
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(16px);
+  box-shadow: var(--shadow-card-soft);
 }
 
-/* Grid de metas */
+.relapse-section-hint {
+  margin: 0;
+  font-size: var(--font-size-micro);
+  color: var(--color-text-muted);
+  line-height: 1.5;
+}
+
+/* Grid de metas — 4 colunas */
 .relapse-goal-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: repeat(4, 1fr);
   gap: 8px;
-  margin-bottom: 10px;
 }
 
 .relapse-goal-card {
@@ -2212,47 +2265,61 @@
   align-items: center;
   justify-content: center;
   gap: 2px;
-  height: 60px;
+  height: 64px;
   border-radius: 14px;
   background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.07);
   cursor: pointer;
-  transition: border-color 0.15s ease, background 0.15s ease;
+  transition:
+    border-color var(--transition-fast),
+    background var(--transition-fast),
+    box-shadow var(--transition-fast);
+}
+
+.relapse-goal-card:active {
+  transform: scale(0.97);
 }
 
 .relapse-goal-card--active {
-  background: rgba(236, 158, 50, 0.1);
-  border-color: rgba(236, 158, 50, 0.5);
+  background: rgba(236, 158, 50, 0.10);
+  border-color: rgba(236, 158, 50, 0.48);
+  box-shadow: 0 0 18px rgba(236, 158, 50, 0.10);
 }
 
 .relapse-goal-days {
   font-size: 22px;
   font-weight: 800;
-  color: var(--ds-color-text-primary);
+  color: var(--color-text-primary);
   line-height: 1;
 }
 
 .relapse-goal-card--active .relapse-goal-days {
-  color: var(--ds-color-warning-500);
+  color: var(--color-accent-amber);
 }
 
 .relapse-goal-unit {
-  font-size: 10px;
+  font-size: 9px;
   font-weight: 600;
-  color: var(--ds-color-text-secondary);
-  letter-spacing: 0.06em;
+  color: var(--color-text-muted);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
 }
 
 /* Link customizar */
 .relapse-custom-link {
   background: transparent;
   border: 0;
-  font-size: 12px;
-  color: var(--ds-color-text-secondary);
+  font-size: var(--font-size-micro);
+  color: var(--color-text-muted);
   cursor: pointer;
-  padding: 0;
+  padding: 2px 0;
   text-align: left;
-  opacity: 0.6;
+  font-family: inherit;
+  transition: color var(--transition-fast);
+}
+
+.relapse-custom-link:hover {
+  color: var(--color-text-secondary);
 }
 
 .relapse-custom-input-wrap {
@@ -2265,89 +2332,282 @@
   flex: 1;
   height: 40px;
   background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.10);
   border-radius: 10px;
   padding: 0 12px;
-  font-size: 14px;
-  color: var(--ds-color-text-primary);
+  font-size: var(--font-size-body);
+  color: var(--color-text-primary);
   font-family: inherit;
+  outline: none;
+  transition: border-color var(--transition-fast);
+}
+
+.relapse-custom-input:focus {
+  border-color: var(--color-accent-cyan);
 }
 
 .relapse-custom-cancel {
   background: transparent;
   border: 0;
-  font-size: 12px;
-  color: var(--ds-color-text-secondary);
+  font-size: var(--font-size-micro);
+  color: var(--color-text-muted);
   cursor: pointer;
   padding: 0;
+  font-family: inherit;
+}
+
+/* Sentimentos */
+.relapse-feelings-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.relapse-feeling-pill {
+  padding: 7px 16px;
+  border-radius: var(--radius-pill);
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  font-size: var(--font-size-small);
+  font-weight: 500;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  font-family: inherit;
+  transition:
+    border-color var(--transition-fast),
+    background var(--transition-fast),
+    color var(--transition-fast);
+}
+
+.relapse-feeling-pill:active {
+  transform: scale(0.97);
+}
+
+.relapse-feeling-pill--active {
+  background: rgba(236, 158, 50, 0.10);
+  border-color: rgba(236, 158, 50, 0.42);
+  color: var(--color-accent-amber);
 }
 
 /* Textareas */
 .relapse-textarea {
   width: 100%;
   min-height: 80px;
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.07);
   border-radius: 12px;
   padding: 12px 14px;
-  font-size: 13px;
-  color: var(--ds-color-text-primary);
+  font-size: var(--font-size-body);
+  color: var(--color-text-primary);
   font-family: inherit;
   resize: none;
   box-sizing: border-box;
-  line-height: 1.55;
-  margin-bottom: 14px;
+  line-height: 1.6;
+  outline: none;
+  transition:
+    border-color var(--transition-fast),
+    box-shadow var(--transition-fast);
+}
+
+.relapse-textarea:focus {
+  border-color: rgba(50, 153, 194, 0.40);
+  box-shadow: 0 0 0 3px rgba(50, 153, 194, 0.08);
 }
 
 .relapse-textarea::placeholder {
-  color: var(--ds-color-text-secondary);
-  opacity: 0.5;
+  color: var(--color-text-muted);
+  opacity: 0.75;
 }
 
-/* Tags de sentimento */
-.relapse-feelings-row {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin-top: 2px;
+.relapse-textarea--last {
+  margin-bottom: 0;
 }
 
-.relapse-feeling-pill {
-  padding: 6px 14px;
-  border-radius: 20px;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  font-size: 12px;
-  font-weight: 500;
-  color: var(--ds-color-text-secondary);
-  cursor: pointer;
-  transition: border-color 0.15s ease, background 0.15s ease, color 0.15s ease;
-}
-
-.relapse-feeling-pill--active {
-  background: rgba(236, 158, 50, 0.12);
-  border-color: rgba(236, 158, 50, 0.45);
-  color: var(--ds-color-warning-500);
-}
-
-/* Botões */
+/* Ações */
 .relapse-actions {
   display: flex;
   flex-direction: column;
   gap: 10px;
+  padding-top: 4px;
 }
 
 .relapse-confirm-btn {
   width: 100%;
+  border-radius: 18px;
 }
 
 .relapse-back-btn {
   background: transparent;
   border: 0;
-  font-size: 13px;
-  color: var(--ds-color-text-secondary);
+  font-size: var(--font-size-small);
+  color: var(--color-text-muted);
   cursor: pointer;
   padding: 8px 0;
   text-align: center;
-  opacity: 0.6;
+  font-family: inherit;
+  transition: color var(--transition-fast);
+}
+
+.relapse-back-btn:hover {
+  color: var(--color-text-secondary);
+}
+
+/* ════════════════════════════════════════
+   STREAK CELEBRATION OVERLAY
+   ════════════════════════════════════════ */
+
+.streak-cel-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #080d1a;
+  overflow: hidden;
+}
+
+/* Glow âmbar no topo */
+.streak-cel-bg-amber {
+  position: absolute;
+  top: -100px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 460px;
+  height: 460px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(236, 158, 50, 0.26) 0%, transparent 62%);
+  pointer-events: none;
+}
+
+/* Glow ciano no canto inferior */
+.streak-cel-bg-cyan {
+  position: absolute;
+  bottom: -80px;
+  right: -80px;
+  width: 320px;
+  height: 320px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(50, 153, 194, 0.18) 0%, transparent 62%);
+  pointer-events: none;
+}
+
+.streak-cel-inner {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 0 28px 48px;
+  width: 100%;
+  max-width: 360px;
+  gap: 18px;
+}
+
+/* Número + unidade */
+.streak-cel-number-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  margin-top: -24px; /* puxa para cima opticamente */
+}
+
+.streak-cel-number {
+  font-size: 128px;
+  font-weight: 900;
+  color: var(--color-text-primary);
+  line-height: 1;
+  letter-spacing: -0.05em;
+  text-shadow: 0 0 90px rgba(236, 158, 50, 0.30);
+}
+
+.streak-cel-unit {
+  font-size: 24px;
+  font-weight: 300;
+  color: var(--color-text-secondary);
+  letter-spacing: 0.02em;
+}
+
+/* Linha motivacional */
+.streak-cel-motto {
+  margin: 0;
+  font-size: var(--font-size-label);
+  font-weight: 500;
+  color: var(--color-text-secondary);
+  line-height: 1.55;
+  max-width: 230px;
+}
+
+/* Calendário */
+.streak-cel-calendar {
+  display: flex;
+  gap: 8px;
+  align-items: flex-end;
+  justify-content: space-between;
+  width: 100%;
+  padding: 18px 16px 16px;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(16px);
+}
+
+.streak-cel-day {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  flex: 1;
+}
+
+.streak-cel-day-today .streak-cel-weekday {
+  color: var(--color-accent-amber);
+}
+
+.streak-cel-weekday {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+}
+
+.streak-cel-dot {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 1.5px solid rgba(255, 255, 255, 0.10);
+  background: rgba(255, 255, 255, 0.03);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: transparent;
+}
+
+.streak-cel-dot-clean {
+  background: rgba(64, 150, 114, 0.16);
+  border-color: rgba(64, 150, 114, 0.50);
+  color: var(--color-success);
+}
+
+.streak-cel-dot-today {
+  border-color: rgba(236, 158, 50, 0.65);
+  box-shadow: 0 0 14px rgba(236, 158, 50, 0.28);
+}
+
+/* Hoje + limpo: âmbar */
+.streak-cel-dot-clean.streak-cel-dot-today {
+  background: rgba(236, 158, 50, 0.16);
+  border-color: var(--color-accent-amber);
+  color: var(--color-accent-amber);
+  box-shadow: 0 0 20px rgba(236, 158, 50, 0.35);
+}
+
+/* Botão */
+.streak-cel-btn {
+  width: 100%;
+  max-width: 280px;
 }

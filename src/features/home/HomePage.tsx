@@ -14,6 +14,7 @@ import { useAppState } from '../../app/state/use-app-state'
 import { AppShell } from '../../shared/layout/AppShell'
 import { hasCheckInToday } from '../../core/domain/check-in'
 import { appRoutes } from '../../core/config/routes'
+import { StreakCelebrationGate } from '../../components/streak/StreakCelebration'
 
 function formatPtDay(value: Date) {
   return new Intl.DateTimeFormat('pt-BR', {
@@ -139,6 +140,16 @@ export function HomePage() {
   const userInitial = normalizedName.charAt(0).toUpperCase() || 'C'
 
   const motionCards = [0, 1, 2, 3]
+
+  // Últimos 7 dias: true = dentro do streak atual (limpo)
+  const diasRecentes = useMemo(
+    () =>
+      Array.from({ length: 7 }, (_, i) => {
+        const daysAgo = 6 - i // i=0 → 6 dias atrás, i=6 → hoje
+        return daysAgo < state.streak.current
+      }),
+    [state.streak.current],
+  )
 
   return (
     <AppShell
@@ -391,6 +402,12 @@ export function HomePage() {
           </article>
         </motion.section>
       </section>
+
+      <StreakCelebrationGate
+        diasStreak={state.streak.current}
+        diasRecentes={diasRecentes}
+        demoNow={demoNow}
+      />
     </AppShell>
   )
 }

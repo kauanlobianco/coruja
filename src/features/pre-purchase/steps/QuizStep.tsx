@@ -25,7 +25,6 @@ export function QuizStep({
   currentQuestion,
   quizProgress,
   pendingAnswerIndex,
-  transitionDirection,
   onBack,
   onSelectOption,
   onConfirm,

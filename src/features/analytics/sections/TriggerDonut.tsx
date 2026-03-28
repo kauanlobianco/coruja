@@ -20,7 +20,7 @@ interface TriggerDonutProps {
   motionDelay: number
 }
 
-export function TriggerDonut({ segments, total, radius, circumference, motionDelay }: TriggerDonutProps) {
+export function TriggerDonut({ segments, total, radius, circumference: _circumference, motionDelay }: TriggerDonutProps) {
   const [hoveredTrigger, setHoveredTrigger] = useState<number | null>(null)
 
   return (
