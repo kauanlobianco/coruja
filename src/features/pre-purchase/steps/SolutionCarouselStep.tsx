@@ -22,9 +22,9 @@ interface SolutionCarouselStepProps {
 
 const solutionEditorialSlides = [
   {
-    title: 'BEM VINDO!',
-    body: 'Nossa missao e recuperar homens, devolvendo os prazeres reais da vida.',
-    support: 'Nos nos baseamos nos melhores metodos da neurociencia para trazer o que realmente funciona para os usuarios.',
+    title: 'Bem-vindo!',
+    body: 'Nossa missão é recuperar homens, devolvendo os prazeres reais da vida.',
+    support: 'Nos baseamos nos melhores métodos da neurociência para trazer o que realmente funciona para os usuários.',
     illustration: OuterSpaceIllustration,
   },
 ] as const satisfies ReadonlyArray<{
@@ -36,45 +36,45 @@ const solutionEditorialSlides = [
 
 const solutionStorySlides = [
   {
-    title: 'BEM VINDO!',
-    body: 'Nossa missao e recuperar homens, devolvendo os prazeres reais da vida.',
-    support: 'Nos nos baseamos nos melhores metodos da neurociencia para trazer o que realmente funciona para os usuarios.',
+    title: 'Bem-vindo!',
+    body: 'Nossa missão é recuperar homens, devolvendo os prazeres reais da vida.',
+    support: 'Nos baseamos nos melhores métodos da neurociência para trazer o que realmente funciona para os usuários.',
     illustration: OuterSpaceIllustration,
   },
   {
-    title: 'Nos removemos a tentacao.',
-    body: 'Sua forca de vontade nao precisa lutar sozinha o tempo todo.',
-    support: 'Nosso bloqueador inteligente cria uma barreira entre voce e os gatilhos, corta o acesso ao conteudo adulto e reduz o esforco mental de dizer nao.',
+    title: 'Nós removemos a tentação.',
+    body: 'Sua força de vontade não precisa lutar sozinha o tempo todo.',
+    support: 'Nosso bloqueador inteligente cria uma barreira entre você e os gatilhos, corta o acesso ao conteúdo adulto e reduz o esforço mental de dizer não.',
     illustration: SecurityOnIllustration,
   },
   {
-    title: 'Evite a recaida.',
-    body: 'Naqueles 5 minutos de fissura, nos te resgatamos da tentacao.',
-    support: 'Com o SOS, voce interrompe o ciclo compulsivo com exercicios mentais e distracoes rapidas que devolvem o controle na hora mais critica.',
+    title: 'Evite a recaída.',
+    body: 'Naqueles 5 minutos de fissura, nós te resgatamos da tentação.',
+    support: 'Com o SOS, você interrompe o ciclo compulsivo com exercícios mentais e distrações rápidas que devolvem o controle na hora mais crítica.',
     illustration: WarningIllustration,
   },
   {
     title: 'Cada dia conta.',
     body: 'Recupere o orgulho de olhar no espelho.',
-    support: 'Registre seus motivos para parar e acompanhe sua contagem de dias. Ver o progresso acumulado devolve a dopamina saudavel que o vicio tentou roubar.',
+    support: 'Registre seus motivos para parar e acompanhe sua contagem de dias. Ver o progresso acumulado devolve a dopamina saudável que o vício tentou roubar.',
     illustration: GoalIllustration,
   },
   {
     title: 'Entenda seus impulsos.',
-    body: 'Clareza e o seu maior superpoder contra o vicio.',
-    support: 'Ao registrar dificuldades, sentimentos e avancos, voce entende o que te puxa para o porno e deixa de ser refem das suas emocoes.',
+    body: 'Clareza é o seu maior superpoder contra o vício.',
+    support: 'Ao registrar dificuldades, sentimentos e avanços, você entende o que te puxa para o pornô e deixa de ser refém das suas emoções.',
     illustration: MindfulnessIllustration,
   },
   {
     title: 'Privacidade total.',
-    body: 'Aqui e o seu lugar seguro. Ninguem precisa saber, a menos que voce queira.',
-    support: 'Seus dados, registros e progresso ficam protegidos com privacidade total e criptografia, porque sua recuperacao nao precisa ser exposta.',
+    body: 'Aqui é o seu lugar seguro. Ninguém precisa saber, a menos que você queira.',
+    support: 'Seus dados, registros e progresso ficam protegidos com privacidade total e criptografia, porque sua recuperação não precisa ser exposta.',
     illustration: SecureDataIllustration,
   },
   {
     title: 'Conhecimento liberta.',
-    body: 'Entenda o porque para dominar o como.',
-    support: 'Nossos conteudos educativos explicam a quimica cerebral por tras do vicio, aliviam a culpa e te devolvem o poder da informacao.',
+    body: 'Entenda o porquê para dominar o como.',
+    support: 'Nossos conteúdos educativos explicam a química cerebral por trás do vício, aliviam a culpa e te devolvem o poder da informação.',
     illustration: ContemplatingIllustration,
   },
 ] as const satisfies ReadonlyArray<{
@@ -161,14 +161,6 @@ export function SolutionCarouselStep({
         </div>
 
         <div className="pain-carousel-footer">
-          <div className="press-logos">
-            <span className="press-logo-text">Forbes</span>
-            <span className="press-logo-divider">|</span>
-            <span className="press-logo-text sans">TECH<br />TIMES</span>
-            <span className="press-logo-divider">|</span>
-            <span className="press-logo-text">LA WEEKLY</span>
-          </div>
-
           <div className="solution-carousel-progress-accent">
             <CarouselProgressNav
               currentStep={slideIndex + 1}
@@ -177,7 +169,7 @@ export function SolutionCarouselStep({
               showBackFromFirstStep
               onNext={onNext}
               nextLabel="Continuar"
-              finishLabel="Avancar"
+              finishLabel="Avançar"
             />
           </div>
         </div>

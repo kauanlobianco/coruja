@@ -22,8 +22,10 @@ export function LandingStep({ conflictError, onStart }: LandingStepProps) {
           <div className="prepurchase-hero-copy foco-hero-center">
             <h2 className="prepurchase-hero-title">Bem-vindo!</h2>
             <p className="prepurchase-hero-subtitle">
-              Vamos comecar descobrindo se voce esta enfrentando um problema com
-              pornografia.
+              Com o Foco Mode, você se liberta da{' '}
+              <span style={{ whiteSpace: 'nowrap' }}>pornografia.</span>
+              <br />
+              Mas antes, vamos entender seu perfil de consumo.
             </p>
           </div>
 
@@ -72,7 +74,7 @@ export function LandingStep({ conflictError, onStart }: LandingStepProps) {
           className="prepurchase-landing-secondary"
           onClick={() => navigate('/account/auth?mode=login&loginOnly=1')}
         >
-          <span className="prepurchase-landing-secondary-label">Ja e assinante?</span>
+          <span className="prepurchase-landing-secondary-label">Já é assinante?</span>
           <ArrowRight size={13} strokeWidth={2.2} />
         </button>
       </div>

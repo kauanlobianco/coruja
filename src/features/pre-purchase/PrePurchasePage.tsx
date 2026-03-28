@@ -17,13 +17,14 @@ import { SolutionCarouselStep } from './steps/SolutionCarouselStep'
 import { ToggleActivationStep } from './steps/ToggleActivationStep'
 import { SocialProofStep } from './steps/SocialProofStep'
 import { PlanPreviewStep } from './steps/PlanPreviewStep'
+import { PlanRevealStep } from './steps/PlanRevealStep'
 import { CustomPlanStep } from './steps/CustomPlanStep'
 import { PaywallStep } from './steps/PaywallStep'
 
 const steps: FunnelStep[] = [
   'landing', 'quiz', 'loading', 'identity', 'symptoms', 'diagnosis',
   'pain-carousel', 'toggle-activation', 'solution-carousel', 'social-proof',
-  'plan-preview', 'custom-plan', 'paywall',
+  'plan-preview', 'plan-reveal', 'custom-plan', 'paywall',
 ]
 
 const initialState: PrePurchaseState = {
@@ -225,7 +226,8 @@ export function PrePurchasePage() {
 
   const usesSolutionMood = state.step === 'solution-carousel' || state.step === 'social-proof'
 
-  const showSolutionBg = usesSolutionMood || (state.step === 'toggle-activation' && toggleActivated)
+  const showSolutionBg = usesSolutionMood
+    || (state.step === 'toggle-activation' && toggleActivated)
   const showPainBg = (state.step === 'pain-carousel' || (state.step === 'toggle-activation' && !toggleActivated))
 
   const funnelFrameClassName = [
@@ -392,9 +394,15 @@ export function PrePurchasePage() {
 
             {state.step === 'plan-preview' && (
               <PlanPreviewStep
-                name={state.name}
-                demoNow={demoNow}
                 onBack={() => goTo('social-proof')}
+                onContinue={() => goTo('plan-reveal')}
+              />
+            )}
+
+            {state.step === 'plan-reveal' && (
+              <PlanRevealStep
+                name={state.name}
+                onBack={() => goTo('plan-preview')}
                 onContinue={() => goTo('custom-plan')}
               />
             )}
@@ -408,7 +416,7 @@ export function PrePurchasePage() {
                 }
                 onOpenPaywall={() => setShowPaywallSheet(true)}
                 onClosePaywall={() => setShowPaywallSheet(false)}
-                onBack={() => goTo('plan-preview')}
+                onBack={() => goTo('plan-reveal')}
                 onContinueToOnboarding={continueToOnboarding}
               />
             )}

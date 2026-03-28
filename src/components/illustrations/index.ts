@@ -1,4 +1,5 @@
 export type { IllustrationProps } from './AnimatedInlineSvg'
+export { BreakingBarriersIllustration } from './BreakingBarriersIllustration'
 export { BrainChemistryIllustration } from './BrainChemistryIllustration'
 export { ContemplatingIllustration } from './ContemplatingIllustration'
 export { CoupleStressIllustration } from './CoupleStressIllustration'

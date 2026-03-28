@@ -11,17 +11,17 @@ const symptomCategoryMeta: Record<
     description: 'Foco, energia mental e clareza cognitiva.',
     accentClassName: 'is-mental',
   },
-  Fisico: {
+  Físico: {
     icon: Activity,
     description: 'Sinais no corpo, energia e resposta sexual.',
     accentClassName: 'is-physical',
   },
   Social: {
     icon: Users,
-    description: 'Conexao, autoconfianca e vida relacional.',
+    description: 'Conexão, autoconfiança e vida relacional.',
     accentClassName: 'is-social',
   },
-  Fe: {
+  Fé: {
     icon: Shield,
     description: 'Sentido, integridade e vida espiritual.',
     accentClassName: 'is-faith',
@@ -66,14 +66,14 @@ export function SymptomsStep({ symptoms, onToggleSymptom, onBack, onContinue }: 
             <div className="prepurchase-symptoms-alert-copy">
               <span className="prepurchase-symptoms-alert-label">Sinal importante</span>
               <p className="prepurchase-symptoms-alert-text">
-                O uso excessivo pode deixar marcas reais em areas importantes da sua vida.
+                O uso excessivo pode deixar marcas reais em áreas importantes da sua vida.
               </p>
             </div>
           </div>
 
           <div className="prepurchase-symptoms-lead">
             <p className="prepurchase-symptoms-lead-title">
-              O que mais tem pesado em voce?
+              O que mais tem pesado em você?
             </p>
             <p className="prepurchase-symptoms-lead-body">
               Selecione os sinais que combinam com seu momento.
@@ -162,7 +162,7 @@ export function SymptomsStep({ symptoms, onToggleSymptom, onBack, onContinue }: 
             disabled={symptoms.length === 0}
             onClick={onContinue}
           >
-            Ver resultado do diagnostico
+            Ver resultado do diagnóstico
           </button>
         </div>
       </div>

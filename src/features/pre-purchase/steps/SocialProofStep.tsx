@@ -21,11 +21,11 @@ const BAD_FILL =
 
 // Ciano: crescimento constante e suave, sem subir tanto
 const GOOD_LINE =
-  'M 20 152 C 46 150, 70 138, 94 128 C 118 118, 140 111, 164 104 C 188 97, 210 91, 234 86 C 258 81, 280 77, 304 73 C 326 70, 350 68, 380 66'
+  'M 20 148 C 46 146, 70 136, 94 126 C 118 116, 140 109, 164 102 C 188 95, 210 89, 234 84 C 258 79, 280 75, 304 71 C 326 68, 350 66, 380 64'
 const GOOD_FILL =
-  'M 20 152 C 46 150, 70 138, 94 128 C 118 118, 140 111, 164 104 C 188 97, 210 91, 234 86 C 258 81, 280 77, 304 73 C 326 70, 350 68, 380 66 L 380 176 L 20 176 Z'
+  'M 20 148 C 46 146, 70 136, 94 126 C 118 116, 140 109, 164 102 C 188 95, 210 89, 234 84 C 258 79, 280 75, 304 71 C 326 68, 350 66, 380 64 L 380 176 L 20 176 Z'
 
-const ORANGE_DURATION = 4.2
+const ORANGE_DURATION = 2.8
 
 type GraphPhase = 'drawing' | 'blurred' | 'activating' | 'done'
 
@@ -71,9 +71,8 @@ export function SocialProofStep({ onBack, onContinue }: SocialProofStepProps) {
           animate={{ opacity: 1, y: 0 }}
           transition={sectionTransition}
         >
-          <p className="social-proof-eyebrow">Prova social</p>
           <h2 className="social-proof-title">
-            Seu resultado acelera quando o <span className="social-proof-title-accent">metodo certo</span> entra no jogo.
+            Seu resultado acelera quando o <span className="social-proof-title-accent">método certo</span> entra no jogo.
           </h2>
         </motion.div>
 
@@ -84,6 +83,7 @@ export function SocialProofStep({ onBack, onContinue }: SocialProofStepProps) {
           transition={{ ...sectionTransition, delay: 0.08 }}
         >
           {/* Header: visivel apenas em done */}
+
           <AnimatePresence>
             {phase === 'done' && (
               <motion.div
@@ -93,14 +93,10 @@ export function SocialProofStep({ onBack, onContinue }: SocialProofStepProps) {
                 exit={{ opacity: 0 }}
                 transition={{ duration: 0.38, ease: [0.22, 1, 0.36, 1] }}
               >
-                <div className="social-proof-graph-copy">
-                  <strong>Progresso mensal</strong>
-                  <span className="social-proof-graph-kicker">Performance com Foco Mode</span>
-                </div>
-                <div className="social-proof-graph-boost">
-                  <strong>+240%</strong>
-                  <span className="social-proof-boost-label">eficiencia</span>
-                </div>
+                <strong className="social-proof-graph-title">Progresso mensal</strong>
+                <p className="social-proof-insight-text">
+                  Com o <strong>Foco Mode</strong> você alcança seu objetivo com consistência, evitando recaídas.
+                </p>
               </motion.div>
             )}
           </AnimatePresence>
@@ -111,7 +107,7 @@ export function SocialProofStep({ onBack, onContinue }: SocialProofStepProps) {
               viewBox="0 0 400 200"
               preserveAspectRatio="none"
               className="social-proof-graph-svg"
-              aria-label="Grafico comparativo de recuperacao"
+              aria-label="Gráfico comparativo de recuperação"
             >
               <line x1="18" y1="176" x2="382" y2="176" stroke="rgba(255,255,255,0.11)" strokeWidth="1.2" />
               <line x1="18" y1="128" x2="382" y2="128" stroke="rgba(255,255,255,0.06)" strokeWidth="1" strokeDasharray="3 8" />
@@ -139,17 +135,11 @@ export function SocialProofStep({ onBack, onContinue }: SocialProofStepProps) {
                 transition={{ duration: 0.7 }}
               />
 
-              <motion.circle
-                cx="20" cy="148" r="4.5" fill="#fff"
-                initial={{ opacity: 0, scale: 0.5 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.28, delay: 0.1 }}
-              />
-
+              {/* Bolinha fim laranja */}
               <AnimatePresence>
                 {phase !== 'drawing' && (
-                  <motion.circle
-                    cx="380" cy="160" r="5" fill="#d77432"
+                  <motion.ellipse
+                    cx="380" cy="160" rx="5.8" ry="4.9" fill="#d77432"
                     initial={{ opacity: 0, scale: 0.5 }}
                     animate={{ opacity: 1, scale: 1 }}
                     exit={{ opacity: 0 }}
@@ -176,7 +166,7 @@ export function SocialProofStep({ onBack, onContinue }: SocialProofStepProps) {
                       strokeLinejoin="round"
                       initial={{ pathLength: 0 }}
                       animate={{ pathLength: 1 }}
-                      transition={{ duration: 1.5, ease: 'easeInOut', delay: 0.2 }}
+                      transition={{ duration: 2.8, ease: 'easeInOut', delay: 0.2 }}
                     />
                     <motion.path
                       d={GOOD_FILL}
@@ -185,19 +175,28 @@ export function SocialProofStep({ onBack, onContinue }: SocialProofStepProps) {
                       animate={{ opacity: 0.07 }}
                       transition={{ duration: 0.6, delay: 1.2 }}
                     />
-                    <motion.circle
-                      cx="380" cy="66" r="6" fill="#58d0e4"
+                    {/* Bolinha fim ciano — aparece quando a linha termina */}
+                    <motion.ellipse
+                      cx="380" cy="64" rx="6.8" ry="5.7" fill="#58d0e4"
                       initial={{ opacity: 0, scale: 0.5 }}
                       animate={{ opacity: 1, scale: 1 }}
-                      transition={{ duration: 0.3, delay: 1.55 }}
+                      transition={{ duration: 0.3, delay: 3.0 }}
                     />
                   </motion.g>
                 )}
               </AnimatePresence>
 
-              <text x="84"  y="194" fill="rgba(255,255,255,0.32)" fontSize="11" textAnchor="middle">Semana 1</text>
-              <text x="202" y="194" fill="rgba(255,255,255,0.32)" fontSize="11" textAnchor="middle">Semana 2</text>
-              <text x="320" y="194" fill="rgba(255,255,255,0.32)" fontSize="11" textAnchor="middle">Semana 3</text>
+              {/* Bolinha inicio — renderizada por cima de tudo */}
+              <motion.ellipse
+                cx="20" cy="148" rx="5.2" ry="4.4" fill="#fff"
+                initial={{ opacity: 0, scale: 0.5 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.28, delay: 0.1 }}
+              />
+
+              <text x="84"  y="194" fill="rgba(255,255,255,0.32)" fontSize="11" textAnchor="middle">Mês 1</text>
+              <text x="202" y="194" fill="rgba(255,255,255,0.32)" fontSize="11" textAnchor="middle">Mês 2</text>
+              <text x="320" y="194" fill="rgba(255,255,255,0.32)" fontSize="11" textAnchor="middle">Mês 3</text>
 
               <defs>
                 <linearGradient id="spEmberGrad" x1="0" y1="0" x2="0" y2="1">
@@ -303,6 +302,7 @@ export function SocialProofStep({ onBack, onContinue }: SocialProofStepProps) {
               )}
             </AnimatePresence>
           </motion.div>
+
         </motion.div>
 
         <motion.div
@@ -312,7 +312,7 @@ export function SocialProofStep({ onBack, onContinue }: SocialProofStepProps) {
           transition={{ ...sectionTransition, delay: 0.22 }}
         >
           <div className="social-proof-feedback-head">
-            <p className="social-proof-eyebrow">Feedbacks</p>
+            <p className="social-proof-eyebrow">Referências</p>
           </div>
           <div className="testimonials-scroller social-proof-testimonials">
             {testimonials.map((item, index) => (
@@ -344,9 +344,7 @@ export function SocialProofStep({ onBack, onContinue }: SocialProofStepProps) {
           transition={{ ...sectionTransition, delay: 0.38 }}
         >
           <p className="social-proof-cta-text">
-            O Foco Mode ajuda voce a parar a pornografia
-            <br />
-            76% mais rapido do que depender so da forca de vontade.
+            O Foco Mode ajuda você a parar a pornografia sem depender apenas da força de vontade.
           </p>
           <button className="button-primary social-proof-cta-button" onClick={onContinue}>
             Continuar

@@ -138,7 +138,7 @@ export function DiagnosisStep({ diagnosis, onBack, onContinue }: DiagnosisStepPr
 
         <div className="diagnosis-context-block">
           <p className="diagnosis-context-text">
-            Seu resultado indica como esse consumo esta impactando sua rotina hoje.
+            Seu resultado indica como esse consumo está impactando sua rotina hoje.
           </p>
         </div>
 
@@ -176,13 +176,27 @@ export function DiagnosisStep({ diagnosis, onBack, onContinue }: DiagnosisStepPr
             transition={{ duration: 0.45, ease: 'easeOut' }}
           >
             <div className="diagnosis-compare-card-copy">
-              <span className="diagnosis-compare-card-kicker">Comparacao com a referencia</span>
+              <span className="diagnosis-compare-card-kicker">Comparação com a referência</span>
               <p className="diagnosis-compare-card-title">
-                Seu padrao esta {aboveThreshold}% acima da linha de consumo problematico.
+                Seu padrão está {aboveThreshold}% acima da linha de consumo problemático.
               </p>
             </div>
 
-            <div className="diagnosis-compare-chart" aria-label="Comparacao entre seu resultado e a referencia de risco">
+            <div className="diagnosis-compare-chart" aria-label="Comparação entre seu resultado e a referência de risco">
+              <div className="diagnosis-compare-column">
+                <div className="diagnosis-compare-track">
+                  <motion.div
+                    className="diagnosis-compare-bar diagnosis-compare-bar-reference"
+                    initial={{ height: 12, opacity: 0.5 }}
+                    animate={{ height: `${referenceBarHeight}%`, opacity: 1 }}
+                    transition={{ duration: 1.45, ease: [0.22, 1, 0.36, 1], delay: 0.05 }}
+                  >
+                    <span className="diagnosis-compare-bar-value">{referencePercent}%</span>
+                  </motion.div>
+                </div>
+                <span className="diagnosis-compare-bar-label">Referência</span>
+              </div>
+
               <div className="diagnosis-compare-column">
                 <div className="diagnosis-compare-track">
                   <motion.div
@@ -196,33 +210,21 @@ export function DiagnosisStep({ diagnosis, onBack, onContinue }: DiagnosisStepPr
                 </div>
                 <span className="diagnosis-compare-bar-label">Seu resultado</span>
               </div>
-
-              <div className="diagnosis-compare-column">
-                <div className="diagnosis-compare-track">
-                  <motion.div
-                    className="diagnosis-compare-bar diagnosis-compare-bar-reference"
-                    initial={{ height: 12, opacity: 0.5 }}
-                    animate={{ height: `${referenceBarHeight}%`, opacity: 1 }}
-                    transition={{ duration: 1.45, ease: [0.22, 1, 0.36, 1], delay: 0.05 }}
-                  >
-                    <span className="diagnosis-compare-bar-value">{referencePercent}%</span>
-                  </motion.div>
-                </div>
-                <span className="diagnosis-compare-bar-label">Referencia</span>
-              </div>
             </div>
 
             <div className="diagnosis-compare">
-              <div className="diagnosis-compare-item">
-                <p className="diagnosis-compare-number">{scorePercent}<span className="diagnosis-compare-unit">%</span></p>
-              </div>
-              <div className="diagnosis-compare-divider" />
               <div className="diagnosis-compare-item">
                 <p className="diagnosis-compare-number diagnosis-compare-number-safe">
                   {referencePercent}<span className="diagnosis-compare-unit">%</span>
                 </p>
               </div>
+              <div className="diagnosis-compare-divider" />
+              <div className="diagnosis-compare-item">
+                <p className="diagnosis-compare-number">{scorePercent}<span className="diagnosis-compare-unit">%</span></p>
+              </div>
             </div>
+
+            <p className="diagnosis-bps-note">Baseado no Brief Pornography Screen (BPS), método validado para identificar padrões de uso problemático e potencial dependência de pornografia.</p>
           </motion.div>
         ) : null}
 
@@ -255,11 +257,12 @@ export function DiagnosisStep({ diagnosis, onBack, onContinue }: DiagnosisStepPr
             </div>
 
             <p className="diagnosis-disclaimer">
-              * Este resultado é apenas uma indicação, não um diagnóstico médico.
+              * Este resultado é apenas uma indicação,
+              <br />não um diagnóstico médico.
             </p>
 
             <button type="button" className="diagnosis-cta" onClick={onContinue}>
-              Entender consequencias
+              Entender consequências
             </button>
           </motion.div>
         )}

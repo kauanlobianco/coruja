@@ -133,23 +133,23 @@ export const quizQuestions: QuizQuestion[] = [
   },
 ]
 
-export const symptomCategories: SymptomCategory[] = ['Mental', 'Fisico', 'Social', 'Fe']
+export const symptomCategories: SymptomCategory[] = ['Mental', 'Físico', 'Social', 'Fé']
 
 export const symptomOptions: SymptomOption[] = [
-  { category: 'Mental', label: 'Falta de ambicao para buscar objetivos' },
-  { category: 'Mental', label: 'Dificuldade de concentracao' },
-  { category: 'Mental', label: 'Memoria fraca ou nevoa mental' },
+  { category: 'Mental', label: 'Falta de ambição para buscar objetivos' },
+  { category: 'Mental', label: 'Dificuldade de concentração' },
+  { category: 'Mental', label: 'Memória fraca ou névoa mental' },
   { category: 'Mental', label: 'Ansiedade generalizada' },
   { category: 'Mental', label: 'Sentindo-se desmotivado' },
-  { category: 'Fisico', label: 'Cansaco e letargia' },
-  { category: 'Fisico', label: 'Baixo desejo sexual' },
-  { category: 'Fisico', label: 'Erecoes fracas sem pornografia' },
+  { category: 'Físico', label: 'Cansaço e letargia' },
+  { category: 'Físico', label: 'Baixo desejo sexual' },
+  { category: 'Físico', label: 'Ereções fracas sem pornografia' },
   { category: 'Social', label: 'Menor vontade de socializar' },
   { category: 'Social', label: 'Sentindo-se isolado dos outros' },
   { category: 'Social', label: 'Sentindo-se pouco atraente ou indigno de amor' },
-  { category: 'Social', label: 'Baixa autoconfianca' },
+  { category: 'Social', label: 'Baixa autoconfiança' },
   { category: 'Social', label: 'Sexo sem sucesso ou sem prazer' },
-  { category: 'Fe', label: 'Sentindo-se distante de Deus' },
+  { category: 'Fé', label: 'Sentindo-se distante de Deus' },
 ]
 
 export const painSlides = [
@@ -172,6 +172,11 @@ export const painSlides = [
     title: 'Sentindo-se infeliz?',
     body: 'Um nível elevado de dopamina faz você precisar de cada vez mais para se sentir bem. Por isso tantos usuários intensivos relatam sentir-se deprimidos, desmotivados e antissociais.',
     icon: 'Frown'
+  },
+  {
+    title: 'Você pode voltar a ser livre.',
+    body: 'O vício é um caminho, mas ele não define quem você é. O primeiro passo foi dado: você reconheceu o problema.',
+    icon: 'Unlock'
   },
 ]
 
@@ -241,13 +246,13 @@ export const planOptions: PlanOption[] = [
     id: 'annual',
     title: 'Plano anual',
     price: '12x de R$ 19,90',
-    description: 'Melhor escolha para quem quer constancia, acompanhamento e mais tempo para consolidar a rotina.',
+    description: 'Melhor escolha para quem quer constância, acompanhamento e mais tempo para consolidar a rotina.',
   },
   {
     id: 'lifetime',
-    title: 'Acesso vitalicio',
-    price: 'R$ 297 a vista',
-    description: 'Para quem prefere liberar o acesso completo de uma vez e seguir no proprio ritmo.',
+    title: 'Acesso vitalício',
+    price: 'R$ 297 à vista',
+    description: 'Para quem prefere liberar o acesso completo de uma vez e seguir no próprio ritmo.',
   },
 ]
 

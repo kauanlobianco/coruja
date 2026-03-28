@@ -17,10 +17,11 @@ export type FunnelStep =
   | 'solution-carousel'
   | 'social-proof'
   | 'plan-preview'
+  | 'plan-reveal'
   | 'custom-plan'
   | 'paywall'
 
-export type SymptomCategory = 'Mental' | 'Fisico' | 'Social' | 'Fe'
+export type SymptomCategory = 'Mental' | 'Físico' | 'Social' | 'Fé'
 
 export interface QuizQuestion {
   id: number

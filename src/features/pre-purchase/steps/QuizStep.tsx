@@ -45,10 +45,6 @@ export function QuizStep({
         </div>
 
         <div className="prepurchase-quiz-progress">
-          <div className="prepurchase-quiz-progress-copy">
-            <span>Seu avanco no quiz</span>
-            <span>{Math.round(quizProgress)}%</span>
-          </div>
           <div className="prepurchase-quiz-progress-track">
             <div
               className="prepurchase-quiz-progress-fill"

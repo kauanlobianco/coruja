@@ -43,7 +43,7 @@ export function IdentityStep({
         <div className="prepurchase-identity-copy">
           <p className="prepurchase-quiz-kicker">Etapa final</p>
           <h2 className="prepurchase-identity-title">Finalmente</h2>
-          <p className="prepurchase-identity-subtitle">Um pouco mais sobre voce</p>
+          <p className="prepurchase-identity-subtitle">Um pouco mais sobre você</p>
         </div>
 
         <div className="prepurchase-identity-form">

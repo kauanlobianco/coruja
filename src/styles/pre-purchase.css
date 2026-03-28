@@ -584,7 +584,7 @@
 .prepurchase-hero-copy {
   display: grid;
   gap: var(--ds-space-3);
-  max-width: 19rem;
+  max-width: 22rem;
 }
 
 .prepurchase-hero-title {
@@ -2001,7 +2001,7 @@
   display: flex;
   flex-direction: column;
   gap: 24px;
-  padding: 0 20px 12px;
+  padding: 0 12px 12px;
   -webkit-overflow-scrolling: touch;
 }
 
@@ -2455,10 +2455,7 @@
   font-weight: 700;
   letter-spacing: 0.01em;
   cursor: pointer;
-  box-shadow:
-    0 12px 22px rgba(166, 95, 59, 0.18),
-    0 2px 8px rgba(166, 95, 59, 0.08),
-    inset 0 1px 0 rgba(255, 255, 255, 0.12);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12);
   transition:
     transform var(--ds-transition-fast),
     opacity var(--ds-transition-fast),
@@ -2467,10 +2464,7 @@
 
 .diagnosis-cta:hover {
   opacity: 0.96;
-  box-shadow:
-    0 14px 24px rgba(166, 95, 59, 0.2),
-    0 2px 8px rgba(166, 95, 59, 0.08),
-    inset 0 1px 0 rgba(255, 255, 255, 0.12);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12);
 }
 
 .diagnosis-cta:active {
@@ -2484,6 +2478,16 @@
   line-height: 1.5;
   color: color-mix(in srgb, white 28%, transparent);
   text-align: center;
+}
+
+.diagnosis-bps-note {
+  margin: 0;
+  font-size: 10px;
+  line-height: 1.55;
+  color: color-mix(in srgb, white 22%, transparent);
+  text-align: justify;
+  padding-top: 4px;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
 }
 
 
@@ -2649,6 +2653,69 @@
 .pp-hero-rating-label {
   font-size: var(--font-size-caption);
   color: var(--color-text-muted);
+}
+
+/* ── Hero banner (plan-preview) ─────────────────────────────────────────── */
+
+.pp-hero-banner {
+  position: relative;
+  padding: var(--space-2) 0 0;
+}
+
+/* Radial cyan glow behind the illustration */
+.pp-hero-banner-aura {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 280px;
+  height: 280px;
+  background: radial-gradient(ellipse at 50% 40%, rgba(43, 181, 196, 0.22) 0%, transparent 68%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.pp-hero-banner-back {
+  position: relative;
+  z-index: 1;
+  margin-bottom: var(--space-4);
+}
+
+.pp-hero-banner-text {
+  position: relative;
+  z-index: 1;
+}
+
+.pp-hero-banner-title {
+  font-size: 36px;
+  font-weight: var(--font-weight-black);
+  line-height: 1.05;
+  letter-spacing: -0.01em;
+  margin: 0 0 var(--space-2);
+  padding-right: 0.15em; /* prevents gradient clip from cutting last glyph */
+  background: linear-gradient(135deg, #ffffff 30%, #2BB5C4 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.pp-hero-banner-sub {
+  font-size: var(--font-size-small);
+  color: var(--color-text-secondary);
+  margin: 0;
+}
+
+/* Illustration — bleeds to edges for full-width impact */
+.pp-hero-banner-illustration {
+  position: relative;
+  z-index: 1;
+  margin: var(--space-2) -20px 0;
+}
+
+.pp-hero-banner-illustration svg {
+  width: 100%;
+  height: auto;
+  display: block;
 }
 
 /* ── MOMENTO 2: Cartão de identidade (hero visual) ──────────────────────── */
@@ -2920,7 +2987,7 @@
 }
 
 .pp-transform-glass-card {
-  margin-top: var(--space-4);
+  margin-top: 0;
   background: rgba(255, 255, 255, 0.02);
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 36px;
@@ -3035,7 +3102,7 @@
   color: var(--color-text-muted);
   text-transform: uppercase;
   letter-spacing: 0.09em;
-  margin-bottom: 1.5rem;
+  margin-bottom: var(--space-3);
   display: block;
 }
 
@@ -3048,42 +3115,66 @@
 
 .pp-feature-card {
   display: flex;
-  align-items: center;
-  gap: 0.75rem;
+  flex-direction: column;
   padding: 0.75rem;
   min-width: 0;
-  overflow: hidden;
   background: rgba(255, 255, 255, 0.03);
   border: 1px solid rgba(255, 255, 255, 0.05);
   border-radius: 1rem;
-  transition: transform 0.2s ease;
+  cursor: pointer;
+  transition: border-color 0.2s ease, background 0.2s ease;
+}
+
+.pp-feature-card--open {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+.pp-feature-card-row {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  min-width: 0;
 }
 
 .pp-feature-icon-wrapper {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 2.25rem;
-  height: 2.25rem;
+  width: 2rem;
+  height: 2rem;
   border-radius: 0.6rem;
   flex-shrink: 0;
-}
-
-.pp-feature-info {
-  display: flex;
-  flex-direction: column;
-  gap: 0.1rem;
+  background-color: color-mix(in srgb, var(--feature-color) 15%, transparent);
+  color: var(--feature-color);
 }
 
 .pp-feature-title {
-  font-size: 0.875rem;
+  font-size: 0.8rem;
   font-weight: 600;
   color: var(--color-text-bright);
   margin: 0;
+  flex: 1;
+  min-width: 0;
+}
+
+.pp-feature-chevron {
+  flex-shrink: 0;
+  color: var(--color-text-muted);
+  transition: transform 0.2s ease;
+}
+
+.pp-feature-card--open .pp-feature-chevron {
+  transform: rotate(180deg);
 }
 
 .pp-feature-desc {
-  display: none; /* Hide description to save significant vertical space */
+  font-size: var(--font-size-caption);
+  color: var(--color-text-secondary);
+  margin: var(--space-2) 0 0;
+  padding-top: var(--space-2);
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  line-height: 1.4;
 }
 
 @media (max-width: 480px) {
@@ -3477,7 +3568,60 @@
   padding-bottom: var(--space-4);
   display: flex;
   flex-direction: column;
-  gap: var(--space-3);
+  gap: var(--space-5);
+}
+
+/* ── Seção de feedbacks com scroll automático ── */
+
+.pp-section-label {
+  font-size: var(--font-size-overline);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.09em;
+  margin: 0 0 var(--space-3);
+}
+
+.pp-testimonials-wrapper {
+  overflow: hidden;
+  margin: 0 -20px;
+  padding: var(--space-1) 0;
+}
+
+.pp-testimonials-track {
+  display: flex;
+  gap: 12px;
+  width: max-content;
+  padding: 4px 20px;
+  animation: marquee-scroll 40s linear infinite;
+  will-change: transform;
+}
+
+.pp-testimonial-card {
+  width: 220px;
+  flex-shrink: 0;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 14px;
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.pp-testimonial-quote {
+  font-size: var(--font-size-small);
+  font-style: italic;
+  color: var(--color-text-secondary);
+  line-height: 1.45;
+  margin: 0;
+}
+
+.pp-testimonial-author {
+  font-size: var(--font-size-caption);
+  color: var(--color-text-muted);
+  font-style: normal;
+  margin: 0;
 }
 
 /* Testemunho âncora emocional — acima da garantia e CTA */
@@ -4297,4 +4441,201 @@
 .cp-sheet-includes li svg {
   color: var(--color-accent-amber);
   flex-shrink: 0;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   PLAN REVEAL STEP  (.pr-*)
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ── Page shell ─────────────────────────────────────────────────────────── */
+
+.pr-page {
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+  position: relative;
+}
+
+/* Overlay de cor — posicionado absolutamente e ativado via opacity para evitar
+   interpolação bruta entre gradientes complexos */
+.pr-bg-overlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background:
+    radial-gradient(
+      circle at 16% 12%,
+      rgba(86, 219, 230, 0.24) 0%,
+      rgba(86, 219, 230, 0.12) 14%,
+      transparent 34%
+    ),
+    radial-gradient(
+      circle at 82% 16%,
+      rgba(120, 199, 255, 0.18) 0%,
+      rgba(120, 199, 255, 0.08) 16%,
+      transparent 34%
+    ),
+    radial-gradient(
+      ellipse 78% 34% at 50% 20%,
+      rgba(88, 208, 228, 0.12) 0%,
+      transparent 58%
+    ),
+    radial-gradient(
+      ellipse 90% 42% at 50% 100%,
+      rgba(71, 148, 210, 0.16) 0%,
+      transparent 58%
+    ),
+    linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--ds-color-bg-base) 66%, #58d0e4 34%) 0%,
+      color-mix(in srgb, var(--ds-color-bg-base) 72%, #4aa9df 28%) 18%,
+      color-mix(in srgb, var(--ds-color-bg-base) 82%, #3a6fa8 18%) 44%,
+      var(--ds-color-bg-base) 100%
+    );
+}
+
+/* Conteúdo acima do overlay */
+.pr-scroll,
+.pr-footer {
+  position: relative;
+  z-index: 1;
+}
+
+/* ── Scroll area ─────────────────────────────────────────────────────────── */
+
+.pr-scroll {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: var(--space-4) var(--space-5) var(--space-6);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+  scrollbar-width: none;
+}
+.pr-scroll::-webkit-scrollbar { display: none; }
+
+/* ── Back button ── */
+
+.pr-back {
+  align-self: flex-start;
+  margin-bottom: var(--space-1);
+}
+
+/* ── Hero block ─────────────────────────────────────────────────────────── */
+
+.pr-hero {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-2);
+  text-align: center;
+}
+
+.pr-name {
+  font-size: 40px;
+  font-weight: var(--font-weight-black);
+  color: var(--color-text-primary);
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+  margin: 0;
+}
+
+.pr-name-accent {
+  color: var(--color-accent-cyan);
+}
+
+/* "seu plano personalizado está pronto" */
+.pr-plan-ready {
+  font-size: var(--font-size-body);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-accent-cyan);
+  margin: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  border-radius: 999px;
+  background: rgba(43, 181, 196, 0.1);
+  border: 1px solid rgba(43, 181, 196, 0.25);
+}
+
+/* "você vai parar a pornografia até:" */
+.pr-subtitle {
+  font-size: var(--font-size-small);
+  color: var(--color-text-secondary);
+  margin: var(--space-2) 0 0;
+}
+
+.pr-date-block {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: var(--space-1);
+  padding: 8px 16px;
+  border-radius: 12px;
+  background: rgba(236, 158, 50, 0.1);
+  border: 1px solid rgba(236, 158, 50, 0.22);
+}
+
+.pr-date-icon {
+  color: var(--color-accent-amber);
+  flex-shrink: 0;
+}
+
+.pr-date-text {
+  font-size: 20px;
+  font-weight: var(--font-weight-black);
+  color: var(--color-text-primary);
+  letter-spacing: -0.01em;
+}
+
+/* ── Card wrapper — perspective for subtle 3D ── */
+
+.pr-card-wrapper {
+  width: 100%;
+  perspective: 1000px;
+}
+
+/* ── Conteúdo que aparece após o card estabilizar ── */
+
+.pr-reveal-content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+}
+
+/* ── Outro caption below card ── */
+
+.pr-outro {
+  font-size: var(--font-size-small);
+  color: var(--color-text-muted);
+  text-align: center;
+  margin: 0;
+}
+
+/* ── Footer — fixed CTA area ── */
+
+.pr-footer {
+  padding: var(--space-4) var(--space-5) var(--space-6);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.pr-cta {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.pr-disclaimer {
+  font-size: var(--font-size-caption);
+  color: var(--color-text-muted);
+  margin: 0;
+  text-align: center;
 }
