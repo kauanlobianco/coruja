@@ -453,33 +453,154 @@ dt {
   z-index: 1;
 }
 
+/* ── 3D iPhone frame — preview mode ─────────────────────────────────────── */
+
+.app-shell-preview-enabled {
+  --frame-base:      hsl(220 8% 20%);
+  --frame-highlight: hsl(220 10% 28%);
+  --frame-shadow:    hsl(222 8% 10%);
+  --frame-edge:      hsl(220 12% 32%);
+  --frame-btn:       hsl(220 10% 24%);
+  --frame-cutout:    hsl(220 6% 8%);
+}
+
 .app-shell-preview-enabled .phone-frame {
-  background: linear-gradient(180deg, hsl(232 24% 18%) 0%, hsl(230 28% 11%) 100%);
-  border: 1px solid hsl(232 28% 20%);
-  border-radius: 40px;
-  padding: 5px;
+  position: relative;
+  background: linear-gradient(160deg,
+    var(--frame-highlight) 0%,
+    var(--frame-base) 22%,
+    hsl(220 6% 14%) 55%,
+    var(--frame-shadow) 100%
+  );
+  border: 1px solid var(--frame-edge);
+  border-radius: 52px;
+  padding: 12px 6px 12px;
   grid-template-rows: auto minmax(0, 1fr);
+  overflow: visible;
   box-shadow:
-    0 28px 64px rgba(26, 44, 134, 0.28),
-    0 14px 36px rgba(0, 0, 0, 0.34),
-    inset 0 1px 0 rgba(255, 255, 255, 0.05);
-  overflow: hidden;
+    0 40px 80px rgba(0, 0, 0, 0.55),
+    0 20px 40px rgba(10, 20, 60, 0.38),
+    0 6px 12px rgba(0, 0, 0, 0.45),
+    inset 0 1px 0 rgba(255, 255, 255, 0.09),
+    inset 0 0 0 1px rgba(0, 0, 0, 0.35);
 }
 
-.app-shell-preview-enabled .phone-notch {
+/* Dynamic island — substitui o notch simples */
+.app-shell-preview-enabled .phone-dynamic-island {
   display: block;
-  width: 118px;
-  height: 19px;
+  width: 126px;
+  height: 36px;
   margin: 0 auto 4px;
-  border-radius: 0 0 16px 16px;
-  background: #050505;
+  border-radius: 999px;
+  background: #000;
+  box-shadow:
+    inset 0 1px 3px rgba(0, 0, 0, 0.9),
+    0 1px 0 rgba(255, 255, 255, 0.04);
+  flex-shrink: 0;
 }
 
+/* Botões esquerda (silent + volume) */
+.app-shell-preview-enabled .phone-buttons-left {
+  position: absolute;
+  left: -5px;
+  top: 130px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  z-index: 10;
+}
+
+.app-shell-preview-enabled .phone-btn-silent,
+.app-shell-preview-enabled .phone-btn-vol-up,
+.app-shell-preview-enabled .phone-btn-vol-down {
+  width: 5px;
+  border-radius: 2px 0 0 2px;
+  background: linear-gradient(90deg, var(--frame-btn) 0%, var(--frame-base) 100%);
+  box-shadow: -2px 0 4px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.07);
+}
+.app-shell-preview-enabled .phone-btn-silent   { height: 30px; }
+.app-shell-preview-enabled .phone-btn-vol-up,
+.app-shell-preview-enabled .phone-btn-vol-down { height: 54px; }
+
+/* Botão power (direita) */
+.app-shell-preview-enabled .phone-buttons-right {
+  position: absolute;
+  right: -5px;
+  top: 160px;
+  z-index: 10;
+}
+
+.app-shell-preview-enabled .phone-btn-power {
+  width: 5px;
+  height: 80px;
+  border-radius: 0 2px 2px 0;
+  background: linear-gradient(90deg, var(--frame-base) 0%, var(--frame-btn) 100%);
+  box-shadow: 2px 0 4px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.07);
+}
+
+/* Rail inferior — USB-C + altofalantes */
+.app-shell-preview-enabled .phone-bottom-rail {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  pointer-events: none;
+}
+
+.app-shell-preview-enabled .phone-rail-speaker::before {
+  content: '';
+  display: block;
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: var(--frame-cutout);
+  box-shadow:
+    6px 0 0 var(--frame-cutout),
+    12px 0 0 var(--frame-cutout),
+    18px 0 0 var(--frame-cutout),
+    24px 0 0 var(--frame-cutout),
+    30px 0 0 var(--frame-cutout);
+}
+
+.app-shell-preview-enabled .phone-rail-usbc {
+  width: 28px;
+  height: 6px;
+  border-radius: 3px;
+  background: var(--frame-cutout);
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.8), 0 0 0 1px var(--frame-btn);
+}
+
+/* App frame + reflexo de vidro */
 .app-shell-preview-enabled .app-frame {
-  height: calc(100% - 17px);
-  border-radius: 34px;
+  height: 100%;
+  border-radius: 42px;
   border: 0;
-  box-shadow: none;
+  position: relative;
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 255, 255, 0.04),
+    inset 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+.app-shell-preview-enabled .app-frame::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 35%;
+  border-radius: 42px 42px 60% 60%;
+  background: linear-gradient(175deg,
+    rgba(255, 255, 255, 0.055) 0%,
+    rgba(255, 255, 255, 0.02) 40%,
+    transparent 70%
+  );
+  pointer-events: none;
+  z-index: 100;
 }
 
 

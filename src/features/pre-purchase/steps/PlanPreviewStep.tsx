@@ -15,70 +15,26 @@ import {
 import { useEffect, useRef, useState } from 'react'
 import { MultiPhoneMockup } from '../../../shared/components/MultiPhoneMockup'
 import { MindfulnessIllustration } from '../../../components/illustrations/MindfulnessIllustration'
+import { getTransformations } from '../data'
+import type { Transformation } from '../data'
+
+const ICON_MAP: Record<Transformation['iconName'], React.ComponentType<{ size?: number }>> = {
+  Zap, TrendingUp, Trophy, Target, Brain, ShieldCheck, Flame,
+}
 
 interface PlanPreviewStepProps {
+  symptoms: string[]
   onBack: () => void
   onContinue: () => void
 }
 
-const transformations = [
-  {
-    before: 'Compulsão silenciosa',
-    after: 'Controle consciente',
-    Icon: Zap,
-    accent: 'amber',
-  },
-  {
-    before: 'Vergonha acumulada',
-    after: 'Orgulho genuíno',
-    Icon: TrendingUp,
-    accent: 'cyan',
-  },
-  {
-    before: 'Relacionamentos vazios',
-    after: 'Presença e conexão real',
-    Icon: Trophy,
-    accent: 'success',
-  },
-] as const
-
 const appFeatures = [
-  {
-    title: 'Monitoramento de Progresso',
-    desc: 'Acompanhe seus dias limpos e marcos de recuperação com precisão.',
-    Icon: Flame,
-    color: 'var(--color-accent-amber)'
-  },
-  {
-    title: 'Análise de Gatilhos',
-    desc: 'Identifique padrões emocionais e situações de risco para evitar recaídas.',
-    Icon: BarChart2,
-    color: 'var(--color-accent-purple)'
-  },
-  {
-    title: 'Bloqueador Inteligente',
-    desc: 'Proteção em tempo real para manter você focado no que importa.',
-    Icon: ShieldCheck,
-    color: 'var(--color-accent-cyan)'
-  },
-  {
-    title: 'Diário de Jornada',
-    desc: 'Registre seus pensamentos e sentimentos para fortalecer sua mentalidade.',
-    Icon: BookOpen,
-    color: 'var(--color-warning)'
-  },
-  {
-    title: 'Modo SOS',
-    desc: 'Ferramentas de emergência para momentos críticos de urgência.',
-    Icon: Brain,
-    color: 'var(--color-danger)'
-  },
-  {
-    title: 'Metas Personalizadas',
-    desc: 'Defina objetivos claros e celebre cada pequena vitória no seu ritmo.',
-    Icon: Target,
-    color: 'var(--color-success)'
-  }
+  { title: 'Monitoramento de Progresso', desc: 'Acompanhe seus dias limpos e marcos de recuperação com precisão.',           Icon: Flame,      accent: 'amber'  },
+  { title: 'Análise de Gatilhos',        desc: 'Identifique padrões emocionais e situações de risco para evitar recaídas.', Icon: BarChart2,  accent: 'purple' },
+  { title: 'Bloqueador Inteligente',     desc: 'Proteção em tempo real para manter você focado no que importa.',            Icon: ShieldCheck, accent: 'cyan'   },
+  { title: 'Diário de Jornada',          desc: 'Registre seus pensamentos e sentimentos para fortalecer sua mentalidade.',  Icon: BookOpen,   accent: 'warning'},
+  { title: 'Modo SOS',                   desc: 'Ferramentas de emergência para momentos críticos de urgência.',             Icon: Brain,      accent: 'danger' },
+  { title: 'Metas Personalizadas',       desc: 'Defina objetivos claros e celebre cada pequena vitória no seu ritmo.',      Icon: Target,     accent: 'success'},
 ] as const
 
 const feedbacks = [
@@ -108,7 +64,8 @@ const feedbacks = [
   },
 ] as const
 
-export function PlanPreviewStep({ onBack, onContinue }: PlanPreviewStepProps) {
+export function PlanPreviewStep({ symptoms, onBack, onContinue }: PlanPreviewStepProps) {
+  const transformations = getTransformations(symptoms)
   const scrollRef = useRef<HTMLDivElement>(null)
   const [expandedFeature, setExpandedFeature] = useState<number | null>(null)
 
@@ -157,18 +114,21 @@ export function PlanPreviewStep({ onBack, onContinue }: PlanPreviewStepProps) {
         {/* ── MOMENTO 3: TRANSFORMAÇÃO ── */}
         <div className="plan-scroll-section pp-transform-moment pp-reveal">
           <div className="pp-transform-list">
-            {transformations.map(({ before, after, Icon, accent }, i) => (
-              <div key={i} className={`pp-transform-row pp-transform-row--${accent} pp-reveal`}>
-                <div className="pp-transform-icon-shell">
-                  <Icon size={15} />
+            {transformations.map(({ before, after, iconName, accent }, i) => {
+              const Icon = ICON_MAP[iconName]
+              return (
+                <div key={i} className={`pp-transform-row pp-transform-row--${accent} pp-reveal`}>
+                  <div className="pp-transform-icon-shell">
+                    <Icon size={15} />
+                  </div>
+                  <div className="pp-transform-text-cols">
+                    <span className="pp-transform-before">{before}</span>
+                    <span className="pp-transform-arrow" aria-hidden="true">→</span>
+                    <span className="pp-transform-after">{after}</span>
+                  </div>
                 </div>
-                <div className="pp-transform-text-cols">
-                  <span className="pp-transform-before">{before}</span>
-                  <span className="pp-transform-arrow" aria-hidden="true">→</span>
-                  <span className="pp-transform-after">{after}</span>
-                </div>
-              </div>
-            ))}
+              )
+            })}
           </div>
 
           <div className="pp-mockup-wrapper pp-reveal">
@@ -195,7 +155,7 @@ export function PlanPreviewStep({ onBack, onContinue }: PlanPreviewStepProps) {
                       onClick={() => setExpandedFeature(isOpen ? null : i)}
                     >
                       <div className="pp-feature-card-row">
-                        <div className="pp-feature-icon-wrapper" style={{ '--feature-color': f.color } as React.CSSProperties}>
+                        <div className={`pp-feature-icon-wrapper pp-feature-icon-wrapper--${f.accent}`}>
                           <f.Icon size={18} />
                         </div>
                         <h3 className="pp-feature-title">{f.title}</h3>

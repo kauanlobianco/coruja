@@ -13,6 +13,8 @@ export const appRoutes = {
   analytics: '/analytics',
   settings: '/settings',
   library: '/library',
+  libraryMedia: '/library/media',
+  libraryGames: '/library/games',
   blocker: '/blocker',
   blocked: '/blocked',
 } as const

@@ -1,0 +1,1556 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>REBOOT | Prevenção de Recaídas</title>
+    <!-- Fonte Inter para tipografia limpa -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        /* * =====================================================================
+         * [REACT EXPORT] GLOBAL THEME & STYLES
+         * Sugestão: Converter para `global.css` ou arquivo de variáveis Tailwind.
+         * =====================================================================
+         */
+        :root {
+            --bg-ultra-dark: #0a0b1e;
+            --surface-color: #151632;
+            --surface-hover: #1e1f42;
+            --grad-start: #6366f1;
+            --grad-end: #a855f7;
+            --grad-blue-start: #3b82f6;
+            --grad-blue-end: #2563eb;
+            --grad-purple-start: #8b5cf6;
+            --grad-purple-end: #6d28d9;
+            --grad-pink-start: #d946ef;
+            --grad-pink-end: #7c3aed;
+            --grad-cyan-start: #38bdf8;
+            --grad-cyan-end: #0284c7;
+            --grad-orange-start: #f97316;
+            --grad-orange-end: #ea580c;
+            --grad-red-orange-start: #fb923c;
+            --grad-red-orange-end: #ef4444;
+            --grad-eco-start: #1e3a8a; 
+            --grad-eco-end: #06b6d4;
+            --grad-rastros-start: #0891b2; 
+            --grad-rastros-end: #1e3a8a;   
+            --surface-input: #1e293b;
+            --success-color: #10b981; 
+            --error-color: #ef4444;   
+            --target-cyan: #22d3ee;   
+            --text-main: #ffffff;
+            --text-muted: #8b8da1;
+            --border-subtle: rgba(255, 255, 255, 0.05);
+            --glow-color: rgba(168, 85, 247, 0.3);
+            --transition-smooth: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * { 
+            box-sizing: border-box; 
+            margin: 0; 
+            padding: 0; 
+            -webkit-tap-highlight-color: transparent; 
+        }
+
+        body {
+            background-color: var(--bg-ultra-dark); 
+            color: var(--text-main);
+            font-family: 'Inter', sans-serif; 
+            height: 100vh; 
+            width: 100vw;
+            overflow: hidden; 
+            display: flex; 
+            justify-content: center;
+        }
+
+        .app-container {
+            width: 100%; 
+            max-width: 480px; 
+            height: 100%; 
+            position: relative;
+            background-color: var(--bg-ultra-dark); 
+            box-shadow: 0 0 50px rgba(0,0,0,0.5);
+            display: flex; 
+            flex-direction: column;
+        }
+
+        /* * =====================================================================
+         * [REACT EXPORT] SHARED COMPONENTS
+         * Sugestão: Criar componentes <View />, <Topbar />, <Button />
+         * =====================================================================
+         */
+        .view {
+            display: none; 
+            flex-direction: column; 
+            height: 100%; 
+            width: 100%;
+            padding: 24px 20px; 
+            position: absolute; 
+            top: 0; 
+            left: 0;
+            background-color: var(--bg-ultra-dark); 
+            opacity: 0; 
+            z-index: 1;
+        }
+
+        .view.active { 
+            display: flex; 
+            animation: fadeIn var(--transition-smooth) forwards; 
+            z-index: 10; 
+        }
+
+        @keyframes fadeIn { 
+            from { opacity: 0; transform: translateY(10px); } 
+            to { opacity: 1; transform: translateY(0); } 
+        }
+
+        .topbar { 
+            display: flex; 
+            align-items: center; 
+            justify-content: space-between; 
+            margin-bottom: 30px; 
+            padding-top: 10px; 
+            z-index: 20; 
+            position: relative; 
+        }
+
+        .btn-back { 
+            background: var(--surface-color); 
+            border: 1px solid var(--border-subtle); 
+            color: var(--text-main); 
+            width: 40px; 
+            height: 40px; 
+            border-radius: 12px; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            cursor: pointer; 
+            transition: background 0.2s; 
+        }
+        .btn-back:hover { background: var(--surface-hover); }
+
+        .view-title { font-size: 1.2rem; font-weight: 500; letter-spacing: 0.5px; }
+
+        .score-card { 
+            background: var(--surface-color); 
+            border: 1px solid var(--border-subtle); 
+            padding: 6px 12px; 
+            border-radius: 20px; 
+            font-size: 0.9rem; 
+            font-weight: 600; 
+            display: flex; 
+            align-items: center; 
+            gap: 6px; 
+        }
+        
+        .btn-white-pill { 
+            background: white; 
+            color: var(--bg-ultra-dark); 
+            border: none; 
+            padding: 16px 40px; 
+            border-radius: 9999px; 
+            font-size: 1.1rem; 
+            font-weight: 700; 
+            font-family: 'Inter', sans-serif; 
+            cursor: pointer; 
+            box-shadow: 0 10px 20px rgba(255,255,255,0.1); 
+            transition: transform 0.2s, box-shadow 0.2s; 
+            width: 80%; 
+            max-width: 300px; 
+            margin-top: auto; 
+            margin-bottom: 20px; 
+        }
+        .btn-white-pill:active { transform: scale(0.96); }
+
+        /* * =====================================================================
+         * [REACT EXPORT] FEEDBACK OVERLAY COMPONENT
+         * Sugestão: Criar <GlobalFeedback isVisible={bool} isCorrect={bool} />
+         * =====================================================================
+         */
+        .global-feedback { 
+            position: fixed; 
+            top: 50%; left: 50%; 
+            transform: translate(-50%, -50%) scale(0.5); 
+            width: 160px; height: 160px; 
+            border-radius: 50%; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            opacity: 0; 
+            pointer-events: none; 
+            z-index: 99999; 
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
+        }
+        .global-feedback.show { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+        .global-feedback.correct { 
+            background: rgba(16, 185, 129, 0.15); 
+            box-shadow: 0 0 80px rgba(16, 185, 129, 0.6); 
+            backdrop-filter: blur(5px); 
+            color: var(--success-color); 
+        }
+        .global-feedback.wrong { 
+            background: rgba(239, 68, 68, 0.15); 
+            box-shadow: 0 0 80px rgba(239, 68, 68, 0.6); 
+            backdrop-filter: blur(5px); 
+            color: var(--error-color); 
+        }
+
+        @keyframes shake { 
+            0%, 100% { transform: translateX(0); } 
+            20%, 60% { transform: translateX(-10px); } 
+            40%, 80% { transform: translateX(10px); } 
+        }
+        .shake-effect { animation: shake 0.3s ease-in-out; }
+
+        /* * =====================================================================
+         * [REACT EXPORT] HUB MENU / HOME SCREEN
+         * Sugestão: Criar <HubScreen /> e <GameCard /> components
+         * =====================================================================
+         */
+        .hub-header { text-align: center; margin-top: 10px; margin-bottom: 24px; }
+        .hub-logo { font-size: 0.9rem; font-weight: 800; letter-spacing: 4px; color: #22d3ee; text-shadow: 0 0 10px rgba(34, 211, 238, 0.4); margin-bottom: 12px; text-transform: uppercase; }
+        .hub-title { font-size: 2rem; font-weight: 800; color: white; margin-bottom: 8px; line-height: 1.1; }
+        .hub-subtitle { color: var(--text-muted); font-size: 0.95rem; font-weight: 400; max-width: 280px; margin: 0 auto; line-height: 1.4; }
+
+        .hub-grid { 
+            display: grid; 
+            grid-template-columns: 1fr 1fr; 
+            gap: 16px; 
+            overflow-y: auto; 
+            padding-bottom: 40px; 
+            -ms-overflow-style: none; 
+            scrollbar-width: none; 
+        }
+        .hub-grid::-webkit-scrollbar { display: none; }
+
+        .game-card { 
+            position: relative; 
+            height: 160px; 
+            border-radius: 24px; 
+            overflow: hidden; 
+            display: flex; 
+            flex-direction: column; 
+            justify-content: space-between; 
+            padding: 16px; 
+            cursor: pointer; 
+            box-shadow: 0 8px 20px rgba(0,0,0,0.4); 
+            transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.2s; 
+        }
+        .game-card:active { transform: scale(0.94); }
+        
+        .card-pattern { 
+            position: absolute; 
+            top: 0; left: 0; width: 100%; height: 100%; 
+            opacity: 0.15; z-index: 0; 
+            background-repeat: repeat; background-position: center; 
+            pointer-events: none; 
+        }
+        .card-content { 
+            position: relative; z-index: 1; height: 100%; 
+            display: flex; flex-direction: column; justify-content: space-between; 
+            pointer-events: none; 
+        }
+        .card-icon-box { 
+            width: 40px; height: 40px; 
+            background: rgba(255, 255, 255, 0.15); 
+            border-radius: 12px; 
+            display: flex; align-items: center; justify-content: center; 
+            backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px); 
+        }
+        .card-icon-box i { color: white; width: 22px; height: 22px; }
+        .card-title { 
+            color: white; font-weight: bold; font-size: 16px; 
+            line-height: 1.2; text-align: left; margin: 0; 
+            text-shadow: 0 2px 4px rgba(0,0,0,0.5); 
+        }
+
+        /* Temas dos Cartões */
+        .theme-memory { background-color: #1e293b; } .theme-memory .card-pattern { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40'%3E%3Crect width='20' height='20' fill='%23ffffff'/%3E%3Crect x='20' y='20' width='20' height='20' fill='%23ffffff'/%3E%3C/svg%3E"); }
+        .theme-find { background-color: #4c1d95; } .theme-find .card-pattern { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='50' height='50'%3E%3Ccircle cx='15' cy='15' r='5' fill='none' stroke='%23ffffff' stroke-width='2'/%3E%3Cline x1='18' y1='18' x2='24' y2='24' stroke='%23ffffff' stroke-width='2'/%3E%3Ccircle cx='35' cy='35' r='3' fill='%23ffffff'/%3E%3C/svg%3E"); }
+        .theme-word { background-color: #881337; } .theme-word .card-pattern { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='60'%3E%3Ctext x='10' y='20' fill='%23ffffff' font-family='sans-serif' font-weight='bold' font-size='14' transform='rotate(-10 10 20)'%3ER%3C/text%3E%3Ctext x='35' y='15' fill='%23ffffff' font-family='sans-serif' font-size='10' transform='rotate(15 35 15)'%3EO%3C/text%3E%3Ctext x='15' y='45' fill='%23ffffff' font-family='sans-serif' font-size='16' transform='rotate(20 15 45)'%3EU%3C/text%3E%3Ctext x='40' y='50' fill='%23ffffff' font-family='sans-serif' font-weight='bold' font-size='12' transform='rotate(-15 40 50)'%3EB%3C/text%3E%3C/svg%3E"); }
+        .theme-breathe { background-color: #0c4a6e; } .theme-breathe .card-pattern { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='60'%3E%3Ccircle cx='30' cy='30' r='10' fill='none' stroke='%23ffffff' stroke-width='1.5'/%3E%3Ccircle cx='30' cy='30' r='20' fill='none' stroke='%23ffffff' stroke-width='1.5'/%3E%3Ccircle cx='30' cy='30' r='30' fill='none' stroke='%23ffffff' stroke-width='1.5'/%3E%3C/svg%3E"); }
+        .theme-stroop { background-color: #064e3b; } .theme-stroop .card-pattern { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='60'%3E%3Crect x='10' y='10' width='15' height='15' fill='%23ffffff'/%3E%3Crect x='35' y='25' width='20' height='10' fill='%23ffffff'/%3E%3Crect x='15' y='40' width='10' height='15' fill='%23ffffff'/%3E%3C/svg%3E"); }
+        .theme-math { background-color: #7c2d12; } .theme-math .card-pattern { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='60'%3E%3Ctext x='10' y='20' fill='%23ffffff' font-family='sans-serif' font-weight='bold' font-size='16'%3E+%3C/text%3E%3Ctext x='35' y='30' fill='%23ffffff' font-family='sans-serif' font-weight='bold' font-size='14'%3E÷%3C/text%3E%3Ctext x='15' y='50' fill='%23ffffff' font-family='sans-serif' font-weight='bold' font-size='18'%3E×%3C/text%3E%3Ctext x='40' y='50' fill='%23ffffff' font-family='sans-serif' font-weight='bold' font-size='16'%3E-%3C/text%3E%3C/svg%3E"); }
+        .theme-eco { background-color: #0f766e; } .theme-eco .card-pattern { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40'%3E%3Cpath d='M10 30 Q20 10 30 30' fill='none' stroke='%23ffffff' stroke-width='2'/%3E%3C/svg%3E"); }
+        .theme-rastros { background-color: #172554; } .theme-rastros .card-pattern { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='50' height='50'%3E%3Ccircle cx='25' cy='25' r='15' fill='none' stroke='%23ffffff' stroke-width='1.5' stroke-dasharray='3 3'/%3E%3Ccircle cx='10' cy='25' r='2.5' fill='%23ffffff'/%3E%3C/svg%3E"); }
+
+        /* * =====================================================================
+         * [REACT EXPORT] SCREENS CSS (GAMES PREVIEWS & LOGIC)
+         * Sugestão: Isolar o CSS de cada jogo nos seus respectivos módulos.
+         * =====================================================================
+         */
+         
+        /* --- Preview Screens Compartilhadas --- */
+        .memory-start-content, .scramble-start-content, .breathe-start-content, .stroop-start-content, .math-start-content, .eco-start-content, .rastros-start-content, .find-start-content { 
+            flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; 
+            text-align: center; gap: 25px; border-radius: 24px; margin-bottom: 20px; 
+        }
+        .memory-start-content { background: radial-gradient(circle at center, rgba(59, 130, 246, 0.05) 0%, transparent 60%); }
+        .scramble-start-content { background: radial-gradient(circle at center, rgba(217, 70, 239, 0.05) 0%, transparent 60%); }
+        .breathe-start-content { background: radial-gradient(circle at center, rgba(6, 182, 212, 0.05) 0%, transparent 60%); }
+        .find-start-content { background: radial-gradient(circle at center, rgba(139, 92, 246, 0.05) 0%, transparent 60%); }
+        .stroop-start-content { background: radial-gradient(circle at center, rgba(249, 115, 22, 0.05) 0%, transparent 60%); }
+        .math-start-content { background: radial-gradient(circle at center, rgba(239, 68, 68, 0.05) 0%, transparent 60%); z-index: 1; position: relative; }
+        .eco-start-content { background: radial-gradient(circle at center, rgba(15, 118, 110, 0.05) 0%, transparent 60%); }
+        .rastros-start-content { background: radial-gradient(circle at center, rgba(34, 211, 238, 0.05) 0%, transparent 60%); }
+
+        .memory-icon-large, .scramble-icon-large, .breathe-icon-large, .big-target-preview, .stroop-icon-large, .eco-icon-large, .rastros-icon-large { 
+            width: 100px; height: 100px; border-radius: 50%; 
+            display: flex; justify-content: center; align-items: center; margin-bottom: 10px; 
+        }
+        .memory-icon-large { background: linear-gradient(135deg, var(--grad-blue-start), var(--grad-blue-end)); box-shadow: 0 10px 30px rgba(59, 130, 246, 0.3); }
+        .scramble-icon-large { background: linear-gradient(135deg, var(--grad-pink-start), var(--grad-pink-end)); box-shadow: 0 10px 30px rgba(217, 70, 239, 0.3); }
+        .breathe-icon-large { background: linear-gradient(135deg, var(--grad-cyan-start), var(--grad-cyan-end)); box-shadow: 0 10px 30px rgba(6, 182, 212, 0.3); }
+        .big-target-preview { background: linear-gradient(135deg, var(--grad-purple-start), var(--grad-purple-end)); box-shadow: 0 0 40px var(--glow-color); animation: pulse 2s infinite ease-in-out; }
+        .stroop-icon-large { background: linear-gradient(135deg, var(--grad-orange-start), var(--grad-pink-end)); box-shadow: 0 10px 30px rgba(249, 115, 22, 0.3); }
+        .eco-icon-large { background: linear-gradient(135deg, var(--grad-eco-start), var(--grad-eco-end)); box-shadow: 0 10px 30px rgba(15, 118, 110, 0.3); }
+        .rastros-icon-large { background: linear-gradient(135deg, var(--grad-rastros-start), var(--grad-rastros-end)); box-shadow: 0 10px 30px rgba(8, 145, 178, 0.3); }
+        .memory-icon-large i, .scramble-icon-large i, .breathe-icon-large i, .big-target-preview i, .stroop-icon-large i, .eco-icon-large i, .rastros-icon-large i { color: white; width: 48px; height: 48px; }
+        
+        .math-icon-large { font-size: 5rem; font-weight: 700; color: #f97316; text-shadow: 0 0 30px rgba(249, 115, 22, 0.8), 0 0 60px rgba(249, 115, 22, 0.4); font-family: 'Times New Roman', serif; font-style: italic; margin-bottom: 10px; } 
+
+        h2.preview-title { font-size: 2.2rem; font-weight: 700; color: white; letter-spacing: 1px; } 
+        p.preview-desc { font-size: 1.1rem; color: var(--text-muted); margin-bottom: 20px; max-width: 280px; margin-left: auto; margin-right: auto;}
+        @keyframes pulse { 0% { box-shadow: 0 0 20px var(--glow-color); transform: scale(1); } 50% { box-shadow: 0 0 50px var(--glow-color); transform: scale(1.05); } 100% { box-shadow: 0 0 20px var(--glow-color); transform: scale(1); } }
+
+        /* --- Memory Game --- */
+        .memory-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; perspective: 1000px; margin-top: auto; margin-bottom: auto; }
+        .mem-card { aspect-ratio: 1; position: relative; transform-style: preserve-3d; transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1); cursor: pointer; }
+        .mem-card.flipped { transform: rotateY(180deg); }
+        .mem-face { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; border-radius: 16px; display: flex; justify-content: center; align-items: center; }
+        .mem-front { background-color: var(--surface-color); border: 1px solid var(--border-subtle); }
+        .mem-card:hover .mem-front { background-color: var(--surface-hover); }
+        .mem-back { background: linear-gradient(135deg, var(--grad-blue-start), var(--grad-blue-end)); transform: rotateY(180deg); box-shadow: inset 0 0 0 1px rgba(255,255,255,0.2); }
+        .mem-back i { color: white; width: 28px; height: 28px; }
+        .mem-card.matched .mem-back { opacity: 0.6; filter: grayscale(0.5); transform: rotateY(180deg) scale(0.95); }
+
+        /* --- Find It Fast --- */
+        .find-target-area { display: flex; flex-direction: column; align-items: center; margin-bottom: 30px; } 
+        .find-target-label { font-size: 0.8rem; letter-spacing: 2px; color: var(--text-muted); margin-bottom: 12px; font-weight: 600; }
+        .active-target-circle { width: 80px; height: 80px; border-radius: 50%; background: linear-gradient(135deg, var(--grad-purple-start), var(--grad-purple-end)); display: flex; justify-content: center; align-items: center; box-shadow: 0 0 25px var(--glow-color); }
+        .active-target-circle i { color: white; width: 36px; height: 36px; }
+        .find-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; background: var(--surface-color); padding: 15px; border-radius: 24px; border: 1px solid var(--border-subtle); margin-bottom: 20px; transition: opacity 0.3s; }
+        .find-item { aspect-ratio: 1; background: rgba(255,255,255,0.03); border-radius: 12px; display: flex; justify-content: center; align-items: center; cursor: pointer; transition: background 0.2s, transform 0.1s; }
+        .find-item i { color: var(--text-muted); width: 24px; height: 24px; transition: color 0.2s; } 
+        .find-item:hover { background: rgba(255,255,255,0.08); } 
+        .find-item:hover i { color: var(--text-main); } 
+        .find-item:active { transform: scale(0.9); }
+        .find-score-area { margin-top: auto; text-align: center; padding-bottom: 20px; } 
+        .find-score-area p { font-size: 1.1rem; color: var(--text-muted); } 
+        .find-score-area span { font-size: 1.5rem; color: var(--text-main); font-weight: 600; display: block; margin-top: 5px; }
+
+        /* --- Word Scramble --- */
+        .scramble-content { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 30px; position: relative; }
+        .scramble-letters { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; }
+        .letter-box { width: 50px; height: 50px; background: var(--surface-input); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; font-weight: bold; color: var(--text-main); box-shadow: inset 0 2px 4px rgba(0,0,0,0.2), 0 4px 10px rgba(0,0,0,0.1); text-transform: uppercase; }
+        .scramble-input-area { display: flex; flex-direction: column; gap: 20px; width: 100%; max-width: 300px; align-items: center; }
+        .scramble-input-area input { width: 100%; background: transparent; border: 2px solid var(--border-subtle); border-radius: 30px; padding: 16px 20px; color: white; text-align: center; font-size: 1.2rem; outline: none; transition: border-color 0.3s; font-family: 'Inter', sans-serif; text-transform: uppercase; }
+        .scramble-input-area input:focus { border-color: var(--grad-pink-end); } 
+        .scramble-input-area input::placeholder { color: var(--text-muted); text-transform: none; font-size: 1rem; }
+        .btn-check-word { width: 100%; background: linear-gradient(135deg, var(--grad-pink-start), var(--grad-pink-end)); border-radius: 30px; border: none; padding: 16px 0; color: white; font-weight: 600; font-size: 1.1rem; cursor: pointer; box-shadow: 0 8px 20px rgba(217, 70, 239, 0.3); transition: transform 0.2s, box-shadow 0.2s; font-family: 'Inter', sans-serif; }
+        .btn-check-word:active { transform: scale(0.96); } 
+        .btn-skip-word { background: transparent; border: none; color: var(--text-muted); font-size: 0.95rem; cursor: pointer; transition: color 0.2s; font-family: 'Inter', sans-serif; text-decoration: underline; } 
+        .btn-skip-word:hover { color: var(--text-main); }
+
+        /* --- Breathe Hold --- */
+        .breathe-content { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 40px; }
+        .breathe-wrapper { position: relative; width: 300px; height: 300px; display: flex; justify-content: center; align-items: center; --duration: 4s; }
+        .breathe-ring { position: absolute; width: clamp(90px, 30vw, 120px); height: clamp(90px, 30vw, 120px); border-radius: 50%; border: 1px solid rgba(34, 211, 238, 0.2); transition: transform var(--duration) ease-in-out, opacity var(--duration) ease-in-out; opacity: 0; pointer-events: none; z-index: 1; }
+        .breathe-circle { position: absolute; width: clamp(90px, 30vw, 120px); height: clamp(90px, 30vw, 120px); border-radius: 50%; background: radial-gradient(circle at 30% 30%, #38bdf8, #0284c7); box-shadow: 0 0 15px rgba(34, 211, 238, 0.3), inset 0 0 15px rgba(255,255,255,0.2); transition: transform var(--duration) ease-in-out, box-shadow var(--duration) ease-in-out; z-index: 2; }
+        .breathe-text-container { position: absolute; z-index: 3; width: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; pointer-events: none; transition: opacity 0.3s; }
+        #breathe-title { font-size: clamp(1.8rem, 6vw, 2.2rem); font-weight: 700; color: #ffffff; letter-spacing: 1px; text-shadow: 0 2px 10px rgba(0,0,0,0.4); margin-bottom: 4px; }
+        #breathe-subtitle { font-size: clamp(0.8rem, 3vw, 0.95rem); font-weight: 500; color: rgba(255,255,255,0.9); text-shadow: 0 2px 8px rgba(0,0,0,0.4); }
+        .breathe-wrapper.inhale .breathe-circle, .breathe-wrapper.hold .breathe-circle { transform: scale(2.333); box-shadow: 0 0 35px rgba(34, 211, 238, 0.6), inset 0 0 25px rgba(255,255,255,0.4); }
+        .breathe-wrapper.hold .breathe-circle { box-shadow: 0 0 55px rgba(34, 211, 238, 1), inset 0 0 35px rgba(255,255,255,0.6); }
+        .breathe-wrapper.inhale .breathe-ring.r1, .breathe-wrapper.hold .breathe-ring.r1 { transform: scale(2.45); opacity: 0.1; }
+        .breathe-wrapper.inhale .breathe-ring.r2, .breathe-wrapper.hold .breathe-ring.r2 { transform: scale(2.65); opacity: 0.08; }
+        .breathe-wrapper.inhale .breathe-ring.r3, .breathe-wrapper.hold .breathe-ring.r3 { transform: scale(2.85); opacity: 0.05; }
+        .breathe-wrapper.exhale .breathe-circle { transform: scale(1); box-shadow: 0 0 15px rgba(34, 211, 238, 0.3), inset 0 0 15px rgba(255,255,255,0.2); }
+        .breathe-wrapper.exhale .breathe-ring { transform: scale(1); opacity: 0; }
+        .breathe-timer-wrapper { text-align: center; }
+        .breathe-timer { font-size: 2.5rem; font-weight: 300; color: var(--text-muted); font-variant-numeric: tabular-nums; }
+        .breathe-timer-label { font-size: 0.9rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 2px; margin-bottom: 5px; }
+
+        /* --- Stroop Test --- */
+        .stroop-play-content { flex: 1; display: flex; flex-direction: column; justify-content: space-between; padding-bottom: 20px; } 
+        .stroop-word-container { flex: 1; display: flex; justify-content: center; align-items: center; background: radial-gradient(circle at center, rgba(255,255,255,0.02) 0%, transparent 70%); }
+        .stroop-word { font-size: 3.5rem; font-weight: 800; text-transform: uppercase; letter-spacing: 2px; transition: color 0.1s, text-shadow 0.1s; } 
+        .stroop-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin-bottom: 30px; }
+        .stroop-color-btn { background: var(--surface-input); border: 2px solid; color: white; padding: 18px 10px; border-radius: 16px; font-size: 1.1rem; font-weight: 600; font-family: 'Inter', sans-serif; cursor: pointer; transition: background 0.15s, transform 0.1s; outline: none; text-transform: uppercase; letter-spacing: 1px; }
+        .stroop-color-btn:active { transform: scale(0.95); } 
+        .game-footer-text { text-align: center; font-size: 1.2rem; font-weight: 500; color: var(--text-muted); } 
+        .game-footer-text span { color: white; font-weight: 700; font-size: 1.5rem; margin-left: 8px; }
+
+        /* --- Math Blitz --- */
+        .math-watermark { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; overflow: hidden; z-index: 0; opacity: 0.05; color: white; font-weight: 800; font-family: 'Inter', sans-serif; } 
+        .math-watermark span { position: absolute; } 
+        .mw-1 { top: 10%; left: 10%; font-size: 6rem; transform: rotate(15deg); } 
+        .mw-2 { top: 20%; right: 15%; font-size: 8rem; transform: rotate(-20deg); } 
+        .mw-3 { bottom: 15%; left: 20%; font-size: 7rem; transform: rotate(45deg); } 
+        .mw-4 { bottom: 25%; right: 10%; font-size: 5rem; transform: rotate(-10deg); } 
+        .mw-5 { top: 50%; left: 50%; font-size: 10rem; transform: translate(-50%, -50%) rotate(30deg); } 
+        .mw-6 { top: 60%; right: 20%; font-size: 4rem; transform: rotate(10deg); } 
+        .mw-7 { bottom: 10%; right: 30%; font-size: 6rem; transform: rotate(-15deg); }
+        
+        .math-play-content { flex: 1; display: flex; flex-direction: column; justify-content: space-between; padding-bottom: 20px; z-index: 1; position: relative; } 
+        .math-question-card { flex: 1; display: flex; justify-content: center; align-items: center; text-align: center; background: var(--surface-color); border: 1px solid var(--border-subtle); border-radius: 24px; margin-bottom: 30px; font-size: 4.5rem; font-weight: 800; color: white; box-shadow: inset 0 0 30px rgba(0,0,0,0.5), 0 10px 30px rgba(0,0,0,0.3); letter-spacing: 2px; }
+        .math-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin-bottom: 30px; } 
+        .math-answer-btn { background: linear-gradient(180deg, var(--grad-red-orange-start), var(--grad-red-orange-end)); border: none; color: white; padding: 25px 10px; border-radius: 16px; font-size: 2.2rem; font-weight: 700; font-family: 'Inter', sans-serif; cursor: pointer; box-shadow: 0 8px 15px rgba(239, 68, 68, 0.3); transition: transform 0.1s, filter 0.2s; outline: none; } 
+        .math-answer-btn:active { transform: scale(0.95); filter: brightness(1.2); }
+
+        /* --- Eco Visual --- */
+        .eco-play-content { flex: 1; display: flex; flex-direction: column; justify-content: space-between; padding-bottom: 20px; align-items: center; } 
+        .eco-status-text { font-size: 1.5rem; font-weight: 500; color: white; margin-top: 20px; letter-spacing: 1px; height: 35px; transition: opacity 0.3s; } 
+        .eco-grid-container { flex: 1; display: flex; align-items: center; justify-content: center; width: 100%; } 
+        .eco-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; width: 260px; justify-content: center; }
+        .eco-circle { width: 110px; height: 110px; border-radius: 50%; border: 2px solid; opacity: 0.3; cursor: pointer; transition: opacity 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease; position: relative; justify-self: center; } 
+        #eco-0 { border-color: #1e3a8a; } #eco-1 { border-color: #06b6d4; } #eco-2 { border-color: #8b5cf6; } #eco-3 { border-color: #10b981; } 
+        .eco-circle.active { opacity: 1; transform: scale(1.05); } 
+        #eco-0.active { background-color: #1e3a8a; box-shadow: 0 0 40px rgba(30, 58, 138, 0.8); } 
+        #eco-1.active { background-color: #06b6d4; box-shadow: 0 0 40px rgba(6, 182, 212, 0.8); } 
+        #eco-2.active { background-color: #8b5cf6; box-shadow: 0 0 40px rgba(139, 92, 246, 0.8); } 
+        #eco-3.active { background-color: #10b981; box-shadow: 0 0 40px rgba(16, 185, 129, 0.8); }
+        @keyframes ecoRipple { 0% { box-shadow: 0 0 0 0 var(--ripple-color); opacity: 0.8; } 100% { box-shadow: 0 0 0 30px var(--ripple-color); opacity: 0; } } 
+        .eco-circle::after { content: ''; position: absolute; top: -2px; left: -2px; right: -2px; bottom: -2px; border-radius: 50%; opacity: 0; pointer-events: none; } 
+        #eco-0::after { --ripple-color: rgba(30, 58, 138, 0.6); border: 2px solid #1e3a8a; } 
+        #eco-1::after { --ripple-color: rgba(6, 182, 212, 0.6); border: 2px solid #06b6d4; } 
+        #eco-2::after { --ripple-color: rgba(139, 92, 246, 0.6); border: 2px solid #8b5cf6; } 
+        #eco-3::after { --ripple-color: rgba(16, 185, 129, 0.6); border: 2px solid #10b981; } 
+        .eco-circle.ripple-effect::after { animation: ecoRipple 0.6s ease-out; }
+
+        /* --- Rastros da Noite --- */
+        .rastros-play-content { flex: 1; display: flex; flex-direction: column; align-items: center; width: 100%; position: relative; padding-bottom: 20px; } 
+        .rastros-status-text { font-size: 1.2rem; font-weight: 500; color: var(--text-main); margin-bottom: 20px; letter-spacing: 1px; height: 30px; text-align: center; transition: opacity 0.3s; }
+        .rastros-container { width: 90%; flex: none; height: 380px; position: relative; border-radius: 24px; border: 1px solid var(--border-subtle); overflow: hidden; margin-top: auto; margin-bottom: auto; background: #0a0b1e; } 
+        #rastros-canvas { width: 100%; height: 100%; display: block; cursor: crosshair; }
+    </style>
+</head>
+<body>
+
+<!-- 
+  [REACT EXPORT] 
+  Feedback Overlay Component 
+-->
+<div id="global-feedback" class="global-feedback">
+    <i id="fb-icon-correct" data-lucide="check-circle-2" style="display: none; width: 64px; height: 64px;"></i>
+    <i id="fb-icon-wrong" data-lucide="x-circle" style="display: none; width: 64px; height: 64px;"></i>
+</div>
+
+<div class="app-container">
+
+    <!-- 
+      =====================================================================
+      [REACT EXPORT] VIEW: HOME MENU (<HubScreen />)
+      =====================================================================
+    -->
+    <div id="view-home" class="view active" style="padding: 20px;">
+        <div class="hub-header">
+            <div class="hub-logo">REBOOT</div>
+            <h1 class="hub-title">Prevenção de Recaídas</h1>
+            <p class="hub-subtitle">Vença o impulso com estes exercícios cognitivos</p>
+        </div>
+
+        <div class="hub-grid">
+            <div class="game-card theme-memory" onclick="AppState.showScreen('view-memory-start')">
+                <div class="card-pattern"></div>
+                <div class="card-content">
+                    <div class="card-icon-box"><i data-lucide="brain"></i></div>
+                    <p class="card-title">Jogo da<br>Memória</p>
+                </div>
+            </div>
+            <div class="game-card theme-find" onclick="AppState.showScreen('view-find-start')">
+                <div class="card-pattern"></div>
+                <div class="card-content">
+                    <div class="card-icon-box"><i data-lucide="search"></i></div>
+                    <p class="card-title">Encontre<br>Rápido</p>
+                </div>
+            </div>
+            <div class="game-card theme-word" onclick="AppState.showScreen('view-scramble-start')">
+                <div class="card-pattern"></div>
+                <div class="card-content">
+                    <div class="card-icon-box"><i data-lucide="type"></i></div>
+                    <p class="card-title">Palavras<br>Embaralhadas</p>
+                </div>
+            </div>
+            <div class="game-card theme-breathe" onclick="AppState.showScreen('view-breathe-start')">
+                <div class="card-pattern"></div>
+                <div class="card-content">
+                    <div class="card-icon-box"><i data-lucide="wind"></i></div>
+                    <p class="card-title">Pausa para<br>Respirar</p>
+                </div>
+            </div>
+            <div class="game-card theme-stroop" onclick="AppState.showScreen('view-stroop-start')">
+                <div class="card-pattern"></div>
+                <div class="card-content">
+                    <div class="card-icon-box"><i data-lucide="palette"></i></div>
+                    <p class="card-title">Teste de<br>Stroop</p>
+                </div>
+            </div>
+            <div class="game-card theme-math" onclick="AppState.showScreen('view-math-start')">
+                <div class="card-pattern"></div>
+                <div class="card-content">
+                    <div class="card-icon-box"><i data-lucide="calculator"></i></div>
+                    <p class="card-title">Desafio<br>Matemático</p>
+                </div>
+            </div>
+            <div class="game-card theme-eco" onclick="AppState.showScreen('view-eco-start')">
+                <div class="card-pattern"></div>
+                <div class="card-content">
+                    <div class="card-icon-box"><i data-lucide="radio"></i></div>
+                    <p class="card-title">Eco<br>Visual</p>
+                </div>
+            </div>
+            <div class="game-card theme-rastros" onclick="AppState.showScreen('view-rastros-start')">
+                <div class="card-pattern"></div>
+                <div class="card-content">
+                    <div class="card-icon-box"><i data-lucide="atom"></i></div>
+                    <p class="card-title">Rastros da<br>Noite</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 
+      =====================================================================
+      [REACT EXPORT] VIEWS: GAMES PREVIEWS & PLAY SCREENS
+      Sugestão: Criar componentes como <MemoryGame /> que contenham 
+      o seu próprio StartScreen e PlayScreen usando estado local.
+      =====================================================================
+    -->
+
+    <!-- MEMORY RECALL -->
+    <div id="view-memory-start" class="view">
+        <div class="topbar"><button class="btn-back" onclick="AppState.showScreen('view-home')"><i data-lucide="chevron-left"></i></button><div style="width: 40px;"></div></div>
+        <div class="memory-start-content"><div class="memory-icon-large"><i data-lucide="brain"></i></div><h2 class="preview-title">Jogo da Memória</h2><p class="preview-desc">Encontre os pares correspondentes para exercitar sua memória de curto prazo.</p><button class="btn-white-pill" onclick="AppState.showScreen('view-memory-play')">INICIAR JOGO</button></div>
+    </div>
+    <div id="view-memory-play" class="view">
+        <div class="topbar"><button class="btn-back" onclick="AppState.showScreen('view-memory-start')"><i data-lucide="chevron-left"></i></button><span class="view-title">Jogo da Memória</span><span class="stats-text" id="memory-moves-ui">Movs: <span id="memory-moves">0</span></span></div>
+        <div class="memory-grid" id="memory-grid"></div>
+    </div>
+
+    <!-- FIND IT FAST -->
+    <div id="view-find-start" class="view">
+        <div class="topbar"><button class="btn-back" onclick="AppState.showScreen('view-home')"><i data-lucide="chevron-left"></i></button><div style="width: 40px;"></div></div>
+        <div class="find-start-content"><div class="big-target-preview"><i data-lucide="target"></i></div><h2 class="preview-title">Foco e Percepção</h2><p class="preview-desc">Encontre o símbolo em destaque na grade. Sem tempo, apenas relaxe.</p><button class="btn-white-pill" onclick="AppState.showScreen('view-find-play')" style="background: linear-gradient(135deg, var(--grad-purple-start), var(--grad-purple-end)); color: white;">INICIAR JOGO</button></div>
+    </div>
+    <div id="view-find-play" class="view">
+        <div class="topbar"><button class="btn-back" onclick="AppState.showScreen('view-find-start')"><i data-lucide="chevron-left"></i></button><span class="view-title">Encontre Rápido</span><div style="width: 40px;"></div></div>
+        <div class="find-target-area"><div class="find-target-label">ENCONTRE ISTO</div><div class="active-target-circle" id="find-target-container"></div></div><div class="find-grid" id="find-grid"></div><div class="find-score-area"><p>Pontuação</p><span id="find-score">0</span></div>
+    </div>
+
+    <!-- WORD SCRAMBLE -->
+    <div id="view-scramble-start" class="view">
+        <div class="topbar"><button class="btn-back" onclick="AppState.showScreen('view-home')"><i data-lucide="chevron-left"></i></button><div style="width: 40px;"></div></div>
+        <div class="scramble-start-content"><div class="scramble-icon-large"><i data-lucide="type"></i></div><h2 class="preview-title">Palavras Embaralhadas</h2><p class="preview-desc">Desembaralhe as letras para formar palavras e estimular seu raciocínio verbal.</p><button class="btn-white-pill" onclick="AppState.showScreen('view-scramble-play')">INICIAR JOGO</button></div>
+    </div>
+    <div id="view-scramble-play" class="view">
+        <div class="topbar"><button class="btn-back" onclick="AppState.showScreen('view-scramble-start')"><i data-lucide="chevron-left"></i></button><span class="view-title">Palavras Embaralhadas</span><div class="score-card"><i data-lucide="award" style="color: var(--grad-pink-start);"></i> <span id="scramble-score">0</span></div></div>
+        <div class="scramble-content"><div class="scramble-letters" id="scramble-letters"></div><div class="scramble-input-area" id="scramble-input-area"><input type="text" id="scramble-input" placeholder="Digite a palavra aqui" autocomplete="off" spellcheck="false"><button class="btn-check-word" id="scramble-btn-check">VERIFICAR</button><button class="btn-skip-word" id="scramble-btn-skip">Pular Palavra</button></div></div>
+    </div>
+
+    <!-- BREATHE HOLD -->
+    <div id="view-breathe-start" class="view">
+        <div class="topbar"><button class="btn-back" onclick="AppState.showScreen('view-home')"><i data-lucide="chevron-left"></i></button><div style="width: 40px;"></div></div>
+        <div class="breathe-start-content"><div class="breathe-icon-large"><i data-lucide="wind"></i></div><h2 class="preview-title">Pausa para Respirar</h2><p class="preview-desc">Acompanhe o guia visual de respiração para reduzir o estresse e acalmar a mente.</p><button class="btn-white-pill" onclick="AppState.showScreen('view-breathe-play')">INICIAR GUIA</button></div>
+    </div>
+    <div id="view-breathe-play" class="view">
+        <div class="topbar"><button class="btn-back" onclick="AppState.showScreen('view-breathe-start')"><i data-lucide="chevron-left"></i></button><span class="view-title">Pausa para Respirar</span><div style="width: 40px;"></div></div>
+        <div class="breathe-content">
+            <div id="breathe-wrapper" class="breathe-wrapper">
+                <div class="breathe-ring r1"></div><div class="breathe-ring r2"></div><div class="breathe-ring r3"></div><div class="breathe-circle"></div>
+                <div class="breathe-text-container" id="breathe-text-container"><div id="breathe-title">Preparando...</div><div id="breathe-subtitle">Acomode-se</div></div>
+            </div>
+            <div class="breathe-timer-wrapper"><div class="breathe-timer-label">Tempo Total</div><div id="breathe-timer" class="breathe-timer">00:00</div></div>
+        </div>
+    </div>
+
+    <!-- STROOP TEST -->
+    <div id="view-stroop-start" class="view">
+        <div class="topbar"><button class="btn-back" onclick="AppState.showScreen('view-home')"><i data-lucide="chevron-left"></i></button><div style="width: 40px;"></div></div>
+        <div class="stroop-start-content"><div class="stroop-icon-large"><i data-lucide="palette"></i></div><h2 class="preview-title">Teste de Stroop</h2><p class="preview-desc">Toque na COR, não na palavra!</p><button class="btn-white-pill" onclick="AppState.showScreen('view-stroop-play')">INICIAR JOGO</button></div>
+    </div>
+    <div id="view-stroop-play" class="view">
+        <div class="topbar"><button class="btn-back" onclick="AppState.showScreen('view-stroop-start')"><i data-lucide="chevron-left"></i></button><span class="view-title">Teste de Stroop</span><div class="score-card"><i data-lucide="clock" style="color: white; width: 16px; height: 16px;"></i> <span id="stroop-time">30s</span></div></div>
+        <div class="stroop-play-content"><div class="stroop-word-container"><div id="stroop-word" class="stroop-word">CORES</div></div><div class="stroop-grid" id="stroop-btn-grid"></div><div class="game-footer-text">Pontuação: <span id="stroop-score">0</span></div></div>
+    </div>
+
+    <!-- MATH BLITZ -->
+    <div id="view-math-start" class="view">
+        <div class="math-watermark"><span class="mw-1">+</span><span class="mw-2">−</span><span class="mw-3">×</span><span class="mw-4">÷</span><span class="mw-5">=</span><span class="mw-6">+</span><span class="mw-7">×</span></div>
+        <div class="topbar" style="z-index: 1;"><button class="btn-back" onclick="AppState.showScreen('view-home')"><i data-lucide="chevron-left"></i></button><div style="width: 40px;"></div></div>
+        <div class="math-start-content"><div class="math-icon-large">√x</div><h2 class="preview-title">Desafio Matemático</h2><p class="preview-desc">Resolva problemas o mais rápido que puder.</p><button class="btn-white-pill" onclick="AppState.showScreen('view-math-play')">INICIAR JOGO</button></div>
+    </div>
+    <div id="view-math-play" class="view">
+        <div class="math-watermark"><span class="mw-1">+</span><span class="mw-2">−</span><span class="mw-3">×</span><span class="mw-4">÷</span><span class="mw-5">=</span><span class="mw-6">+</span><span class="mw-7">×</span></div>
+        <div class="topbar" style="z-index: 1;"><button class="btn-back" onclick="AppState.showScreen('view-math-start')"><i data-lucide="chevron-left"></i></button><span class="view-title">Desafio Matemático</span><div class="score-card"><i data-lucide="clock" style="color: white; width: 16px; height: 16px;"></i> <span id="math-time">30s</span></div></div>
+        <div class="math-play-content"><div class="math-question-card" id="math-question">0 + 0</div><div class="math-grid" id="math-btn-grid"></div><div class="game-footer-text">Pontuação: <span id="math-score">0</span></div></div>
+    </div>
+
+    <!-- ECO VISUAL -->
+    <div id="view-eco-start" class="view">
+        <div class="topbar"><button class="btn-back" onclick="AppState.showScreen('view-home')"><i data-lucide="chevron-left"></i></button><div style="width: 40px;"></div></div>
+        <div class="eco-start-content"><div class="eco-icon-large"><i data-lucide="radio"></i></div><h2 class="preview-title">Eco Visual</h2><p class="preview-desc">Memorize e repita a sequência luminosa.</p><button class="btn-white-pill" onclick="AppState.showScreen('view-eco-play')">START GAME</button></div>
+    </div>
+    <div id="view-eco-play" class="view">
+        <div class="topbar"><button class="btn-back" onclick="AppState.showScreen('view-eco-start')"><i data-lucide="chevron-left"></i></button><span class="view-title">Eco Visual</span><div class="score-card"><i data-lucide="award" style="color: var(--grad-eco-end);"></i> <span id="eco-score">0</span></div></div>
+        <div class="eco-play-content"><div class="eco-status-text" id="eco-status">Prepare-se...</div><div class="eco-grid-container" id="eco-grid-container"></div></div>
+    </div>
+
+    <!-- RASTROS DA NOITE -->
+    <div id="view-rastros-start" class="view">
+        <div class="topbar"><button class="btn-back" onclick="AppState.showScreen('view-home')"><i data-lucide="chevron-left"></i></button><div style="width: 40px;"></div></div>
+        <div class="rastros-start-content"><div class="rastros-icon-large"><i data-lucide="atom"></i></div><h2 class="preview-title">Rastros da Noite</h2><p class="preview-desc">Acompanhe o alvo em um balé fluído de esferas espaciais.</p><button class="btn-white-pill" onclick="AppState.showScreen('view-rastros-play')">START GAME</button></div>
+    </div>
+    <div id="view-rastros-play" class="view">
+        <div class="topbar"><button class="btn-back" onclick="AppState.showScreen('view-rastros-start')"><i data-lucide="chevron-left"></i></button><span class="view-title">Rastros da Noite</span><div class="score-card"><i data-lucide="award" style="color: var(--target-cyan);"></i> <span id="rastros-score">0</span></div></div>
+        <div class="rastros-play-content"><div class="rastros-status-text" id="rastros-status">Observe o alvo...</div><div class="rastros-container" id="rastros-container"><canvas id="rastros-canvas"></canvas></div><div id="rastros-gameover" style="display:none; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; width: 100%; z-index: 20;"><p style="color: var(--text-muted);">Rodadas concluídas</p><h2 id="rastros-final-score" style="font-size: 3.5rem; color: white; margin: 10px 0 20px;">0</h2><button class="btn-white-pill" onclick="rastrosGame.start()">TENTAR NOVAMENTE</button></div></div>
+    </div>
+
+</div>
+
+<script>
+/**
+ * =====================================================================
+ * [REACT EXPORT] UTILS & HELPERS
+ * Sugestão: Criar `utils.js` para estas funções e constantes globais.
+ * =====================================================================
+ */
+const iconBank = [
+    'moon', 'sun', 'star', 'cloud', 'anchor', 'coffee', 'feather', 'flower', 
+    'heart', 'key', 'leaf', 'music', 'umbrella', 'zap', 'droplet', 'compass', 
+    'camera', 'headphones', 'watch', 'book', 'award', 'bell', 'gift', 'map', 
+    'shield', 'snowflake', 'flame', 'wind', 'palette', 'clock', 'calculator', 
+    'target', 'brain', 'type', 'check-circle-2', 'x-circle', 'radio', 'atom'
+];
+
+function shuffleArray(array) { 
+    let arr = [...array]; 
+    for (let i = arr.length - 1; i > 0; i--) { 
+        const j = Math.floor(Math.random() * (i + 1)); 
+        [arr[i], arr[j]] = [arr[j], arr[i]]; 
+    } 
+    return arr; 
+}
+
+const FeedbackSystem = {
+    show(isCorrect, elementToShake = null) {
+        const overlay = document.getElementById('global-feedback');
+        const iconCorrect = document.getElementById('fb-icon-correct');
+        const iconWrong = document.getElementById('fb-icon-wrong');
+        
+        overlay.className = 'global-feedback show ' + (isCorrect ? 'correct' : 'wrong');
+        iconCorrect.style.display = isCorrect ? 'block' : 'none';
+        iconWrong.style.display = isCorrect ? 'none' : 'block';
+        
+        if (!isCorrect && elementToShake) { 
+            elementToShake.classList.add('shake-effect'); 
+            setTimeout(() => elementToShake.classList.remove('shake-effect'), 300); 
+        }
+        
+        setTimeout(() => { overlay.classList.remove('show'); }, 400); 
+    }
+};
+
+
+/**
+ * =====================================================================
+ * [REACT EXPORT] GAME MODULE: MEMORY RECALL
+ * Sugestão: Converter para Componente React.
+ * `start()` -> useEffect (on mount).
+ * `stop()` -> return function (cleanup) no useEffect.
+ * `cards`, `moves`, etc -> useState ou useReducer.
+ * =====================================================================
+ */
+const memoryGame = {
+    // --- STATE ---
+    cards: [], 
+    flippedCards: [], 
+    moves: 0, 
+    matches: 0, 
+    isLocked: false,
+    
+    // --- LIFECYCLE ---
+    start() { 
+        this.stop(); 
+        const grid = document.getElementById('memory-grid'); 
+        grid.innerHTML = ''; 
+        
+        this.flippedCards = []; 
+        this.moves = 0; 
+        this.matches = 0; 
+        this.isLocked = false; 
+        document.getElementById('memory-moves').textContent = '0'; 
+        
+        const selectedIcons = shuffleArray(iconBank).slice(0, 12); 
+        this.cards = shuffleArray([...selectedIcons, ...selectedIcons]); 
+        
+        this.cards.forEach((iconName) => { 
+            const card = document.createElement('div'); 
+            card.className = 'mem-card'; 
+            card.innerHTML = `<div class="mem-face mem-front"></div><div class="mem-face mem-back"><i data-lucide="${iconName}"></i></div>`; 
+            card.onclick = () => this.flipCard(card, iconName); 
+            grid.appendChild(card); 
+        }); 
+        
+        lucide.createIcons({ root: grid }); 
+    },
+    
+    stop() { 
+        this.flippedCards = []; 
+        this.isLocked = true; 
+    },
+    
+    // --- ACTIONS ---
+    flipCard(card, iconName) { 
+        if (this.isLocked || card.classList.contains('flipped') || card.classList.contains('matched')) return; 
+        
+        card.classList.add('flipped'); 
+        card.dataset.val = iconName; 
+        this.flippedCards.push(card); 
+        
+        if (this.flippedCards.length === 2) { 
+            this.moves++; 
+            document.getElementById('memory-moves').textContent = this.moves; 
+            this.checkMatch(); 
+        } 
+    },
+    
+    checkMatch() { 
+        this.isLocked = true; 
+        const [c1, c2] = this.flippedCards; 
+        
+        if (c1.dataset.val === c2.dataset.val) { 
+            setTimeout(() => { 
+                c1.classList.add('matched'); 
+                c2.classList.add('matched'); 
+                this.matches++; 
+                this.flippedCards = []; 
+                this.isLocked = false; 
+                
+                if (this.matches === 12) setTimeout(() => this.start(), 1500); 
+            }, 400); 
+        } else { 
+            setTimeout(() => { 
+                c1.classList.remove('flipped'); 
+                c2.classList.remove('flipped'); 
+                this.flippedCards = []; 
+                this.isLocked = false; 
+            }, 1000); 
+        } 
+    }
+};
+
+/**
+ * =====================================================================
+ * [REACT EXPORT] GAME MODULE: FIND IT FAST
+ * =====================================================================
+ */
+const findGame = {
+    // --- STATE ---
+    score: 0, 
+    currentTarget: '',
+    
+    // --- LIFECYCLE ---
+    start() { 
+        this.stop(); 
+        this.score = 0; 
+        document.getElementById('find-score').textContent = '0'; 
+        this.nextRound(); 
+    }, 
+    
+    stop() { },
+    
+    // --- ACTIONS ---
+    nextRound() { 
+        const grid = document.getElementById('find-grid'); 
+        grid.innerHTML = ''; 
+        
+        const shuffled = shuffleArray(iconBank); 
+        this.currentTarget = shuffled[0]; 
+        document.getElementById('find-target-container').innerHTML = `<i data-lucide="${this.currentTarget}"></i>`; 
+        
+        let gridIcons = shuffled.slice(1, 25); 
+        gridIcons.splice(Math.floor(Math.random() * 25), 0, this.currentTarget); 
+        
+        gridIcons.forEach((iconName) => { 
+            const item = document.createElement('div'); 
+            item.className = 'find-item'; 
+            item.innerHTML = `<i data-lucide="${iconName}"></i>`; 
+            item.onclick = () => { 
+                if (iconName === this.currentTarget) { 
+                    FeedbackSystem.show(true); 
+                    this.score++; 
+                    document.getElementById('find-score').textContent = this.score; 
+                    setTimeout(() => this.nextRound(), 150); 
+                } else { 
+                    FeedbackSystem.show(false, item); 
+                } 
+            }; 
+            grid.appendChild(item); 
+        }); 
+        
+        lucide.createIcons({ root: document.getElementById('view-find-play') }); 
+    }
+};
+
+/**
+ * =====================================================================
+ * [REACT EXPORT] GAME MODULE: WORD SCRAMBLE
+ * =====================================================================
+ */
+const scrambleGame = {
+    // --- CONFIG & STATE ---
+    baseWords: [
+        'AMOR', 'VIDA', 'AZUL', 'BRISA', 'MENTE', 'CALMA', 'FOCO', 'ALMA', 'PLENO', 
+        'LIVRE', 'FELIZ', 'TEMPO', 'PAUSA', 'SOPRO', 'CLARO', 'VERDE', 'NOBRE', 
+        'IDEIA', 'SONHO', 'VIGOR', 'PONTO', 'NUVEM', 'CLIMA', 'VENTO', 'FLUXO', 
+        'CALOR', 'TERRA', 'FUNDO', 'SABER', 'LUGAR', 'FALAR', 'CANTO', 'JOGAR', 
+        'NINHO', 'MUNDO', 'VIVER', 'FORTE', 'CINZA', 'PRAIA', 'FRUTO', 'NOITE', 
+        'TARDE', 'MANHA'
+    ],
+    validDictionary: [
+        'AMOR', 'ROMA', 'MORA', 'RAMO', 'VIDA', 'DIVA', 'AZUL', 'BRISA', 'MENTE', 
+        'CALMA', 'FOCO', 'ALMA', 'LAMA', 'MALA', 'PLENO', 'LIVRE', 'FELIZ', 'TEMPO', 
+        'PAUSA', 'SOPRO', 'POROS', 'CLARO', 'COLAR', 'CORAL', 'VERDE', 'NOBRE', 
+        'IDEIA', 'SONHO', 'VIGOR', 'PONTO', 'NUVEM', 'CLIMA', 'VENTO', 'FLUXO', 
+        'CALOR', 'TERRA', 'FUNDO', 'SABER', 'BARES', 'LUGAR', 'FALAR', 'CANTO', 
+        'CONTA', 'JOGAR', 'NINHO', 'MUNDO', 'VIVER', 'FORTE', 'CINZA', 'PRAIA', 
+        'PARIA', 'FRUTO', 'NOITE', 'TARDE', 'MANHA'
+    ],
+    currentWord: '', 
+    currentLetters: '', 
+    score: 0, 
+    isAnimating: false,
+    
+    // --- LIFECYCLE ---
+    start() { 
+        this.stop(); 
+        this.score = 0; 
+        this.isAnimating = false; 
+        document.getElementById('scramble-score').textContent = '0'; 
+        
+        const input = document.getElementById('scramble-input'); 
+        input.value = ''; 
+        
+        document.getElementById('scramble-btn-check').onclick = () => this.checkWord(); 
+        document.getElementById('scramble-btn-skip').onclick = () => this.nextWord(); 
+        input.onkeydown = (e) => { if (e.key === 'Enter') this.checkWord(); }; 
+        
+        this.nextWord(); 
+    },
+    
+    stop() { 
+        this.isAnimating = true; 
+    },
+    
+    // --- ACTIONS ---
+    nextWord() { 
+        let newWord; 
+        do { newWord = this.baseWords[Math.floor(Math.random() * this.baseWords.length)]; } 
+        while (newWord === this.currentWord); 
+        this.currentWord = newWord; 
+        
+        this.currentLetters = this.currentWord.split('').sort().join('');
+
+        let scrambledArray; 
+        do { scrambledArray = shuffleArray(this.currentWord.split('')); } 
+        while (scrambledArray.join('') === this.currentWord); 
+        
+        const container = document.getElementById('scramble-letters'); 
+        container.innerHTML = ''; 
+        scrambledArray.forEach(letter => { 
+            const box = document.createElement('div'); 
+            box.className = 'letter-box'; 
+            box.textContent = letter; 
+            container.appendChild(box); 
+        }); 
+        
+        const input = document.getElementById('scramble-input'); 
+        input.value = ''; 
+        input.focus(); 
+        this.isAnimating = false; 
+    },
+    
+    checkWord() { 
+        if (this.isAnimating) return; 
+        const input = document.getElementById('scramble-input'); 
+        
+        let guess = input.value.trim().toUpperCase().normalize('NFD').replace(/[\u0300-\u036f]/g, ""); 
+        const sortedGuess = guess.split('').sort().join('');
+        
+        const isExactAnagram = (sortedGuess === this.currentLetters);
+        const isValidWord = this.validDictionary.includes(guess);
+
+        if (isExactAnagram && isValidWord) { 
+            this.isAnimating = true; 
+            this.score++; 
+            document.getElementById('scramble-score').textContent = this.score; 
+            FeedbackSystem.show(true); 
+            setTimeout(() => this.nextWord(), 500); 
+        } else { 
+            FeedbackSystem.show(false, document.getElementById('scramble-input-area')); 
+            input.focus(); 
+        } 
+    }
+};
+
+/**
+ * =====================================================================
+ * [REACT EXPORT] GAME MODULE: BREATHE HOLD
+ * =====================================================================
+ */
+const breatheGame = {
+    // --- STATE ---
+    totalSeconds: 0, 
+    timerInterval: null, 
+    cycleTimeout: null,
+    
+    // --- LIFECYCLE ---
+    start() {
+        this.stop();
+        this.totalSeconds = 0;
+        this.updateTime();
+        
+        setTimeout(() => {
+            this.timerInterval = setInterval(() => { this.totalSeconds++; this.updateTime(); }, 1000);
+            this.inhale();
+        }, 50);
+    },
+    
+    stop() {
+        clearInterval(this.timerInterval);
+        clearTimeout(this.cycleTimeout);
+        const wrapper = document.getElementById('breathe-wrapper');
+        const textContainer = document.getElementById('breathe-text-container');
+        if(wrapper) {
+            wrapper.classList.remove('inhale', 'hold', 'exhale');
+            wrapper.style.setProperty('--duration', '0s');
+        }
+        if(textContainer) {
+            document.getElementById('breathe-title').textContent = 'Preparando...';
+            document.getElementById('breathe-subtitle').textContent = 'Acomode-se';
+            textContainer.style.opacity = 1;
+        }
+    },
+
+    // --- ACTIONS ---
+    setText(title, sub) {
+        const container = document.getElementById('breathe-text-container');
+        container.style.opacity = 0;
+        setTimeout(() => {
+            document.getElementById('breathe-title').textContent = title;
+            document.getElementById('breathe-subtitle').textContent = sub;
+            container.style.opacity = 1;
+        }, 300);
+    },
+
+    inhale() {
+        this.setText("Inspire", "Respire profundamente");
+        const wrapper = document.getElementById('breathe-wrapper');
+        void wrapper.offsetWidth; // Force reflow
+        wrapper.style.setProperty('--duration', '4s');
+        wrapper.className = 'breathe-wrapper inhale';
+        this.cycleTimeout = setTimeout(() => this.hold(), 4000);
+    },
+
+    hold() {
+        this.setText("Segure", "Mantenha o ar nos pulmões");
+        const wrapper = document.getElementById('breathe-wrapper');
+        wrapper.style.setProperty('--duration', '4s');
+        wrapper.className = 'breathe-wrapper hold';
+        this.cycleTimeout = setTimeout(() => this.exhale(), 4000);
+    },
+
+    exhale() {
+        this.setText("Expire", "Solte o ar lentamente");
+        const wrapper = document.getElementById('breathe-wrapper');
+        wrapper.style.setProperty('--duration', '6s');
+        wrapper.className = 'breathe-wrapper exhale';
+        this.cycleTimeout = setTimeout(() => this.inhale(), 6000);
+    },
+
+    updateTime() {
+        const m = Math.floor(this.totalSeconds / 60).toString().padStart(2, '0');
+        const s = (this.totalSeconds % 60).toString().padStart(2, '0');
+        document.getElementById('breathe-timer').textContent = `${m}:${s}`;
+    }
+};
+
+/**
+ * =====================================================================
+ * [REACT EXPORT] GAME MODULE: STROOP TEST
+ * =====================================================================
+ */
+const stroopGame = {
+    // --- CONFIG & STATE ---
+    colors: [ 
+        { id: 'vermelho', label: 'VERMELHO', hex: '#ef4444' }, 
+        { id: 'azul', label: 'AZUL', hex: '#3b82f6' }, 
+        { id: 'verde', label: 'VERDE', hex: '#10b981' }, 
+        { id: 'amarelo', label: 'AMARELO', hex: '#eab308' }, 
+        { id: 'laranja', label: 'LARANJA', hex: '#f97316' }, 
+        { id: 'roxo', label: 'ROXO', hex: '#a855f7' } 
+    ], 
+    score: 0, 
+    timeLeft: 30, 
+    timerInterval: null, 
+    correctId: '', 
+    isPlaying: false,
+    
+    // --- LIFECYCLE ---
+    start() { 
+        this.stop(); 
+        this.score = 0; 
+        this.timeLeft = 30; 
+        this.isPlaying = true; 
+        document.getElementById('stroop-score').textContent = '0'; 
+        document.getElementById('stroop-time').textContent = '30s'; 
+        
+        const grid = document.getElementById('stroop-btn-grid'); 
+        grid.innerHTML = ''; 
+        this.colors.forEach(c => { 
+            const btn = document.createElement('button'); 
+            btn.className = 'stroop-color-btn'; 
+            btn.textContent = c.label; 
+            btn.style.borderColor = c.hex; 
+            btn.onclick = () => this.handleGuess(btn, c.id); 
+            grid.appendChild(btn); 
+        }); 
+        
+        this.nextRound(); 
+        
+        this.timerInterval = setInterval(() => { 
+            this.timeLeft--; 
+            document.getElementById('stroop-time').textContent = this.timeLeft + 's'; 
+            if (this.timeLeft <= 0) this.endGame(); 
+        }, 1000); 
+    },
+    
+    stop() { 
+        clearInterval(this.timerInterval); 
+        this.isPlaying = false; 
+    },
+    
+    // --- ACTIONS ---
+    nextRound() { 
+        if (!this.isPlaying) return; 
+        const wordObj = this.colors[Math.floor(Math.random() * this.colors.length)]; 
+        let colorObj; 
+        
+        if (Math.random() > 0.2) { 
+            const diff = this.colors.filter(c => c.id !== wordObj.id); 
+            colorObj = diff[Math.floor(Math.random() * diff.length)]; 
+        } else { 
+            colorObj = wordObj; 
+        } 
+        
+        this.correctId = colorObj.id; 
+        const wordEl = document.getElementById('stroop-word'); 
+        wordEl.textContent = wordObj.label; 
+        wordEl.style.color = colorObj.hex; 
+        wordEl.style.textShadow = `0 0 25px ${colorObj.hex}66`; 
+    },
+    
+    handleGuess(btn, id) { 
+        if (!this.isPlaying) return; 
+        const originalBg = btn.style.backgroundColor; 
+        
+        if (id === this.correctId) { 
+            FeedbackSystem.show(true); 
+            btn.style.backgroundColor = 'rgba(16, 185, 129, 0.3)'; 
+            this.score++; 
+            document.getElementById('stroop-score').textContent = this.score; 
+        } else { 
+            FeedbackSystem.show(false, btn); 
+            btn.style.backgroundColor = 'rgba(239, 68, 68, 0.3)'; 
+        } 
+        
+        document.querySelectorAll('.stroop-color-btn').forEach(b => b.style.pointerEvents = 'none'); 
+        
+        setTimeout(() => { 
+            btn.style.backgroundColor = originalBg; 
+            document.querySelectorAll('.stroop-color-btn').forEach(b => b.style.pointerEvents = 'auto'); 
+            this.nextRound(); 
+        }, 300); 
+    },
+    
+    endGame() { 
+        this.stop(); 
+        document.getElementById('stroop-word').textContent = "FIM"; 
+        document.getElementById('stroop-word').style.color = "#ffffff"; 
+        document.getElementById('stroop-word').style.textShadow = "none"; 
+        document.getElementById('stroop-btn-grid').innerHTML = `<div style="grid-column: span 2; text-align: center;"><p style="color: var(--text-muted);">Sua pontuação</p><h2 style="font-size: 3rem; color: white; margin: 10px 0 20px;">${this.score}</h2><button class="btn-white-pill" onclick="stroopGame.start()">JOGAR DE NOVO</button></div>`; 
+    }
+};
+
+/**
+ * =====================================================================
+ * [REACT EXPORT] GAME MODULE: MATH BLITZ
+ * =====================================================================
+ */
+const mathGame = {
+    // --- STATE ---
+    score: 0, 
+    timeLeft: 30, 
+    timerInterval: null, 
+    answer: 0, 
+    isPlaying: false,
+    
+    // --- LIFECYCLE ---
+    start() { 
+        this.stop(); 
+        this.score = 0; 
+        this.timeLeft = 30; 
+        this.isPlaying = true; 
+        document.getElementById('math-score').textContent = '0'; 
+        document.getElementById('math-time').textContent = '30s'; 
+        document.getElementById('math-question').style.fontSize = "4.5rem"; 
+        
+        this.nextRound(); 
+        
+        this.timerInterval = setInterval(() => { 
+            this.timeLeft--; 
+            document.getElementById('math-time').textContent = this.timeLeft + 's'; 
+            if (this.timeLeft <= 0) this.endGame(); 
+        }, 1000); 
+    },
+    
+    stop() { 
+        clearInterval(this.timerInterval); 
+        this.isPlaying = false; 
+    },
+    
+    // --- ACTIONS ---
+    nextRound() { 
+        if (!this.isPlaying) return; 
+        const ops = ['+', '-', '×']; 
+        const op = ops[Math.floor(Math.random() * ops.length)]; 
+        let n1, n2, ans; 
+        
+        if (op === '+') { 
+            n1 = Math.floor(Math.random() * 40) + 1; 
+            n2 = Math.floor(Math.random() * 40) + 1; 
+            ans = n1 + n2; 
+        } else if (op === '-') { 
+            n1 = Math.floor(Math.random() * 40) + 10; 
+            n2 = Math.floor(Math.random() * n1) + 1; 
+            ans = n1 - n2; 
+        } else { 
+            n1 = Math.floor(Math.random() * 10) + 2; 
+            n2 = Math.floor(Math.random() * 10) + 2; 
+            ans = n1 * n2; 
+        } 
+        
+        this.answer = ans; 
+        document.getElementById('math-question').textContent = `${n1} ${op} ${n2}`; 
+        
+        let opts = [ans]; 
+        while(opts.length < 4) { 
+            let offset = Math.floor(Math.random() * 5) + 1; 
+            let sign = Math.random() > 0.5 ? 1 : -1; 
+            let wrong = ans + (offset * sign); 
+            if (Math.random() > 0.8) wrong = ans + 10 * sign; 
+            if (wrong >= 0 && !opts.includes(wrong)) opts.push(wrong); 
+        } 
+        
+        opts = shuffleArray(opts); 
+        const grid = document.getElementById('math-btn-grid'); 
+        grid.innerHTML = ''; 
+        
+        opts.forEach(val => { 
+            const btn = document.createElement('button'); 
+            btn.className = 'math-answer-btn'; 
+            btn.textContent = val; 
+            btn.onclick = () => this.handleGuess(val, btn); 
+            grid.appendChild(btn); 
+        }); 
+    },
+    
+    handleGuess(val, btn) { 
+        if (!this.isPlaying) return; 
+        btn.style.transform = 'scale(0.95)'; 
+        setTimeout(() => btn.style.transform = 'scale(1)', 100); 
+        
+        if (val === this.answer) { 
+            FeedbackSystem.show(true); 
+            this.score++; 
+            document.getElementById('math-score').textContent = this.score; 
+            this.nextRound(); 
+        } else { 
+            FeedbackSystem.show(false, document.getElementById('math-question')); 
+            this.nextRound(); 
+        } 
+    },
+    
+    endGame() { 
+        this.stop(); 
+        document.getElementById('math-question').textContent = "FIM!"; 
+        document.getElementById('math-question').style.fontSize = "2.2rem"; 
+        document.getElementById('math-btn-grid').innerHTML = `<div style="grid-column: span 2; text-align: center;"><p style="color: var(--text-muted);">Sua pontuação final</p><h2 style="font-size: 3rem; color: white; margin: 10px 0 20px;">${this.score}</h2><button class="btn-white-pill" onclick="AppState.showScreen('view-math-start')">JOGAR DE NOVO</button></div>`; 
+    }
+};
+
+/**
+ * =====================================================================
+ * [REACT EXPORT] GAME MODULE: ECO VISUAL (Simon Says Clone)
+ * =====================================================================
+ */
+const ecoGame = {
+    // --- STATE ---
+    sequence: [], 
+    playerIndex: 0, 
+    score: 0, 
+    isPlaying: false, 
+    isShowingSequence: false, 
+    timeouts: [],
+    
+    // --- LIFECYCLE ---
+    start() { 
+        this.stop(); 
+        this.sequence = []; 
+        this.score = 0; 
+        this.isPlaying = true; 
+        document.getElementById('eco-score').textContent = '0'; 
+        document.getElementById('eco-status').textContent = 'Prepare-se...'; 
+        document.getElementById('eco-grid-container').innerHTML = `<div class="eco-grid" id="eco-grid"><div class="eco-circle" id="eco-0" onclick="ecoGame.handleTap(0)"></div><div class="eco-circle" id="eco-1" onclick="ecoGame.handleTap(1)"></div><div class="eco-circle" id="eco-2" onclick="ecoGame.handleTap(2)"></div><div class="eco-circle" id="eco-3" onclick="ecoGame.handleTap(3)"></div></div>`; 
+        
+        this.timeouts.push(setTimeout(() => this.nextLevel(), 1000)); 
+    },
+    
+    stop() { 
+        this.isPlaying = false; 
+        this.timeouts.forEach(clearTimeout); 
+        this.timeouts = []; 
+        for(let i=0; i<4; i++){ 
+            let c = document.getElementById(`eco-${i}`); 
+            if(c) c.classList.remove('active', 'ripple-effect'); 
+        } 
+    },
+    
+    // --- ACTIONS ---
+    nextLevel() { 
+        if (!this.isPlaying) return; 
+        this.playerIndex = 0; 
+        this.score = this.sequence.length; 
+        document.getElementById('eco-score').textContent = this.score; 
+        
+        this.sequence.push(Math.floor(Math.random() * 4)); 
+        this.playSequence(); 
+    },
+    
+    playSequence() { 
+        this.isShowingSequence = true; 
+        document.getElementById('eco-status').textContent = 'Observe o padrão...'; 
+        let delay = 600; 
+        
+        this.sequence.forEach((colorIdx, index) => { 
+            this.timeouts.push(setTimeout(() => { 
+                this.flashCircle(colorIdx, 400); 
+            }, delay * (index + 1))); 
+        }); 
+        
+        this.timeouts.push(setTimeout(() => { 
+            this.isShowingSequence = false; 
+            if (this.isPlaying) { document.getElementById('eco-status').textContent = 'Sua vez!'; } 
+        }, delay * (this.sequence.length + 1))); 
+    },
+    
+    flashCircle(id, duration, isPlayerTap = false) { 
+        const circle = document.getElementById(`eco-${id}`); 
+        if(!circle) return; 
+        
+        circle.classList.add('active'); 
+        if (isPlayerTap) { 
+            circle.classList.remove('ripple-effect'); 
+            void circle.offsetWidth; 
+            circle.classList.add('ripple-effect'); 
+        } 
+        
+        this.timeouts.push(setTimeout(() => { 
+            circle.classList.remove('active'); 
+            if(isPlayerTap) { 
+                setTimeout(() => circle.classList.remove('ripple-effect'), 600); 
+            } 
+        }, duration)); 
+    },
+    
+    handleTap(id) { 
+        if (!this.isPlaying || this.isShowingSequence) return; 
+        
+        this.flashCircle(id, 200, true); 
+        
+        if (id === this.sequence[this.playerIndex]) { 
+            this.playerIndex++; 
+            if (this.playerIndex === this.sequence.length) { 
+                this.isShowingSequence = true; 
+                document.getElementById('eco-status').textContent = 'Perfeito!'; 
+                this.timeouts.push(setTimeout(() => this.nextLevel(), 1000)); 
+            } 
+        } else { 
+            FeedbackSystem.show(false, document.getElementById('eco-grid')); 
+            this.endGame(); 
+        } 
+    },
+    
+    endGame() { 
+        this.isPlaying = false; 
+        document.getElementById('eco-status').textContent = 'FIM DE JOGO!'; 
+        document.getElementById('eco-grid-container').innerHTML = `<div style="text-align: center;"><p style="color: var(--text-muted);">Sequência alcançada</p><h2 style="font-size: 3.5rem; color: white; margin: 10px 0 20px;">${this.score}</h2><button class="btn-white-pill" onclick="ecoGame.start()">TENTAR NOVAMENTE</button></div>`; 
+    }
+};
+
+/**
+ * =====================================================================
+ * [REACT EXPORT] GAME MODULE: RASTROS DA NOITE (CANVAS)
+ * Sugestão: Isolar o `canvas` em um componente que usa `useRef` para
+ * acessar o 2D context e `requestAnimationFrame` em um `useEffect`.
+ * =====================================================================
+ */
+const rastrosGame = {
+    // --- STATE ---
+    score: 0, 
+    isPlaying: false, 
+    spheres: [], 
+    stars: [], 
+    impactPulses: [], 
+    targetIndex: 0, 
+    numSpheres: 7, 
+    phase: 'INIT', 
+    canvas: null, 
+    ctx: null, 
+    animationId: null, 
+    timeouts: [], 
+    ripple: { active: false, x: 0, y: 0, radius: 0, maxRadius: 0 }, 
+    pulseTime: 0,
+    
+    // --- LIFECYCLE ---
+    start() { 
+        this.stop(); 
+        this.score = 0; 
+        this.isPlaying = true; 
+        document.getElementById('rastros-score').textContent = '0'; 
+        document.getElementById('rastros-gameover').style.display = 'none'; 
+        
+        this.canvas = document.getElementById('rastros-canvas'); 
+        this.ctx = this.canvas.getContext('2d'); 
+        
+        this.resizeCanvas(); 
+        this.initStars(); 
+        
+        this.canvas.onclick = (e) => this.handleClick(e); 
+        this.nextRound(); 
+        
+        const loop = (timestamp) => { 
+            if (!this.isPlaying) return; 
+            this.update(); 
+            this.draw(); 
+            this.pulseTime++; 
+            this.animationId = requestAnimationFrame(loop); 
+        }; 
+        
+        this.animationId = requestAnimationFrame(loop); 
+    },
+    
+    stop() { 
+        this.isPlaying = false; 
+        cancelAnimationFrame(this.animationId); 
+        this.timeouts.forEach(clearTimeout); 
+        this.timeouts = []; 
+        this.spheres = []; 
+        this.impactPulses = []; 
+        this.phase = 'INIT'; 
+        if (this.canvas) this.canvas.onclick = null; 
+    },
+    
+    // --- ACTIONS & ENGINE ---
+    resizeCanvas() { 
+        const container = document.getElementById('rastros-container'); 
+        this.canvas.width = container.clientWidth; 
+        this.canvas.height = container.clientHeight; 
+        this.ripple.maxRadius = Math.max(this.canvas.width, this.canvas.height) * 1.2; 
+    },
+    
+    initStars() { 
+        this.stars = []; 
+        for (let i = 0; i < 60; i++) { 
+            this.stars.push({ x: Math.random() * this.canvas.width, y: Math.random() * this.canvas.height, r: Math.random() * 1.5, opacity: 0.1 + Math.random() * 0.3 }); 
+        } 
+    },
+    
+    nextRound() {
+        this.numSpheres = Math.min(7 + Math.floor(this.score / 2), 15); 
+        this.spheres = []; 
+        this.impactPulses = []; 
+        this.ripple.active = false;
+        
+        // Multiplicador de velocidade zerado no início (this.score = 0 ao perder e recomeçar)
+        let speedMultiplier = Math.min(this.score * 0.25, 4.0); 
+        
+        for (let i = 0; i < this.numSpheres; i++) {
+            let r = 22, x, y, overlapping = true, attempts = 0;
+            while(overlapping && attempts < 100) { 
+                x = r + Math.random() * (this.canvas.width - r * 2); 
+                y = r + Math.random() * (this.canvas.height - r * 2); 
+                overlapping = false; 
+                for(let j = 0; j < this.spheres.length; j++) { 
+                    if (Math.hypot(this.spheres[j].x - x, this.spheres[j].y - y) < r * 2) { overlapping = true; break; } 
+                } 
+                attempts++; 
+            }
+            // Velocidade base reduzida drasticamente de 3.0 para 1.5 para um início bem mais calmo
+            let speed = 1.5 + speedMultiplier + Math.random() * 1.0; 
+            let angle = Math.random() * Math.PI * 2;
+            this.spheres.push({ x, y, r, vx: Math.cos(angle) * speed, vy: Math.sin(angle) * speed, history: [] });
+        }
+        
+        this.targetIndex = Math.floor(Math.random() * this.numSpheres); 
+        this.phase = 'OBSERVE'; 
+        document.getElementById('rastros-status').textContent = 'Observe o alvo...';
+        
+        this.timeouts.push(setTimeout(() => { 
+            this.phase = 'SHUFFLE'; 
+            document.getElementById('rastros-status').textContent = 'Embaralhando...'; 
+            this.timeouts.push(setTimeout(() => { 
+                this.phase = 'CHOOSE'; 
+                document.getElementById('rastros-status').textContent = 'Onde está a esfera alvo?'; 
+            }, 6000)); 
+        }, 2000));
+    },
+    
+    update() {
+        if (this.ripple.active) { this.ripple.radius += 12; if (this.ripple.radius > this.ripple.maxRadius) this.ripple.active = false; }
+        this.impactPulses.forEach(p => { p.r += 1.5; p.alpha -= 0.04; }); this.impactPulses = this.impactPulses.filter(p => p.alpha > 0);
+        if (this.phase === 'SHUFFLE') {
+            this.spheres.forEach(sp => {
+                sp.x += sp.vx; sp.y += sp.vy;
+                if (sp.x - sp.r < 0) { sp.x = sp.r; sp.vx *= -1; } else if (sp.x + sp.r > this.canvas.width) { sp.x = this.canvas.width - sp.r; sp.vx *= -1; }
+                if (sp.y - sp.r < 0) { sp.y = sp.r; sp.vy *= -1; } else if (sp.y + sp.r > this.canvas.height) { sp.y = this.canvas.height - sp.r; sp.vy *= -1; }
+                sp.history.push({x: sp.x, y: sp.y}); if (sp.history.length > 25) sp.history.shift(); 
+            });
+            for (let i = 0; i < this.spheres.length; i++) {
+                for (let j = i + 1; j < this.spheres.length; j++) {
+                    let s1 = this.spheres[i], s2 = this.spheres[j], dx = s2.x - s1.x, dy = s2.y - s1.y, dist = Math.hypot(dx, dy), minDist = s1.r + s2.r;
+                    if (dist < minDist) {
+                        let nx = dx / dist, ny = dy / dist, overlap = minDist - dist;
+                        s1.x -= nx * overlap * 0.5; s1.y -= ny * overlap * 0.5; s2.x += nx * overlap * 0.5; s2.y += ny * overlap * 0.5;
+                        let dvx = s2.vx - s1.vx, dvy = s2.vy - s1.vy, vAlongNormal = dvx * nx + dvy * ny;
+                        if (vAlongNormal > 0) continue;
+                        let j_impulse = -2 * vAlongNormal / 2, impulseX = nx * j_impulse, impulseY = ny * j_impulse;
+                        s1.vx -= impulseX; s1.vy -= impulseY; s2.vx += impulseX; s2.vy += impulseY;
+                        this.impactPulses.push({ x: s1.x + nx * s1.r, y: s1.y + ny * s1.r, r: 5, alpha: 0.8 });
+                    }
+                }
+            }
+        } else if (this.phase === 'CHOOSE' || this.phase === 'RESULT') { this.spheres.forEach(sp => { if (sp.history.length > 0) sp.history.shift(); }); }
+    },
+    
+    draw() {
+        if (!this.ctx) return; const ctx = this.ctx, w = this.canvas.width, h = this.canvas.height;
+        let bgGrad = ctx.createRadialGradient(w/2, h/2, 0, w/2, h/2, w); bgGrad.addColorStop(0, '#151632'); bgGrad.addColorStop(1, '#0a0b1e'); ctx.fillStyle = bgGrad; ctx.fillRect(0, 0, w, h);
+        ctx.fillStyle = '#ffffff'; this.stars.forEach(s => { ctx.globalAlpha = s.opacity; ctx.beginPath(); ctx.arc(s.x, s.y, s.r, 0, Math.PI*2); ctx.fill(); }); ctx.globalAlpha = 1.0;
+        this.impactPulses.forEach(p => { ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2); ctx.strokeStyle = `rgba(34, 211, 238, ${Math.max(0, p.alpha)})`; ctx.lineWidth = 2.5; ctx.stroke(); });
+        ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+        this.spheres.forEach(sp => {
+            if (sp.history.length > 1) { for (let i = 0; i < sp.history.length - 1; i++) { let p1 = sp.history[i], p2 = sp.history[i+1], ratio = i / sp.history.length; ctx.beginPath(); ctx.moveTo(p1.x, p1.y); ctx.lineTo(p2.x, p2.y); ctx.strokeStyle = `rgba(34, 211, 238, ${ratio * 0.4})`; ctx.lineWidth = sp.r * ratio * 0.8; ctx.stroke(); } }
+        });
+        this.spheres.forEach((sp, idx) => {
+            const isTarget = (idx === this.targetIndex), isHighlightedTarget = ((this.phase === 'OBSERVE' && isTarget) || (this.phase === 'RESULT' && isTarget && !this.ripple.active));
+            if (isHighlightedTarget) { ctx.shadowBlur = 30 + Math.sin(this.pulseTime * 0.15) * 15; ctx.shadowColor = '#22d3ee'; } else { ctx.shadowBlur = 0; }
+            let grad = ctx.createRadialGradient(sp.x, sp.y, sp.r*0.2, sp.x, sp.y, sp.r);
+            if (isHighlightedTarget) { grad.addColorStop(0, 'rgba(255, 255, 255, 0.9)'); grad.addColorStop(0.5, 'rgba(34, 211, 238, 0.8)'); grad.addColorStop(1, 'rgba(8, 145, 178, 0.9)'); } else { grad.addColorStop(0, 'rgba(255,255,255,0.15)'); grad.addColorStop(1, 'rgba(0,0,0,0.8)'); }
+            ctx.fillStyle = grad; ctx.beginPath(); ctx.arc(sp.x, sp.y, sp.r, 0, Math.PI*2); ctx.fill();
+            ctx.strokeStyle = isHighlightedTarget ? 'rgba(255,255,255,0.9)' : 'rgba(255,255,255,0.3)'; ctx.lineWidth = isHighlightedTarget ? 2.5 : 1.5; ctx.stroke();
+            if (this.phase === 'OBSERVE' && isTarget) { ctx.shadowBlur = 0; ctx.beginPath(); ctx.arc(sp.x, sp.y, sp.r + 12 + Math.sin(this.pulseTime * 0.2) * 6, 0, Math.PI*2); ctx.strokeStyle = `rgba(34, 211, 238, ${0.5 + Math.sin(this.pulseTime * 0.2) * 0.5})`; ctx.lineWidth = 2; ctx.stroke(); }
+            ctx.shadowBlur = 0; let hl = ctx.createRadialGradient(sp.x - sp.r*0.35, sp.y - sp.r*0.35, 0, sp.x - sp.r*0.35, sp.y - sp.r*0.35, sp.r*0.6); hl.addColorStop(0, 'rgba(255,255,255,0.8)'); hl.addColorStop(1, 'rgba(255,255,255,0)'); ctx.fillStyle = hl; ctx.beginPath(); ctx.arc(sp.x - sp.r*0.35, sp.y - sp.r*0.35, sp.r*0.6, 0, Math.PI*2); ctx.fill();
+        });
+        if (this.ripple.active) { ctx.shadowBlur = 0; ctx.beginPath(); ctx.arc(this.ripple.x, this.ripple.y, this.ripple.radius, 0, Math.PI*2); let alpha = Math.max(0, 1 - (this.ripple.radius / this.ripple.maxRadius)); ctx.strokeStyle = `rgba(16, 185, 129, ${alpha})`; ctx.lineWidth = 8; ctx.stroke(); ctx.fillStyle = `rgba(16, 185, 129, ${alpha * 0.1})`; ctx.fill(); }
+    },
+    
+    handleClick(e) {
+        if (this.phase !== 'CHOOSE') return; 
+        const rect = this.canvas.getBoundingClientRect();
+        const scaleX = this.canvas.width / rect.width;
+        const scaleY = this.canvas.height / rect.height;
+        const clickX = (e.clientX - rect.left) * scaleX;
+        const clickY = (e.clientY - rect.top) * scaleY;
+        
+        for (let i = 0; i < this.spheres.length; i++) { 
+            if (Math.hypot(this.spheres[i].x - clickX, this.spheres[i].y - clickY) < this.spheres[i].r + 5) { 
+                this.processResult(i); 
+                break; 
+            } 
+        }
+    },
+    
+    processResult(selectedIndex) {
+        this.phase = 'RESULT';
+        if (selectedIndex === this.targetIndex) { 
+            FeedbackSystem.show(true); 
+            this.score++; 
+            document.getElementById('rastros-score').textContent = this.score; 
+            document.getElementById('rastros-status').textContent = 'Excelente!'; 
+            this.ripple = { active: true, x: this.spheres[this.targetIndex].x, y: this.spheres[this.targetIndex].y, radius: this.spheres[this.targetIndex].r, maxRadius: this.canvas.width * 1.5 }; 
+            this.timeouts.push(setTimeout(() => { this.nextRound(); }, 1500)); 
+        } 
+        else { 
+            FeedbackSystem.show(false, document.getElementById('rastros-container')); 
+            document.getElementById('rastros-status').textContent = 'Foco perdido...'; 
+            this.timeouts.push(setTimeout(() => { this.endGame(); }, 2500)); 
+        }
+    },
+    
+    endGame() { 
+        this.phase = 'INIT'; 
+        document.getElementById('rastros-status').textContent = 'FIM DE JOGO'; 
+        document.getElementById('rastros-final-score').textContent = this.score; 
+        document.getElementById('rastros-gameover').style.display = 'block'; 
+    }
+};
+
+/**
+ * =====================================================================
+ * [REACT EXPORT] ROUTER / APP STATE
+ * Sugestão: Substituir pelo React Router Dom ou Conditional Rendering
+ * =====================================================================
+ */
+const AppState = {
+    allGames: [memoryGame, findGame, scrambleGame, breatheGame, stroopGame, mathGame, ecoGame, rastrosGame],
+    
+    init() { 
+        lucide.createIcons(); 
+    },
+    
+    showScreen(screenId) {
+        // Trigger Unmount em todos os jogos ativos
+        this.allGames.forEach(game => { 
+            if (typeof game.stop === 'function') game.stop(); 
+        });
+        
+        // Simula a mudança de rota escondendo todos e mostrando o alvo
+        document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+        const targetView = document.getElementById(screenId); 
+        if(targetView) targetView.classList.add('active');
+        
+        lucide.createIcons();
+        
+        // Trigger Mount dependendo da rota atual
+        if (screenId === 'view-memory-play') memoryGame.start();
+        if (screenId === 'view-scramble-play') scrambleGame.start();
+        if (screenId === 'view-breathe-play') breatheGame.start();
+        if (screenId === 'view-find-play') findGame.start();
+        if (screenId === 'view-stroop-play') stroopGame.start();
+        if (screenId === 'view-math-play') mathGame.start();
+        if (screenId === 'view-eco-play') ecoGame.start();
+        if (screenId === 'view-rastros-play') { setTimeout(() => rastrosGame.start(), 10); }
+    }
+};
+
+window.addEventListener('DOMContentLoaded', () => {
+    AppState.init();
+});
+</script>
+
+</body>
+</html>

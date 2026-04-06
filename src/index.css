@@ -4,6 +4,8 @@
 @import './styles/pre-purchase.css';
 @import './styles/onboarding.css';
 @import './styles/multi-phone.css';
+@import './styles/games.css';
+@import './styles/library.css';
 
 /* ── Journal ──────────────────────────────────────────────────────────── */
 
@@ -574,6 +576,7 @@ dd {
 .funnel-header-main {
   display: grid;
   gap: 8px;
+  width: 100%;
 }
 
 .funnel-header-quiz {

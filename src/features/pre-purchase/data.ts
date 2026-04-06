@@ -7,6 +7,69 @@ import type {
   Testimonial,
 } from './types'
 
+export interface Transformation {
+  before: string
+  after: string
+  iconName: 'Zap' | 'TrendingUp' | 'Trophy' | 'Target' | 'Brain' | 'ShieldCheck' | 'Flame'
+  accent: 'amber' | 'cyan' | 'success' | 'ember'
+}
+
+// Maps each symptom label → its transformation card
+const symptomTransformationMap: Record<string, Transformation> = {
+  'Falta de ambição para buscar objetivos': { before: 'Sem ambição ou direção',      after: 'Propósito e direção claros',      iconName: 'Target',      accent: 'amber'   },
+  'Dificuldade de concentração':            { before: 'Dificuldade de concentração', after: 'Foco e presença total',           iconName: 'Zap',         accent: 'cyan'    },
+  'Memória fraca ou névoa mental':          { before: 'Névoa mental constante',       after: 'Mente afiada e clara',            iconName: 'Brain',       accent: 'cyan'    },
+  'Ansiedade generalizada':                 { before: 'Ansiedade sem controle',       after: 'Calma e equilíbrio interno',      iconName: 'ShieldCheck', accent: 'success' },
+  'Sentindo-se desmotivado':                { before: 'Desmotivação crônica',         after: 'Energia e motivação real',        iconName: 'Flame',       accent: 'ember'   },
+  'Cansaço e letargia':                     { before: 'Cansaço e letargia',           after: 'Vitalidade renovada',             iconName: 'Zap',         accent: 'amber'   },
+  'Baixo desejo sexual':                    { before: 'Desejo artificial e vazio',    after: 'Conexão íntima de verdade',       iconName: 'Trophy',      accent: 'success' },
+  'Ereções fracas sem pornografia':         { before: 'Intimidade comprometida',      after: 'Conexão física real',             iconName: 'Trophy',      accent: 'success' },
+  'Menor vontade de socializar':            { before: 'Isolamento e retração social', after: 'Presença e conexão real',         iconName: 'Trophy',      accent: 'success' },
+  'Sentindo-se isolado dos outros':         { before: 'Sentindo-se isolado',          after: 'Pertencimento e vínculos fortes', iconName: 'TrendingUp',  accent: 'cyan'    },
+  'Sentindo-se pouco atraente ou indigno de amor': { before: 'Sentindo-se indigno de amor', after: 'Confiança e valor próprio', iconName: 'TrendingUp',  accent: 'cyan'    },
+  'Baixa autoconfiança':                    { before: 'Vergonha acumulada',           after: 'Orgulho genuíno',                iconName: 'TrendingUp',  accent: 'cyan'    },
+  'Sexo sem sucesso ou sem prazer':         { before: 'Intimidade sem prazer',        after: 'Conexão plena e satisfatória',   iconName: 'Trophy',      accent: 'success' },
+  'Sentindo-se distante de Deus':           { before: 'Distante de Deus e de si',    after: 'Paz interior e fé renovada',     iconName: 'Target',      accent: 'amber'   },
+}
+
+// Priority order: most universal/impactful symptoms first (used when user selected fewer than MIN_TRANSFORMATIONS)
+const TRANSFORMATION_PRIORITY = [
+  'Baixa autoconfiança',
+  'Dificuldade de concentração',
+  'Sentindo-se desmotivado',
+  'Falta de ambição para buscar objetivos',
+  'Ansiedade generalizada',
+  'Sentindo-se pouco atraente ou indigno de amor',
+  'Menor vontade de socializar',
+  'Memória fraca ou névoa mental',
+  'Cansaço e letargia',
+  'Sentindo-se isolado dos outros',
+  'Baixo desejo sexual',
+  'Ereções fracas sem pornografia',
+  'Sexo sem sucesso ou sem prazer',
+  'Sentindo-se distante de Deus',
+]
+
+const MIN_TRANSFORMATIONS = 4
+
+export function getTransformations(selectedSymptoms: string[]): Transformation[] {
+  const result: Transformation[] = selectedSymptoms
+    .filter((s) => symptomTransformationMap[s])
+    .map((s) => symptomTransformationMap[s])
+
+  if (result.length >= MIN_TRANSFORMATIONS) return result.slice(0, MIN_TRANSFORMATIONS)
+
+  // Fill up to MIN_TRANSFORMATIONS from the priority list, skipping already added
+  const selectedSet = new Set(selectedSymptoms)
+  for (const symptom of TRANSFORMATION_PRIORITY) {
+    if (result.length >= MIN_TRANSFORMATIONS) break
+    if (!selectedSet.has(symptom) && symptomTransformationMap[symptom]) {
+      result.push(symptomTransformationMap[symptom])
+    }
+  }
+  return result
+}
+
 // Escala BPS: A = 0 pts | B = 1 pt | C = 2 pts
 // Q1 e Q3 são demográficas (0 pts em todas as opções, não entram no score)
 // Q12 tem apenas opções A e C (sem B) — 0 ou 2 pts

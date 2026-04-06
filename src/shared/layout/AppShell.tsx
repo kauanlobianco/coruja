@@ -47,7 +47,24 @@ export function AppShell({
     <div className={`app-shell${previewMode ? ' app-shell-preview-enabled' : ''}`}>
       <div className="phone-shell">
         <div className="phone-frame">
-          {previewMode ? <div className="phone-notch" aria-hidden="true" /> : null}
+          {previewMode ? (
+            <>
+              <div className="phone-buttons-left" aria-hidden="true">
+                <div className="phone-btn-silent" />
+                <div className="phone-btn-vol-up" />
+                <div className="phone-btn-vol-down" />
+              </div>
+              <div className="phone-buttons-right" aria-hidden="true">
+                <div className="phone-btn-power" />
+              </div>
+              <div className="phone-dynamic-island" aria-hidden="true" />
+              <div className="phone-bottom-rail" aria-hidden="true">
+                <div className="phone-rail-speaker phone-rail-speaker--left" />
+                <div className="phone-rail-usbc" />
+                <div className="phone-rail-speaker phone-rail-speaker--right" />
+              </div>
+            </>
+          ) : null}
 
           <div className="app-frame">
             <div className="app-container">

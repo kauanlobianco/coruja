@@ -18,6 +18,8 @@ import { AccountAuthPage } from '../features/account/AccountAuthPage'
 import { BlockerPage } from '../features/blocker/BlockerPage'
 import { BlockedPage } from '../features/blocker/BlockedPage'
 import { LibraryPage } from '../features/library/LibraryPage'
+import { LibraryMediaPage } from '../features/library/LibraryMediaPage'
+import { GamesCatalogPage } from '../features/games/GamesCatalogPage'
 
 function resolveFlowDestination(state: ReturnType<typeof useAppState>['state']) {
   if (!state.account) {
@@ -192,6 +194,22 @@ export function AppRoutes() {
         element={
           <RequireAppAccess>
             <LibraryPage />
+          </RequireAppAccess>
+        }
+      />
+      <Route
+        path={appRoutes.libraryMedia}
+        element={
+          <RequireAppAccess>
+            <LibraryMediaPage />
+          </RequireAppAccess>
+        }
+      />
+      <Route
+        path={appRoutes.libraryGames}
+        element={
+          <RequireAppAccess>
+            <GamesCatalogPage />
           </RequireAppAccess>
         }
       />

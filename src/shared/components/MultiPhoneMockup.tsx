@@ -21,16 +21,18 @@ export function MultiPhoneMockup({
   return (
     <div className="multi-phone-stage">
       <div className="multi-phone-glow" aria-hidden="true" />
-      
+
+      {/* Left phone — right side face visible */}
       <div className="multi-phone-wrapper multi-phone-left">
+        <div className="mpm-side mpm-side--right" aria-hidden="true" />
         <IPhoneMockup
           model="15-pro"
           color="space-black"
-          scale={0.42}
-          screenBg="#0a0c16"
+          scale={0.38}
+          screenBg="#080a14"
           safeArea={false}
           showHomeIndicator={false}
-          shadow="0 24px 48px rgba(0,0,0,0.55), 0 4px 12px rgba(0,0,0,0.35)"
+          shadow="0 28px 56px rgba(0,0,0,0.65), 0 6px 16px rgba(0,0,0,0.4)"
           wallpaper={leftImage}
           wallpaperFit="cover"
         >
@@ -39,15 +41,17 @@ export function MultiPhoneMockup({
         </IPhoneMockup>
       </div>
 
+      {/* Right phone — left side face visible */}
       <div className="multi-phone-wrapper multi-phone-right">
+        <div className="mpm-side mpm-side--left" aria-hidden="true" />
         <IPhoneMockup
           model="15-pro"
           color="space-black"
-          scale={0.42}
-          screenBg="#0a0c16"
+          scale={0.38}
+          screenBg="#080a14"
           safeArea={false}
           showHomeIndicator={false}
-          shadow="0 24px 48px rgba(0,0,0,0.55), 0 4px 12px rgba(0,0,0,0.35)"
+          shadow="0 28px 56px rgba(0,0,0,0.65), 0 6px 16px rgba(0,0,0,0.4)"
           wallpaper={rightImage}
           wallpaperFit="cover"
         >
@@ -56,15 +60,16 @@ export function MultiPhoneMockup({
         </IPhoneMockup>
       </div>
 
+      {/* Center phone — slight backward tilt */}
       <div className="multi-phone-wrapper multi-phone-center">
         <IPhoneMockup
           model="15-pro"
           color="space-black"
-          scale={0.48}
-          screenBg="#0a0c16"
+          scale={0.50}
+          screenBg="#080a14"
           safeArea={false}
           showHomeIndicator={false}
-          shadow="0 32px 64px rgba(0,0,0,0.6), 0 8px 24px rgba(0,0,0,0.4)"
+          shadow="0 48px 96px rgba(0,0,0,0.75), 0 20px 40px rgba(0,10,40,0.5), 0 6px 12px rgba(0,0,0,0.55)"
           wallpaper={centerImage}
           wallpaperFit="cover"
         >

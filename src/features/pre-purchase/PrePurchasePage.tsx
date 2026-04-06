@@ -228,6 +228,8 @@ export function PrePurchasePage() {
 
   const showSolutionBg = usesSolutionMood
     || (state.step === 'toggle-activation' && toggleActivated)
+    || state.step === 'plan-reveal'
+    || state.step === 'custom-plan'
   const showPainBg = (state.step === 'pain-carousel' || (state.step === 'toggle-activation' && !toggleActivated))
 
   const funnelFrameClassName = [
@@ -259,11 +261,11 @@ export function PrePurchasePage() {
         <div className="phone-frame">
           <div className="phone-notch" aria-hidden="true" />
 
-          <div className={funnelFrameClassName} style={{ maxWidth: '100vw', minWidth: 0, overflowX: 'hidden' }}>
+          <div className={funnelFrameClassName}>
             <div className="prepurchase-dark-overlay" aria-hidden="true" />
             {showDefaultHeader && (
               <header className="funnel-header">
-                <div className="funnel-header-main" style={{ width: '100%' }}>
+                <div className="funnel-header-main">
                   <span className="eyebrow">Pre-compra</span>
                   <h1>Foco Mode</h1>
                 </div>
@@ -394,6 +396,7 @@ export function PrePurchasePage() {
 
             {state.step === 'plan-preview' && (
               <PlanPreviewStep
+                symptoms={state.symptoms}
                 onBack={() => goTo('social-proof')}
                 onContinue={() => goTo('plan-reveal')}
               />
