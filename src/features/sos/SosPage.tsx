@@ -1,12 +1,14 @@
 import { useEffect, useEffectEvent, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
+import { Settings2 } from 'lucide-react'
 import { AppShell } from '../../shared/layout/AppShell'
 import { useAppState } from '../../app/state/use-app-state'
+import { appRoutes } from '../../core/config/routes'
 
 const breathingSteps = ['Inspire', 'Segure', 'Expire', 'Pause']
 const defaultMotivations = ['Seu proximo passo ainda importa.']
-const panicSupportMessages = [
+const genericSupportMessages = [
   'Fique so nos proximos minutos.',
   'Nao siga o impulso no pico.',
   'Esperar tambem e agir.',
@@ -27,6 +29,7 @@ export function SosPage() {
   const { state, openSosSession } = useAppState()
   const motivations =
     state.profile.motivations.length > 0 ? state.profile.motivations : defaultMotivations
+  const configuration = state.sos.configuration
 
   const [stepIndex, setStepIndex] = useState(0)
   const [cycleCount, setCycleCount] = useState(0)
@@ -97,9 +100,15 @@ export function SosPage() {
 
   const activeMotivation = motivations[motivationIndex % motivations.length]
   const timerDone = secondsLeft === 0
+
+  const supportMessages =
+    configuration && configuration.traps.length > 0
+      ? configuration.traps.map((t) => t.responseText)
+      : genericSupportMessages
+
   const supportMessage = timerDone
     ? 'O pico passou. Escolha seu proximo passo.'
-    : panicSupportMessages[Math.min(cycleCount, panicSupportMessages.length - 1)]
+    : supportMessages[cycleCount % supportMessages.length]
 
   return (
     <AppShell title="" eyebrow="" hideTopbar contentClassName="app-content-sos">
@@ -172,12 +181,30 @@ export function SosPage() {
           </button>
 
           <div className="sos-secondary-actions">
-            <button className="sos-secondary-button" onClick={() => navigate('/app')}>
+            <button type="button" className="sos-secondary-button" onClick={() => navigate(appRoutes.home)}>
               Estou bem, voltar para a Home
             </button>
-            <button className="sos-secondary-button" onClick={() => navigate('/library')}>
+            <button type="button" className="sos-secondary-button" onClick={() => navigate(appRoutes.library)}>
               Relaxar na biblioteca de jogos
             </button>
+            {configuration ? (
+              <button
+                type="button"
+                className="sos-secondary-button sos-setup-link"
+                onClick={() => navigate(appRoutes.sosSetup)}
+              >
+                <Settings2 size={14} />
+                Atualizar meu SOS
+              </button>
+            ) : (
+              <button
+                type="button"
+                className="sos-secondary-button sos-setup-link sos-setup-link--highlight"
+                onClick={() => navigate(appRoutes.sosSetup)}
+              >
+                Configure seu SOS para respostas personalizadas →
+              </button>
+            )}
           </div>
         </motion.div>
       </section>

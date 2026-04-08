@@ -11,6 +11,7 @@ import type {
   AppModel,
   CheckInEntry,
   JournalEntry,
+  SosConfiguration,
   UserProfile,
 } from '../../core/domain/models'
 import { defaultAppModel } from '../../core/domain/models'
@@ -122,6 +123,7 @@ export interface AppStateContextValue {
   ) => Promise<void>
   shiftDemoDays: (deltaDays: number) => Promise<void>
   resetDemoClock: () => Promise<void>
+  saveSosConfiguration: (config: SosConfiguration) => Promise<void>
   logoutAccount: (reason?: string | null) => Promise<void>
   resetApp: () => Promise<void>
 }
@@ -785,6 +787,18 @@ export function AppStateProvider({ children }: PropsWithChildren) {
     },
     resetDemoClock: async () => {
       await applyDemoOffset(0)
+    },
+    saveSosConfiguration: async (config) => {
+      await updateState(
+        (current) => ({
+          ...current,
+          sos: {
+            ...current.sos,
+            configuration: config,
+          },
+        }),
+        { syncRemote: true },
+      )
     },
     logoutAccount,
     resetApp: async () => {

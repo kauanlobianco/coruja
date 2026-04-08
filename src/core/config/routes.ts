@@ -8,6 +8,7 @@ export const appRoutes = {
   home: '/app',
   checkIn: '/check-in',
   sos: '/sos',
+  sosSetup: '/sos/setup',
   journal: '/journal',
   relapse: '/relapse',
   analytics: '/analytics',

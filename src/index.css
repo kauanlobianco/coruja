@@ -6,6 +6,7 @@
 @import './styles/multi-phone.css';
 @import './styles/games.css';
 @import './styles/library.css';
+@import './styles/sos-setup.css';
 
 /* ── Journal ──────────────────────────────────────────────────────────── */
 
@@ -1381,6 +1382,18 @@ dd {
   font-size: 10px;
   line-height: 1.35;
   cursor: pointer;
+}
+
+.sos-setup-link {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.sos-setup-link--highlight {
+  border-color: rgba(34, 211, 238, 0.3);
+  color: #22d3ee;
 }
 
 .bar-list {

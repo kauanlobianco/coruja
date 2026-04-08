@@ -90,6 +90,15 @@ const appStateSchema = z.object({
   sos: z.object({
     lastOpenedAt: z.string().nullable(),
     totalSessions: z.number().int().min(0),
+    configuration: z.object({
+      traps: z.array(z.object({
+        id: z.string(),
+        text: z.string(),
+        responseText: z.string(),
+      })),
+      consequences: z.array(z.string()),
+      configuredAt: z.string(),
+    }).nullable().optional().catch(null).default(null),
   }),
 })
 

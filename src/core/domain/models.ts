@@ -76,9 +76,22 @@ export interface BackupMetadata {
   hasRemoteBackup: boolean
 }
 
+export interface SosTrapConfig {
+  id: string
+  text: string
+  responseText: string
+}
+
+export interface SosConfiguration {
+  traps: SosTrapConfig[]
+  consequences: string[]
+  configuredAt: string
+}
+
 export interface SosSnapshot {
   lastOpenedAt: string | null
   totalSessions: number
+  configuration: SosConfiguration | null
 }
 
 export interface AppModel {
@@ -135,5 +148,6 @@ export const defaultAppModel: AppModel = {
   sos: {
     lastOpenedAt: null,
     totalSessions: 0,
+    configuration: null,
   },
 }

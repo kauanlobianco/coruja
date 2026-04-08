@@ -20,6 +20,7 @@ import { BlockedPage } from '../features/blocker/BlockedPage'
 import { LibraryPage } from '../features/library/LibraryPage'
 import { LibraryMediaPage } from '../features/library/LibraryMediaPage'
 import { GamesCatalogPage } from '../features/games/GamesCatalogPage'
+import { SosSetupPage } from '../features/sos/SosSetupPage'
 
 function resolveFlowDestination(state: ReturnType<typeof useAppState>['state']) {
   if (!state.account) {
@@ -186,6 +187,14 @@ export function AppRoutes() {
         element={
           <RequireAppAccess>
             <SosPage />
+          </RequireAppAccess>
+        }
+      />
+      <Route
+        path={appRoutes.sosSetup}
+        element={
+          <RequireAppAccess>
+            <SosSetupPage />
           </RequireAppAccess>
         }
       />

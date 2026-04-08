@@ -1,0 +1,505 @@
+/* ===== SOS SETUP — ss-* prefix ===== */
+/* Shares .ob-chat-* layout from onboarding.css */
+
+.ss-setup-screen {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  background: #0a0b1e;
+}
+
+/* ── Consequence selector — grouped layout ────────────────────────────── */
+
+.ss-consequence-selector .ob-chat-selector-head h3 {
+  font-size: 14px;
+}
+
+.ss-consequence-groups {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.ss-consequence-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.ss-consequence-group-label {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.35);
+  padding-left: 2px;
+}
+
+.ss-consequence-group-items {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+}
+
+/* Ember variant overrides for consequence selector */
+.ss-consequence-selector .ob-chat-tag--selected {
+  border-color: rgba(249, 115, 22, 0.38);
+  background:
+    radial-gradient(circle at 10% 50%, rgba(249, 115, 22, 0.1) 0%, transparent 75%),
+    rgba(249, 115, 22, 0.04);
+  color: #f97316;
+}
+
+.ss-consequence-selector .ob-chat-selected-count--met {
+  color: #f97316;
+}
+
+.ss-consequence-selector .ob-chat-tag--available:hover {
+  border-color: rgba(249, 115, 22, 0.35);
+}
+
+/* ── Response composer ────────────────────────────────────────────────── */
+
+.ss-response-trap-count {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: #22d3ee;
+  padding: 3px 9px;
+  border-radius: 999px;
+  background: rgba(34, 211, 238, 0.1);
+  border: 1px solid rgba(34, 211, 238, 0.22);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.ss-response-context {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 14px 16px;
+  background:
+    radial-gradient(circle at top left, rgba(34, 211, 238, 0.08), transparent 65%),
+    rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+}
+
+.ss-response-context-label,
+.ss-response-section-title,
+.ss-response-edit-title {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.42);
+}
+
+.ss-response-trap-quote {
+  font-size: 24px;
+  font-weight: 700;
+  line-height: 1.15;
+  color: #fff;
+}
+
+.ss-response-section,
+.ss-response-edit,
+.ss-response-footer {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.ss-response-section-head,
+.ss-response-edit-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.ss-response-section-helper,
+.ss-response-edit-helper {
+  font-size: 12px;
+  line-height: 1.4;
+  color: rgba(255, 255, 255, 0.42);
+  text-align: right;
+  max-width: 170px;
+}
+
+.ss-response-options {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.ss-response-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 14px;
+  cursor: pointer;
+  text-align: left;
+  width: 100%;
+  transition: background 0.16s, border-color 0.18s, transform 0.12s, box-shadow 0.18s;
+}
+
+.ss-response-card:hover {
+  background: rgba(255, 255, 255, 0.07);
+  border-color: rgba(34, 211, 238, 0.25);
+  transform: translateY(-1px);
+}
+
+.ss-response-card:active {
+  transform: translateY(0);
+}
+
+.ss-response-card.is-selected {
+  border-color: rgba(34, 211, 238, 0.38);
+  background:
+    radial-gradient(circle at left center, rgba(34, 211, 238, 0.1), transparent 70%),
+    rgba(34, 211, 238, 0.06);
+  box-shadow: 0 0 0 1px rgba(34, 211, 238, 0.12);
+}
+
+.ss-response-card-text {
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 1.45;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.ss-response-draft-state {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: rgba(34, 211, 238, 0.06);
+  border: 1px solid rgba(34, 211, 238, 0.16);
+}
+
+.ss-response-draft-state--idle {
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.03);
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+.ss-response-draft-chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: rgba(34, 211, 238, 0.12);
+  color: #22d3ee;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.ss-response-draft-note {
+  font-size: 12px;
+  line-height: 1.4;
+  color: rgba(255, 255, 255, 0.54);
+  text-align: right;
+}
+
+.ss-response-textarea {
+  min-height: 112px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 14px;
+  padding: 14px 16px;
+  color: rgba(255, 255, 255, 0.88);
+  font-size: 15px;
+  line-height: 1.55;
+  resize: none;
+  width: 100%;
+  outline: none;
+  font-family: inherit;
+  transition: border-color 0.15s, background 0.15s;
+}
+
+.ss-response-textarea:focus {
+  border-color: rgba(34, 211, 238, 0.35);
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.ss-response-textarea::placeholder {
+  color: rgba(255, 255, 255, 0.24);
+}
+
+.ss-response-hint {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.42);
+  margin: 0;
+  text-align: center;
+  line-height: 1.45;
+}
+
+.ss-response-footer .ob-chat-send {
+  width: 100%;
+}
+
+@media (max-width: 420px) {
+  .ss-response-section-head,
+  .ss-response-edit-head,
+  .ss-response-draft-state {
+    flex-direction: column;
+  }
+
+  .ss-response-section-helper,
+  .ss-response-edit-helper,
+  .ss-response-draft-note {
+    text-align: left;
+    max-width: none;
+  }
+
+  .ss-response-draft-state--idle {
+    align-items: flex-start;
+  }
+}
+
+/* Shield review screen */
+
+.ss-review-screen {
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.ss-review {
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+  padding: 0 0 40px;
+}
+
+.ss-review-header {
+  padding: 20px 20px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.ss-review-back {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.45);
+  font-size: 13px;
+  cursor: pointer;
+  padding: 0;
+  margin-bottom: 12px;
+  transition: color 0.15s;
+  align-self: flex-start;
+}
+
+.ss-review-back:hover {
+  color: rgba(255, 255, 255, 0.75);
+}
+
+.ss-review-title-wrap {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.ss-review-icon {
+  color: #22d3ee;
+  flex-shrink: 0;
+}
+
+.ss-review-title {
+  font-size: 22px;
+  font-weight: 800;
+  color: #fff;
+  margin: 0;
+  line-height: 1.2;
+}
+
+.ss-review-subtitle {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.4);
+  margin: 0;
+}
+
+.ss-review-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 24px 20px 0;
+}
+
+.ss-review-section {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.ss-review-section-label {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.35);
+}
+
+/* Trap chips in review */
+.ss-review-trap-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+}
+
+.ss-review-trap-chip {
+  padding: 6px 12px;
+  border-radius: 8px;
+  background: rgba(34, 211, 238, 0.08);
+  border: 1px solid rgba(34, 211, 238, 0.22);
+  color: rgba(255, 255, 255, 0.75);
+  font-size: 13px;
+  font-weight: 500;
+}
+
+/* Response pairs in review */
+.ss-review-responses {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.ss-review-response-item {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-left: 3px solid rgba(34, 211, 238, 0.5);
+  border-radius: 0 12px 12px 0;
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.ss-review-response-trap {
+  font-size: 11px;
+  font-weight: 700;
+  color: rgba(34, 211, 238, 0.7);
+  letter-spacing: 0.02em;
+}
+
+.ss-review-response-text {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.78);
+  line-height: 1.55;
+  margin: 0;
+}
+
+/* Consequence chips in review */
+.ss-review-consequence-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+}
+
+.ss-review-consequence-chip {
+  padding: 5px 11px;
+  border-radius: 8px;
+  background: rgba(249, 115, 22, 0.08);
+  border: 1px solid rgba(249, 115, 22, 0.22);
+  color: rgba(255, 200, 150, 0.8);
+  font-size: 12px;
+}
+
+.ss-review-footer {
+  padding: 24px 20px 0;
+}
+
+.ss-review-confirm-btn {
+  width: 100%;
+  padding: 16px;
+  font-size: 16px;
+  font-weight: 700;
+  border-radius: 14px;
+  background: linear-gradient(135deg, #22d3ee, #0891b2);
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: opacity 0.15s;
+}
+
+.ss-review-confirm-btn:hover {
+  opacity: 0.9;
+}
+
+/* ── Done overlay ─────────────────────────────────────────────────────── */
+
+.ss-done-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 300;
+  background: #0a0b1e;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 32px 24px;
+}
+
+.ss-done-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  text-align: center;
+  max-width: 320px;
+}
+
+.ss-done-orb {
+  width: 88px;
+  height: 88px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, rgba(34, 211, 238, 0.16), rgba(8, 145, 178, 0.1));
+  border: 1px solid rgba(34, 211, 238, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #22d3ee;
+  box-shadow: 0 0 48px rgba(34, 211, 238, 0.22);
+}
+
+.ss-done-title {
+  font-size: 32px;
+  font-weight: 800;
+  color: #fff;
+  margin: 0;
+  line-height: 1.15;
+}
+
+.ss-done-chip {
+  padding: 7px 18px;
+  border-radius: 999px;
+  background: rgba(34, 211, 238, 0.1);
+  border: 1px solid rgba(34, 211, 238, 0.25);
+  color: #22d3ee;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.ss-done-tagline {
+  font-size: 15px;
+  color: rgba(255, 255, 255, 0.5);
+  line-height: 1.65;
+  margin: 0;
+}
