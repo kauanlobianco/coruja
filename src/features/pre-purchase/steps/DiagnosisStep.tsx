@@ -20,8 +20,8 @@ interface DiagnosisReport {
 function getRiskBand(scorePercent: number): RiskBand {
   if (scorePercent >= 75) {
     return {
-      label: 'Risco Crítico',
-      short: 'Suas respostas indicam um padrão severo de dependência, com perda de controle real e impacto em múltiplas áreas da sua vida.',
+      label: 'Risco Critico',
+      short: 'Suas respostas indicam um padrao severo de dependencia, com perda de controle real e impacto em multiplas areas da sua vida.',
       color: '#B14343',
       badgeClass: 'diagnosis-badge-critical',
     }
@@ -29,7 +29,7 @@ function getRiskBand(scorePercent: number): RiskBand {
   if (scorePercent >= 50) {
     return {
       label: 'Risco Alto',
-      short: 'O que você respondeu mostra um ciclo entranhado, com dificuldade crescente de interromper e impacto concreto no dia a dia.',
+      short: 'O que voce respondeu mostra um ciclo entranhado, com dificuldade crescente de interromper e impacto concreto no dia a dia.',
       color: '#E35B2E',
       badgeClass: 'diagnosis-badge-high',
     }
@@ -37,14 +37,14 @@ function getRiskBand(scorePercent: number): RiskBand {
   if (scorePercent >= 20) {
     return {
       label: 'Risco Moderado',
-      short: 'Suas respostas mostram sinais de repetição automática e desgaste emocional. Agir agora evita que o padrão se consolide.',
+      short: 'Suas respostas mostram sinais de repeticao automatica e desgaste emocional. Agir agora evita que o padrao se consolide.',
       color: '#EC9E32',
       badgeClass: 'diagnosis-badge-moderate',
     }
   }
   return {
-    label: 'Referência Saudável',
-    short: 'Seu resultado não mostra um padrão dominante neste momento, mas vale proteger sua rotina para isso não ganhar espaço.',
+    label: 'Referencia Saudavel',
+    short: 'Seu resultado nao mostra um padrao dominante neste momento, mas vale proteger sua rotina para isso nao ganhar espaco.',
     color: '#409672',
     badgeClass: 'diagnosis-badge-safe',
   }
@@ -135,138 +135,134 @@ export function DiagnosisStep({ diagnosis, onBack, onContinue }: DiagnosisStepPr
       </div>
 
       <div className={`diagnosis-scroll ${band.badgeClass.replace('badge', 'band')}`}>
-
         <div className="diagnosis-context-block">
           <p className="diagnosis-context-text">
-            Seu resultado indica como esse consumo está impactando sua rotina hoje.
+            Seu resultado indica como esse consumo esta impactando sua rotina hoje.
           </p>
         </div>
 
-        {showScore && (
+        <motion.div
+          className={`diagnosis-score-card ${showScore ? 'is-visible' : 'is-hidden'}`}
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: showScore ? 1 : 0, y: showScore ? 0 : 16 }}
+          transition={{ duration: 0.4, ease: 'easeOut' }}
+        >
+          <p className="diagnosis-you-label">RESULTADO DA AVALIACAO</p>
+          <p className="diagnosis-score-number">
+            {displayCount}<span className="diagnosis-compare-unit">%</span>
+          </p>
           <motion.div
-            className="diagnosis-score-card"
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
+            className={`diagnosis-badge-inner ${showBadge ? 'is-visible' : 'is-hidden'}`}
+            initial={false}
+            animate={{ opacity: showBadge ? 1 : 0, y: showBadge ? 0 : 10 }}
             transition={{ duration: 0.4, ease: 'easeOut' }}
           >
-            <p className="diagnosis-you-label">RESULTADO DA AVALIAÇÃO</p>
-            <p className="diagnosis-score-number">
-              {displayCount}<span className="diagnosis-compare-unit">%</span>
-            </p>
-            {showBadge && (
-              <motion.div
-                className="diagnosis-badge-inner"
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.4, ease: 'easeOut' }}
-              >
-                <span className={`diagnosis-badge ${band.badgeClass}`}>
-                  ⚠ {band.label.toUpperCase()}
-                </span>
-              </motion.div>
-            )}
+            <span className={`diagnosis-badge ${band.badgeClass}`}>
+              {band.label.toUpperCase()}
+            </span>
           </motion.div>
-        )}
+        </motion.div>
 
-        {showComparison ? (
-          <motion.div
-            className="diagnosis-compare-card"
-            initial={{ opacity: 0, y: 18 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.45, ease: 'easeOut' }}
-          >
-            <div className="diagnosis-compare-card-copy">
-              <span className="diagnosis-compare-card-kicker">Comparação com a referência</span>
-              <p className="diagnosis-compare-card-title">
-                Seu padrão está {aboveThreshold}% acima da linha de consumo problemático.
+        <motion.div
+          className={`diagnosis-compare-card ${showComparison ? 'is-visible' : 'is-hidden'}`}
+          initial={false}
+          animate={{ opacity: showComparison ? 1 : 0, y: showComparison ? 0 : 18 }}
+          transition={{ duration: 0.45, ease: 'easeOut' }}
+          aria-hidden={!showComparison}
+        >
+          <div className="diagnosis-compare-card-copy">
+            <span className="diagnosis-compare-card-kicker">Comparacao com a referencia</span>
+            <p className="diagnosis-compare-card-title">
+              Seu padrao esta {aboveThreshold}% acima da linha de consumo problematico.
+            </p>
+          </div>
+
+          <div className="diagnosis-compare-chart" aria-label="Comparacao entre seu resultado e a referencia de risco">
+            <div className="diagnosis-compare-column">
+              <div className="diagnosis-compare-track">
+                <motion.div
+                  className="diagnosis-compare-bar diagnosis-compare-bar-reference"
+                  initial={{ height: 12, opacity: 0.5 }}
+                  animate={{ height: `${referenceBarHeight}%`, opacity: showComparison ? 1 : 0.5 }}
+                  transition={{ duration: 1.45, ease: [0.22, 1, 0.36, 1], delay: 0.05 }}
+                >
+                  <span className="diagnosis-compare-bar-value">{referencePercent}%</span>
+                </motion.div>
+              </div>
+              <span className="diagnosis-compare-bar-label">Referencia</span>
+            </div>
+
+            <div className="diagnosis-compare-column">
+              <div className="diagnosis-compare-track">
+                <motion.div
+                  className="diagnosis-compare-bar diagnosis-compare-bar-user"
+                  initial={{ height: 12, opacity: 0.5 }}
+                  animate={{ height: `${userBarHeight}%`, opacity: showComparison ? 1 : 0.5 }}
+                  transition={{ duration: 2.2, ease: [0.22, 1, 0.36, 1], delay: 0.35 }}
+                >
+                  <span className="diagnosis-compare-bar-value">{scorePercent}%</span>
+                </motion.div>
+              </div>
+              <span className="diagnosis-compare-bar-label">Seu resultado</span>
+            </div>
+          </div>
+
+          <div className="diagnosis-compare">
+            <div className="diagnosis-compare-item">
+              <p className="diagnosis-compare-number diagnosis-compare-number-safe">
+                {referencePercent}<span className="diagnosis-compare-unit">%</span>
               </p>
             </div>
-
-            <div className="diagnosis-compare-chart" aria-label="Comparação entre seu resultado e a referência de risco">
-              <div className="diagnosis-compare-column">
-                <div className="diagnosis-compare-track">
-                  <motion.div
-                    className="diagnosis-compare-bar diagnosis-compare-bar-reference"
-                    initial={{ height: 12, opacity: 0.5 }}
-                    animate={{ height: `${referenceBarHeight}%`, opacity: 1 }}
-                    transition={{ duration: 1.45, ease: [0.22, 1, 0.36, 1], delay: 0.05 }}
-                  >
-                    <span className="diagnosis-compare-bar-value">{referencePercent}%</span>
-                  </motion.div>
-                </div>
-                <span className="diagnosis-compare-bar-label">Referência</span>
-              </div>
-
-              <div className="diagnosis-compare-column">
-                <div className="diagnosis-compare-track">
-                  <motion.div
-                    className="diagnosis-compare-bar diagnosis-compare-bar-user"
-                    initial={{ height: 12, opacity: 0.5 }}
-                    animate={{ height: `${userBarHeight}%`, opacity: 1 }}
-                    transition={{ duration: 2.2, ease: [0.22, 1, 0.36, 1], delay: 0.35 }}
-                  >
-                    <span className="diagnosis-compare-bar-value">{scorePercent}%</span>
-                  </motion.div>
-                </div>
-                <span className="diagnosis-compare-bar-label">Seu resultado</span>
-              </div>
+            <div className="diagnosis-compare-divider" />
+            <div className="diagnosis-compare-item">
+              <p className="diagnosis-compare-number">
+                {scorePercent}<span className="diagnosis-compare-unit">%</span>
+              </p>
             </div>
+          </div>
 
-            <div className="diagnosis-compare">
-              <div className="diagnosis-compare-item">
-                <p className="diagnosis-compare-number diagnosis-compare-number-safe">
-                  {referencePercent}<span className="diagnosis-compare-unit">%</span>
-                </p>
-              </div>
-              <div className="diagnosis-compare-divider" />
-              <div className="diagnosis-compare-item">
-                <p className="diagnosis-compare-number">{scorePercent}<span className="diagnosis-compare-unit">%</span></p>
-              </div>
+          <p className="diagnosis-bps-note">
+            Baseado no Brief Pornography Screen (BPS), metodo validado para identificar padroes de uso problematico e potencial dependencia de pornografia.
+          </p>
+        </motion.div>
+
+        <motion.div
+          className={`diagnosis-rest ${showRest ? 'is-visible' : 'is-hidden'}`}
+          initial={false}
+          animate={{ opacity: showRest ? 1 : 0, y: showRest ? 0 : 20 }}
+          transition={{ duration: 0.5, ease: 'easeOut' }}
+          aria-hidden={!showRest}
+        >
+          <div className="diagnosis-markers">
+            <div className="diagnosis-markers-header">
+              <span className="diagnosis-markers-title">Observacoes criticas</span>
+              <span className="diagnosis-markers-badge">{markers.length} detectadas</span>
             </div>
-
-            <p className="diagnosis-bps-note">Baseado no Brief Pornography Screen (BPS), método validado para identificar padrões de uso problemático e potencial dependência de pornografia.</p>
-          </motion.div>
-        ) : null}
-
-        {showRest && (
-          <motion.div
-            className="diagnosis-rest"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, ease: 'easeOut' }}
-          >
-            <div className="diagnosis-markers">
-              <div className="diagnosis-markers-header">
-                <span className="diagnosis-markers-title">Observações críticas</span>
-                <span className="diagnosis-markers-badge">{markers.length} detectadas</span>
-              </div>
-              {markers.map((marker, index) => {
-                const Icon = [Zap, Clock, Frown][index] ?? Zap
-                return (
-                  <div key={marker.id} className="diagnosis-marker-card">
-                    <div className={`diagnosis-marker-icon-shell diagnosis-marker-icon-shell--${index}`}>
-                      <Icon size={18} strokeWidth={1.8} />
-                    </div>
-                    <div className="diagnosis-marker-body">
-                      <p className="diagnosis-marker-title">{marker.title}</p>
-                      <p className="diagnosis-marker-copy">{marker.copy}</p>
-                    </div>
+            {markers.map((marker, index) => {
+              const Icon = [Zap, Clock, Frown][index] ?? Zap
+              return (
+                <div key={marker.id} className="diagnosis-marker-card">
+                  <div className={`diagnosis-marker-icon-shell diagnosis-marker-icon-shell--${index}`}>
+                    <Icon size={18} strokeWidth={1.8} />
                   </div>
-                )
-              })}
-            </div>
+                  <div className="diagnosis-marker-body">
+                    <p className="diagnosis-marker-title">{marker.title}</p>
+                    <p className="diagnosis-marker-copy">{marker.copy}</p>
+                  </div>
+                </div>
+              )
+            })}
+          </div>
 
-            <p className="diagnosis-disclaimer">
-              * Este resultado é apenas uma indicação,
-              <br />não um diagnóstico médico.
-            </p>
+          <p className="diagnosis-disclaimer">
+            * Este resultado e apenas uma indicacao,
+            <br />nao um diagnostico medico.
+          </p>
 
-            <button type="button" className="diagnosis-cta" onClick={onContinue}>
-              Entender consequências
-            </button>
-          </motion.div>
-        )}
-
+          <button type="button" className="diagnosis-cta" onClick={onContinue}>
+            Entender consequencias
+          </button>
+        </motion.div>
       </div>
     </section>
   )

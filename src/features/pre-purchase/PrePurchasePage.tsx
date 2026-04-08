@@ -1,5 +1,5 @@
 import { AnimatePresence, motion } from 'framer-motion'
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAppState } from '../../app/state/use-app-state'
 import { quizQuestions, painSlides, solutionSlides } from './data'
@@ -52,7 +52,9 @@ function getQuizProgress(quizIndex: number) {
 
 export function PrePurchasePage() {
   const navigate = useNavigate()
-  const { state: appState, demoNow } = useAppState()
+  const { state: appState } = useAppState()
+  const frameRef = useRef<HTMLDivElement | null>(null)
+  const identityTransitionTimeoutRef = useRef<number | null>(null)
   const [state, setState] = useState<PrePurchaseState>(() => loadPrePurchaseState() ?? initialState)
   const [loadingProgress, setLoadingProgress] = useState(0)
   const [showPaywallSheet, setShowPaywallSheet] = useState(false)
@@ -66,6 +68,14 @@ export function PrePurchasePage() {
   useEffect(() => {
     savePrePurchaseState(state)
   }, [state])
+
+  useEffect(() => {
+    return () => {
+      if (identityTransitionTimeoutRef.current !== null) {
+        window.clearTimeout(identityTransitionTimeoutRef.current)
+      }
+    }
+  }, [])
 
   // Drive the loading animation and auto-advance to identity
   useEffect(() => {
@@ -209,7 +219,18 @@ export function PrePurchasePage() {
   }
 
   function handleIdentityContinue() {
-    setState((current) => ({ ...current, step: 'symptoms', darkMode: true }))
+    if (identityTransitionTimeoutRef.current !== null) {
+      window.clearTimeout(identityTransitionTimeoutRef.current)
+    }
+
+    setState((current) => ({ ...current, darkMode: true }))
+
+    identityTransitionTimeoutRef.current = window.setTimeout(() => {
+      setState((current) => (current.step === 'identity'
+        ? { ...current, step: 'symptoms' }
+        : current))
+      identityTransitionTimeoutRef.current = null
+    }, 320)
   }
 
   function continueToOnboarding() {
@@ -220,11 +241,12 @@ export function PrePurchasePage() {
   // ── Layout ─────────────────────────────────────────────────────────────────
 
   const usesImmersiveFrame = [
-    'landing', 'quiz', 'loading', 'identity', 'symptoms', 'diagnosis',
-    'pain-carousel', 'toggle-activation', 'solution-carousel', 'social-proof',
+    'landing', 'quiz', 'loading', 'identity',
+    'pain-carousel', 'toggle-activation', 'solution-carousel',
   ].includes(state.step)
 
   const usesSolutionMood = state.step === 'solution-carousel' || state.step === 'social-proof'
+  const usesContentHeightFrame = state.step === 'symptoms' || state.step === 'diagnosis' || state.step === 'social-proof'
 
   const showSolutionBg = usesSolutionMood
     || (state.step === 'toggle-activation' && toggleActivated)
@@ -237,6 +259,7 @@ export function PrePurchasePage() {
       ? 'funnel-frame funnel-phone-frame funnel-phone-frame-quiz prepurchase-shell'
       : 'funnel-frame funnel-phone-frame prepurchase-shell',
     state.darkMode && !showSolutionBg ? 'prepurchase-dark-mode' : '',
+    usesContentHeightFrame ? 'prepurchase-content-height-mode' : '',
     state.step === 'pain-carousel' || state.step === 'toggle-activation' || state.step === 'solution-carousel' ? 'prepurchase-carousel-mode' : '',
     showPainBg ? 'prepurchase-pain-mode' : '',
     showSolutionBg ? 'prepurchase-solution-mode' : '',
@@ -255,13 +278,19 @@ export function PrePurchasePage() {
     setState((current) => ({ ...current, step: 'solution-carousel' }))
   }, [])
 
+  useEffect(() => {
+    const frame = frameRef.current
+    if (!frame) return
+    frame.scrollTo({ top: 0, behavior: 'auto' })
+  }, [state.step])
+
   return (
     <div className="app-shell">
       <div className="phone-shell">
         <div className="phone-frame">
           <div className="phone-notch" aria-hidden="true" />
 
-          <div className={funnelFrameClassName}>
+          <div ref={frameRef} className={funnelFrameClassName}>
             <div className="prepurchase-dark-overlay" aria-hidden="true" />
             {showDefaultHeader && (
               <header className="funnel-header">
