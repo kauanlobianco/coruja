@@ -1,17 +1,72 @@
+// ── Motivation options ─────────────────────────────────────────────────────
+
+export interface MotivationOption {
+  id: string
+  label: string
+  icon: string
+}
+
+export const MOTIVATION_OPTIONS: MotivationOption[] = [
+  { id: 'clareza', label: 'Mais clareza mental', icon: 'brain' },
+  { id: 'sono', label: 'Dormir em paz', icon: 'moon' },
+  { id: 'controle', label: 'Voltar a ter controle', icon: 'target' },
+  { id: 'relacionamentos', label: 'Melhores relações', icon: 'heart' },
+  { id: 'presente', label: 'Estar mais presente', icon: 'sparkles' },
+  { id: 'autoestima', label: 'Autoestima mais sólida', icon: 'shield' },
+  { id: 'foco', label: 'Mais foco', icon: 'compass' },
+  { id: 'energia', label: 'Mais energia', icon: 'sparkles' },
+  { id: 'inteireza', label: 'Me sentir inteiro', icon: 'compass' },
+  { id: 'respeito', label: 'Respeito próprio', icon: 'shield' },
+  { id: 'futuro', label: 'Proteger quem eu quero ser', icon: 'sparkles' },
+  { id: 'espiritualidade', label: 'Me alinhar com meus valores', icon: 'sparkles' },
+  { id: 'culpa', label: 'Sair do ciclo de culpa', icon: 'compass' },
+  { id: 'familia', label: 'Minha família', icon: 'heart' },
+]
+
+// ── Trigger groups ─────────────────────────────────────────────────────────
+
+export interface TriggerGroup {
+  label: string
+  items: string[]
+}
+
+export const TRIGGER_GROUPS: TriggerGroup[] = [
+  {
+    label: 'Situações e contextos',
+    items: [
+      'Celular na cama',
+      'Madrugada',
+      'Sozinho no quarto',
+      'Sem rumo no computador',
+      'Logo ao acordar',
+      'Fim de semana vazio',
+      'Depois de beber',
+      'Rolando redes sociais',
+    ],
+  },
+  {
+    label: 'Estados mentais e emocionais',
+    items: [
+      'Tédio',
+      'Ansiedade',
+      'Solidão',
+      'Estresse acumulado',
+      'Frustração',
+      'Carência',
+      'Cansaço',
+      'Sensação de fracasso',
+    ],
+  },
+]
+
+export const TRIGGER_OPTIONS = TRIGGER_GROUPS.flatMap((group) => group.items)
+
+// ── Mental traps ───────────────────────────────────────────────────────────
+
 export interface MentalTrap {
   id: string
   text: string
   shortLabel: string
-}
-
-export interface ResponseSuggestion {
-  shortText: string
-  draftText: string
-}
-
-export interface ConsequenceGroup {
-  label: string
-  items: string[]
 }
 
 export const MENTAL_TRAPS: MentalTrap[] = [
@@ -20,11 +75,20 @@ export const MENTAL_TRAPS: MentalTrap[] = [
   { id: 'already-ruined', text: 'Já estraguei tudo', shortLabel: 'Já estraguei tudo' },
   { id: 'no-one-knows', text: 'Ninguém vai saber', shortLabel: 'Ninguém vai saber' },
   { id: 'just-relief', text: 'Só pra aliviar', shortLabel: 'Só pra aliviar' },
-  { id: 'loneliness', text: 'É só carência', shortLabel: 'É só carência' },
+  { id: 'loneliness', text: 'Só tô precisando de carinho', shortLabel: 'Só tô precisando de carinho' },
   { id: 'no-harm', text: 'Não faz mal', shortLabel: 'Não faz mal' },
   { id: 'later', text: 'Depois eu paro', shortLabel: 'Depois eu paro' },
   { id: 'last-time', text: 'É a última vez', shortLabel: 'É a última vez' },
+  { id: 'testing', text: 'Só pra ver como eu reajo', shortLabel: 'Só pra ver como eu reajo' },
+  { id: 'overconfident', text: 'Tô indo bem demais, uma vez não muda nada', shortLabel: 'Tô indo bem demais' },
 ]
+
+// ── Response suggestions ───────────────────────────────────────────────────
+
+export interface ResponseSuggestion {
+  shortText: string
+  draftText: string
+}
 
 export const RESPONSE_SUGGESTIONS: Record<string, ResponseSuggestion[]> = {
   'just-today': [
@@ -34,7 +98,7 @@ export const RESPONSE_SUGGESTIONS: Record<string, ResponseSuggestion[]> = {
     },
     {
       shortText: 'O ciclo começa aqui',
-      draftText: 'O “só hoje” nunca vem sozinho. É aqui que o ciclo volta a ganhar força.',
+      draftText: 'O "só hoje" nunca vem sozinho. É aqui que o ciclo volta a ganhar força.',
     },
     {
       shortText: 'Ceder alimenta o próximo',
@@ -153,31 +217,70 @@ export const RESPONSE_SUGGESTIONS: Record<string, ResponseSuggestion[]> = {
       draftText: 'Fazer mais uma vez não fecha nada. Só reabre o padrão que eu quero romper.',
     },
   ],
+  testing: [
+    {
+      shortText: 'Teste que já sei o resultado',
+      draftText: 'Eu já conheço o resultado desse teste. Não é curiosidade, é o ciclo tentando voltar com outra roupa.',
+    },
+    {
+      shortText: 'Não existe entrar com distância',
+      draftText: 'Não existe testar com distância. Entrar é entrar. Eu já aprendi isso da pior forma.',
+    },
+    {
+      shortText: 'Saber o final é suficiente',
+      draftText: 'Conheço esse caminho de ponta a ponta. Saber como ele termina é motivo suficiente pra não começar.',
+    },
+  ],
+  overconfident: [
+    {
+      shortText: 'Ir bem é razão pra proteger',
+      draftText: 'Ir bem é exatamente quando o ciclo tenta uma brecha. Não vou desperdiçar o que construí por descuido.',
+    },
+    {
+      shortText: 'Progresso não é desconto',
+      draftText: 'Se eu estou indo bem, esse é o motivo pra proteger, não pra relaxar. O progresso não é desconto.',
+    },
+    {
+      shortText: 'Uma vez é o começo',
+      draftText: 'Uma vez nunca é só uma vez. Eu conheço esse padrão. Não hoje.',
+    },
+  ],
+}
+
+// ── Consequence groups ─────────────────────────────────────────────────────
+
+export interface ConsequenceGroup {
+  label: string
+  items: string[]
 }
 
 export const CONSEQUENCE_GROUPS: ConsequenceGroup[] = [
   {
     label: 'Emocional',
     items: [
-      'Me sinto culpado e envergonhado',
-      'Fico ansioso e agitado',
-      'Demoro dias para me recuperar emocionalmente',
+      'Culpa que não sai do dia',
+      'Ansiedade e agitação sem motivo',
+      'Levo dias para voltar ao normal',
+      'Me sinto distante de mim mesmo',
     ],
   },
   {
     label: 'Energia e foco',
     items: [
-      'Perco energia e motivação',
-      'Durmo mal depois',
-      'Perco foco no trabalho ou estudos',
+      'Perco energia sem conseguir explicar',
+      'Durmo mal naquela noite',
+      'Fico travado sem conseguir focar',
+      'Perco vontade de fazer o que gosto',
     ],
   },
   {
     label: 'Identidade e relações',
     items: [
-      'Me distancio das pessoas que amo',
-      'Sinto que traí meu progresso',
-      'Perco respeito próprio',
+      'Me afasto de quem amo',
+      'Traio meu próprio progresso',
+      'Perco respeito por mim mesmo',
+      'Perco clareza sobre o que realmente importa',
+      'Me sinto um homem dividido',
     ],
   },
 ]

@@ -5,7 +5,11 @@
   position: fixed;
   inset: 0;
   z-index: 200;
+  width: 100%;
+  min-height: 100%;
+  padding-bottom: env(safe-area-inset-bottom, 0px);
   background: #0a0b1e;
+  overflow: hidden;
 }
 
 /* ── Consequence selector — grouped layout ────────────────────────────── */
@@ -17,28 +21,35 @@
 .ss-consequence-groups {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 10px;
 }
 
 .ss-consequence-group {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.ss-consequence-group-label {
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.35);
-  padding-left: 2px;
+  display: contents;
 }
 
 .ss-consequence-group-items {
   display: flex;
   flex-wrap: wrap;
   gap: 7px;
+  padding: 10px;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  align-content: flex-start;
+  align-items: flex-start;
+}
+
+.ss-consequence-selected {
+  margin-bottom: 4px;
+}
+
+.ss-consequence-tag,
+.ss-consequence-tag-selected {
+  max-width: 100%;
+  min-height: 32px;
+  padding: 0 10px;
+  font-size: 12px;
 }
 
 /* Ember variant overrides for consequence selector */
@@ -77,8 +88,8 @@
 .ss-response-context {
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  padding: 14px 16px;
+  gap: 4px;
+  padding: 10px 14px;
   background:
     radial-gradient(circle at top left, rgba(34, 211, 238, 0.08), transparent 65%),
     rgba(255, 255, 255, 0.04);
@@ -97,18 +108,21 @@
 }
 
 .ss-response-trap-quote {
-  font-size: 24px;
+  font-size: 20px;
   font-weight: 700;
-  line-height: 1.15;
+  line-height: 1.1;
   color: #fff;
 }
 
-.ss-response-section,
-.ss-response-edit,
+.ss-response-composer,
 .ss-response-footer {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+}
+
+.ss-response-composer {
+  gap: 14px;
+  padding-bottom: calc(176px + env(safe-area-inset-bottom, 0px));
 }
 
 .ss-response-section-head,
@@ -128,37 +142,69 @@
   max-width: 170px;
 }
 
-.ss-response-options {
+.ss-response-footer {
   display: flex;
-  flex-direction: column;
+  position: fixed;
+  left: var(--ds-space-5);
+  right: var(--ds-space-5);
+  bottom: 0;
+  z-index: 220;
   gap: 8px;
+  margin: 0;
+  padding: 8px 0 calc(6px + env(safe-area-inset-bottom, 0px));
+  background:
+    linear-gradient(180deg, rgba(10, 11, 30, 0) 0%, rgba(10, 11, 30, 0.86) 18%, #0a0b1e 100%);
+  animation: ss-response-footer-enter 220ms ease-out;
 }
 
-.ss-response-card {
+.ss-response-footer-head {
   display: flex;
-  align-items: center;
+  align-items: flex-end;
+  justify-content: space-between;
   gap: 12px;
-  padding: 14px 16px;
+}
+
+.ss-response-suggestions {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 8px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: 0 2px 2px;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.ss-response-suggestions::-webkit-scrollbar {
+  display: none;
+}
+
+.ss-response-suggestion {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 28px;
+  padding: 0 10px;
   background: rgba(255, 255, 255, 0.04);
   border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 14px;
+  border-radius: 999px;
   cursor: pointer;
-  text-align: left;
-  width: 100%;
+  white-space: nowrap;
+  flex: 0 0 auto;
   transition: background 0.16s, border-color 0.18s, transform 0.12s, box-shadow 0.18s;
 }
 
-.ss-response-card:hover {
+.ss-response-suggestion:hover {
   background: rgba(255, 255, 255, 0.07);
   border-color: rgba(34, 211, 238, 0.25);
   transform: translateY(-1px);
 }
 
-.ss-response-card:active {
+.ss-response-suggestion:active {
   transform: translateY(0);
 }
 
-.ss-response-card.is-selected {
+.ss-response-suggestion.is-selected {
   border-color: rgba(34, 211, 238, 0.38);
   background:
     radial-gradient(circle at left center, rgba(34, 211, 238, 0.1), transparent 70%),
@@ -166,22 +212,17 @@
   box-shadow: 0 0 0 1px rgba(34, 211, 238, 0.12);
 }
 
-.ss-response-card-text {
-  font-size: 15px;
+.ss-response-suggestion-text {
+  font-size: 11px;
   font-weight: 600;
-  line-height: 1.45;
+  line-height: 1;
   color: rgba(255, 255, 255, 0.9);
 }
 
 .ss-response-draft-state {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  padding: 10px 12px;
-  border-radius: 12px;
-  background: rgba(34, 211, 238, 0.06);
-  border: 1px solid rgba(34, 211, 238, 0.16);
+  padding: 0;
+  background: transparent;
+  border: 0;
 }
 
 .ss-response-draft-state--idle {
@@ -207,18 +248,18 @@
   font-size: 12px;
   line-height: 1.4;
   color: rgba(255, 255, 255, 0.54);
-  text-align: right;
+  text-align: left;
 }
 
 .ss-response-textarea {
-  min-height: 112px;
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  min-height: 68px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.12);
   border-radius: 14px;
-  padding: 14px 16px;
+  padding: 10px 12px;
   color: rgba(255, 255, 255, 0.88);
-  font-size: 15px;
-  line-height: 1.55;
+  font-size: 13px;
+  line-height: 1.45;
   resize: none;
   width: 100%;
   outline: none;
@@ -245,16 +286,26 @@
 
 .ss-response-footer .ob-chat-send {
   width: 100%;
+  min-height: 42px;
+}
+
+@keyframes ss-response-footer-enter {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 @media (max-width: 420px) {
-  .ss-response-section-head,
   .ss-response-edit-head,
-  .ss-response-draft-state {
+  .ss-response-footer-head {
     flex-direction: column;
   }
 
-  .ss-response-section-helper,
   .ss-response-edit-helper,
   .ss-response-draft-note {
     text-align: left;
@@ -269,6 +320,8 @@
 /* Shield review screen */
 
 .ss-review-screen {
+  height: 100%;
+  min-height: 100%;
   overflow-y: auto;
   display: flex;
   flex-direction: column;
@@ -450,11 +503,30 @@
   position: fixed;
   inset: 0;
   z-index: 300;
+  width: 100%;
+  min-height: 100%;
+  padding-bottom: calc(32px + env(safe-area-inset-bottom, 0px));
   background: #0a0b1e;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 32px 24px;
+  padding-top: 32px;
+  padding-right: 24px;
+  padding-left: 24px;
+}
+
+@media (hover: none) and (pointer: coarse) {
+  .ss-setup-screen,
+  .ss-done-overlay {
+    min-height: 100dvh;
+  }
+}
+
+@media (display-mode: standalone), (display-mode: fullscreen) {
+  .ss-setup-screen,
+  .ss-done-overlay {
+    min-height: 100svh;
+  }
 }
 
 .ss-done-content {

@@ -4,19 +4,19 @@ import { AnimatePresence, motion } from 'framer-motion'
 import { ArrowLeft, SendHorizontal } from 'lucide-react'
 
 const SYSTEM_PROMPT = `
-Você é um terapeuta de plantão auxiliando um usuário que está tentando largar o vício em pornografia. Siga estas regras estritamente:
+Voce e um terapeuta de plantao auxiliando um usuario que esta tentando largar o vicio em pornografia. Siga estas regras estritamente:
 
-1. Seja humano e natural: Responda como se estivesse conversando em um aplicativo de mensagens (como WhatsApp). Use um tom acolhedor, calmo e direto.
+1. Seja humano e natural: Responda como se estivesse conversando em um aplicativo de mensagens. Use um tom acolhedor, calmo e direto.
 
-2. Extrema Brevidade: Suas respostas devem ter no máximo 2 a 3 frases curtas. Evite escrever blocos longos de texto.
+2. Extrema brevidade: Suas respostas devem ter no maximo 2 a 3 frases curtas. Evite blocos longos.
 
-3. Sem Formatação Markdown: Nunca use asteriscos (*), sublinhados (_), hashtags (#) ou qualquer formatação de negrito/itálico. Use apenas texto limpo, vírgulas, pontos finais e quebras de linha normais.
+3. Sem markdown: Nunca use asteriscos, hashtags ou qualquer formatacao de negrito/italico. Use apenas texto limpo.
 
-4. Um passo de cada vez: Se for propor um exercício de respiração ou distração, não mande uma lista de opções. Faça uma pergunta simples por vez e espere o usuário responder. Exemplo: "Sinto muito que esteja passando por isso. Você consegue se levantar e ir até a janela agora?" ou "Quer tentar um exercício de respiração comigo de 1 minuto?". Espere a resposta dele para continuar.
+4. Um passo de cada vez: Se for propor respiracao ou distracao, nao mande uma lista. Faca uma pergunta simples por vez e espere o usuario responder.
 
-5. Sem palestras: Nunca dê aulas teóricas longas sobre dopamina a menos que o usuário faça uma pergunta técnica e direta sobre o assunto, e mesmo assim, explique em no máximo duas frases limpas.
+5. Sem palestras: Nunca de aulas teoricas longas sobre dopamina, a menos que o usuario faca uma pergunta tecnica direta, e mesmo assim explique em no maximo duas frases.
 
-Responda sempre em português do Brasil.
+Responda sempre em portugues do Brasil.
 `.trim()
 
 interface Message {
@@ -24,6 +24,25 @@ interface Message {
   role: 'user' | 'model'
   text: string
 }
+
+interface SosMentorContext {
+  selectedTrapText?: string
+  responseText?: string
+  motivation?: string
+}
+
+interface AiMentorChatProps {
+  onBack: () => void
+  entryMode?: 'default' | 'sos'
+  sosContext?: SosMentorContext
+  initialSuggestions?: string[]
+}
+
+const DEFAULT_SUGGESTIONS = [
+  'To sentindo vontade agora. Me ajuda.',
+  'O que e o ciclo de recompensa da dopamina?',
+  'Tive uma recaida. O que faco?',
+]
 
 function createId() {
   return `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`
@@ -109,14 +128,14 @@ async function sendToGroq(history: Message[], userText: string): Promise<string>
   const apiKey = import.meta.env.VITE_GROQ_API_KEY as string
 
   if (!apiKey) {
-    throw new Error('VITE_GROQ_API_KEY não configurada no arquivo .env')
+    throw new Error('VITE_GROQ_API_KEY nao configurada no arquivo .env')
   }
 
   const messages = [
     { role: 'system', content: SYSTEM_PROMPT },
-    ...history.map((m) => ({
-      role: m.role === 'model' ? 'assistant' : 'user',
-      content: m.text,
+    ...history.map((message) => ({
+      role: message.role === 'model' ? 'assistant' : 'user',
+      content: message.text,
     })),
     { role: 'user', content: userText },
   ]
@@ -125,7 +144,7 @@ async function sendToGroq(history: Message[], userText: string): Promise<string>
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      'Authorization': `Bearer ${apiKey}`,
+      Authorization: `Bearer ${apiKey}`,
     },
     body: JSON.stringify({
       model: 'llama-3.3-70b-versatile',
@@ -136,27 +155,24 @@ async function sendToGroq(history: Message[], userText: string): Promise<string>
 
   if (!response.ok) {
     const errorBody = await response.json().catch(() => ({}))
-    const errorMessage = (errorBody as { error?: { message?: string } }).error?.message ?? `Erro ${response.status}`
+    const errorMessage =
+      (errorBody as { error?: { message?: string } }).error?.message ?? `Erro ${response.status}`
     throw new Error(errorMessage)
   }
 
   const data = await response.json() as {
     choices: Array<{ message: { content: string } }>
   }
+
   return data.choices[0].message.content
 }
 
-interface AiMentorChatProps {
-  onBack: () => void
-}
-
-const SUGGESTIONS = [
-  'Tô sentindo vontade agora. Me ajuda.',
-  'O que é o ciclo de recompensa da dopamina?',
-  'Tive uma recaída. O que faço?',
-]
-
-export function AiMentorChat({ onBack }: AiMentorChatProps) {
+export function AiMentorChat({
+  onBack,
+  entryMode = 'default',
+  sosContext,
+  initialSuggestions,
+}: AiMentorChatProps) {
   const [messages, setMessages] = useState<Message[]>([])
   const [input, setInput] = useState('')
   const [loading, setLoading] = useState(false)
@@ -167,7 +183,9 @@ export function AiMentorChat({ onBack }: AiMentorChatProps) {
   useEffect(() => {
     const previousOverflow = document.body.style.overflow
     document.body.style.overflow = 'hidden'
-    return () => { document.body.style.overflow = previousOverflow }
+    return () => {
+      document.body.style.overflow = previousOverflow
+    }
   }, [])
 
   useEffect(() => {
@@ -175,10 +193,10 @@ export function AiMentorChat({ onBack }: AiMentorChatProps) {
   }, [messages, loading])
 
   function autoResize() {
-    const el = textareaRef.current
-    if (!el) return
-    el.style.height = 'auto'
-    el.style.height = `${Math.min(el.scrollHeight, 120)}px`
+    const element = textareaRef.current
+    if (!element) return
+    element.style.height = 'auto'
+    element.style.height = `${Math.min(element.scrollHeight, 120)}px`
   }
 
   async function handleSend(text?: string) {
@@ -186,34 +204,50 @@ export function AiMentorChat({ onBack }: AiMentorChatProps) {
     if (!finalText || loading) return
 
     const userMessage: Message = { id: createId(), role: 'user', text: finalText }
-    setMessages((prev) => [...prev, userMessage])
+    setMessages((current) => [...current, userMessage])
     setInput('')
     setError(null)
     setLoading(true)
 
-    if (textareaRef.current) textareaRef.current.style.height = 'auto'
+    if (textareaRef.current) {
+      textareaRef.current.style.height = 'auto'
+    }
 
     try {
       const reply = await sendToGroq(messages, finalText)
-      setMessages((prev) => [...prev, { id: createId(), role: 'model', text: reply }])
+      setMessages((current) => [...current, { id: createId(), role: 'model', text: reply }])
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Erro desconhecido'
-      setError(`Não foi possível obter uma resposta: ${message}`)
+      setError(`Nao foi possivel obter uma resposta: ${message}`)
     } finally {
       setLoading(false)
     }
   }
 
-  function handleKeyDown(e: React.KeyboardEvent<HTMLTextAreaElement>) {
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault()
+  function handleKeyDown(event: React.KeyboardEvent<HTMLTextAreaElement>) {
+    if (event.key === 'Enter' && !event.shiftKey) {
+      event.preventDefault()
       void handleSend()
     }
   }
 
+  const isSosMode = entryMode === 'sos'
+  const heroTitle = isSosMode ? 'Estou com voce agora.' : 'Ola! Sou seu mentor virtual.'
+  const heroSubtitle = isSosMode
+    ? 'Podemos atravessar este pico juntos. Me diga em uma frase o que esta mais pesado agora.'
+    : 'Estou aqui para te apoiar na sua jornada. Pode me perguntar qualquer coisa - sem julgamentos.'
+  const suggestions =
+    initialSuggestions && initialSuggestions.length > 0 ? initialSuggestions : DEFAULT_SUGGESTIONS
+  const sosContextLine = isSosMode
+    ? sosContext?.selectedTrapText
+      ? `Armadilha mais forte agora: "${sosContext.selectedTrapText}".`
+      : sosContext?.motivation
+        ? `Lembrete do seu porque: ${sosContext.motivation}`
+        : null
+    : null
+
   const content = (
     <div className="ai-chat-overlay">
-      {/* Topbar */}
       <div className="ai-chat-topbar">
         <button type="button" className="ob-chat-back" onClick={onBack} aria-label="Voltar">
           <ArrowLeft size={14} strokeWidth={2.2} />
@@ -230,11 +264,10 @@ export function AiMentorChat({ onBack }: AiMentorChatProps) {
         </div>
       </div>
 
-      {/* Messages */}
       <div className="ai-chat-messages">
         <div className="ob-chat-stack">
           <AnimatePresence initial={false}>
-            {messages.length === 0 && !loading && (
+            {messages.length === 0 && !loading ? (
               <motion.div
                 className="ai-chat-empty"
                 initial={{ opacity: 0, y: 8 }}
@@ -245,33 +278,32 @@ export function AiMentorChat({ onBack }: AiMentorChatProps) {
                 <div className="ob-chat-avatar ai-chat-empty-avatar" aria-hidden="true">
                   <FocoBotAvatar />
                 </div>
-                <p className="ai-chat-empty-title">Olá! Sou seu mentor virtual.</p>
-                <p className="ai-chat-empty-sub">
-                  Estou aqui para te apoiar na sua jornada. Pode me perguntar qualquer coisa — sem julgamentos.
-                </p>
+                <p className="ai-chat-empty-title">{heroTitle}</p>
+                <p className="ai-chat-empty-sub">{heroSubtitle}</p>
+                {sosContextLine ? <p className="ai-chat-empty-context">{sosContextLine}</p> : null}
                 <div className="ai-chat-suggestions">
-                  {SUGGESTIONS.map((s) => (
+                  {suggestions.map((suggestion) => (
                     <button
-                      key={s}
+                      key={suggestion}
                       type="button"
                       className="ai-chat-suggestion-pill"
-                      onClick={() => void handleSend(s)}
+                      onClick={() => void handleSend(suggestion)}
                     >
-                      {s}
+                      {suggestion}
                     </button>
                   ))}
                 </div>
               </motion.div>
-            )}
+            ) : null}
           </AnimatePresence>
 
-          {messages.map((msg) => (
-            <MessageBubble key={msg.id} role={msg.role} text={msg.text} />
+          {messages.map((message) => (
+            <MessageBubble key={message.id} role={message.role} text={message.text} />
           ))}
 
-          {loading && <TypingBubble />}
+          {loading ? <TypingBubble /> : null}
 
-          {error && (
+          {error ? (
             <motion.div
               className="ai-chat-error-msg"
               initial={{ opacity: 0 }}
@@ -279,13 +311,12 @@ export function AiMentorChat({ onBack }: AiMentorChatProps) {
             >
               {error}
             </motion.div>
-          )}
+          ) : null}
 
           <div ref={bottomRef} />
         </div>
       </div>
 
-      {/* Input bar */}
       <div className="ai-chat-input-bar">
         <textarea
           ref={textareaRef}
@@ -294,7 +325,10 @@ export function AiMentorChat({ onBack }: AiMentorChatProps) {
           value={input}
           rows={1}
           disabled={loading}
-          onChange={(e) => { setInput(e.target.value); autoResize() }}
+          onChange={(event) => {
+            setInput(event.target.value)
+            autoResize()
+          }}
           onKeyDown={handleKeyDown}
         />
         <button

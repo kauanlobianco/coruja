@@ -683,6 +683,7 @@ export function AppStateProvider({ children }: PropsWithChildren) {
         (current) => ({
           ...current,
           sos: {
+            ...current.sos,
             lastOpenedAt: now,
             totalSessions: current.sos.totalSessions + 1,
           },

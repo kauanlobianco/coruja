@@ -2323,6 +2323,18 @@
   max-width: 280px;
 }
 
+.ai-chat-empty-context {
+  margin: 0;
+  padding: 8px 12px;
+  border-radius: 12px;
+  border: 1px solid rgba(43, 181, 196, 0.18);
+  background: rgba(43, 181, 196, 0.08);
+  color: rgba(230, 244, 248, 0.82);
+  font-size: 12px;
+  line-height: 1.45;
+  max-width: 300px;
+}
+
 .ai-chat-suggestions {
   display: flex;
   flex-direction: column;

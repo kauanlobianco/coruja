@@ -189,7 +189,13 @@ function ConsequenceSelector({ selected, onToggle }: {
   selected: string[]
   onToggle: (item: string) => void
 }) {
+  const stripRef = useRef<HTMLDivElement>(null)
   const selectedSet = new Set(selected)
+
+  useEffect(() => {
+    if (!stripRef.current) return
+    stripRef.current.scrollTo({ left: stripRef.current.scrollWidth, behavior: 'smooth' })
+  }, [selected])
 
   return (
     <motion.div
@@ -205,36 +211,45 @@ function ConsequenceSelector({ selected, onToggle }: {
         </span>
       </div>
 
+      <motion.div className="ob-chat-tags-selected ss-consequence-selected" ref={stripRef} layout>
+        <AnimatePresence initial={false}>
+          {selected.length === 0 ? (
+            <motion.span className="ob-chat-selected-placeholder" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+              As consequências que mais pesam aparecem aqui...
+            </motion.span>
+          ) : null}
+          {selected.map((item) => (
+            <motion.div key={item} className="ob-chat-tag ob-chat-tag--selected ss-consequence-tag-selected" layout>
+              <span className="ob-chat-tag-label">{item}</span>
+              <button
+                type="button"
+                className="ob-chat-tag-remove"
+                onClick={() => onToggle(item)}
+                aria-label={`Remover ${item}`}
+              >
+                {'\u00D7'}
+              </button>
+            </motion.div>
+          ))}
+        </AnimatePresence>
+      </motion.div>
+
       <div className="ss-consequence-groups">
-        {CONSEQUENCE_GROUPS.map((group) => (
-          <div key={group.label} className="ss-consequence-group">
-            <span className="ss-consequence-group-label">{group.label}</span>
-            <div className="ss-consequence-group-items">
-              {group.items.map((item) => {
-                const isSelected = selectedSet.has(item)
-                return (
-                  <motion.button
-                    key={item}
-                    type="button"
-                    className={`ob-chat-tag${isSelected ? ' ob-chat-tag--selected' : ' ob-chat-tag--available'}`}
-                    onClick={() => onToggle(item)}
-                    layout
-                  >
-                    <span className="ob-chat-tag-label">{item}</span>
-                    {isSelected ? (
-                      <button
-                        type="button"
-                        className="ob-chat-tag-remove"
-                        onClick={(e) => { e.stopPropagation(); onToggle(item) }}
-                        aria-label={`Remover ${item}`}
-                      >{'\u00D7'}</button>
-                    ) : null}
-                  </motion.button>
-                )
-              })}
-            </div>
-          </div>
-        ))}
+        <div className="ss-consequence-group-items">
+          {CONSEQUENCE_GROUPS.flatMap((group) => group.items)
+            .filter((item) => !selectedSet.has(item))
+            .map((item) => (
+              <motion.button
+                key={item}
+                type="button"
+                className="ob-chat-tag ob-chat-tag--available ss-consequence-tag"
+                onClick={() => onToggle(item)}
+                layout
+              >
+                <span className="ob-chat-tag-label">{item}</span>
+              </motion.button>
+            ))}
+        </div>
       </div>
     </motion.div>
   )
@@ -275,61 +290,48 @@ function ResponseComposer({ trap, trapIndex, trapTotal, onSubmit }: {
   return (
     <motion.div
       className="ob-chat-selector ss-response-composer"
-      initial={{ opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.4, ease: 'easeInOut' }}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.24, ease: 'easeOut' }}
     >
       <div className="ob-chat-selector-head">
-        <h3>Escolha uma base curta.</h3>
+        <h3>Escreva o que vai te trazer de volta para o controle.</h3>
         <span className="ss-response-trap-count">{trapIndex + 1} de {trapTotal}</span>
       </div>
 
       <div className="ss-response-context">
-        <span className="ss-response-context-label">Quando sua mente disser</span>
+        <span className="ss-response-context-label">Armadilha</span>
         <div className="ss-response-trap-quote">"{trap.text}"</div>
       </div>
 
-      <div className="ss-response-section">
-        <div className="ss-response-section-head">
-          <span className="ss-response-section-title">Bases curtas</span>
-          <span className="ss-response-section-helper">Toque para preencher abaixo.</span>
+      <div className="ss-response-footer">
+        <div className="ss-response-footer-head">
+          <span className="ss-response-edit-helper">Sugestões:</span>
         </div>
 
-        <div className="ss-response-options">
+        <div className="ss-response-suggestions" aria-label="Sugestões de resposta">
           {suggestions.map((suggestion) => (
             <button
               key={suggestion.shortText}
               type="button"
-              className={`ss-response-card${pickedSuggestion?.shortText === suggestion.shortText ? ' is-selected' : ''}`}
+              className={`ss-response-suggestion${pickedSuggestion?.shortText === suggestion.shortText ? ' is-selected' : ''}`}
               onClick={() => handlePickSuggestion(suggestion)}
             >
-              <span className="ss-response-card-text">{suggestion.shortText}</span>
+              <span className="ss-response-suggestion-text">{suggestion.shortText}</span>
             </button>
           ))}
-        </div>
-      </div>
-
-      <div className="ss-response-edit">
-        <div className="ss-response-edit-head">
-          <span className="ss-response-edit-title">Sua resposta</span>
-          <span className="ss-response-edit-helper">Edite se quiser com as suas palavras.</span>
         </div>
 
         {pickedSuggestion ? (
           <div className="ss-response-draft-state">
-            <span className="ss-response-draft-chip">Base: {pickedSuggestion.shortText}</span>
-            <span className="ss-response-draft-note">Ela virou um rascunho editável abaixo.</span>
+            <span className="ss-response-draft-note">Sugestão aplicada. Ajuste como quiser antes de salvar.</span>
           </div>
-        ) : (
-          <div className="ss-response-draft-state ss-response-draft-state--idle">
-            <span className="ss-response-draft-note">Toque em uma base ou escreva do seu jeito.</span>
-          </div>
-        )}
+        ) : null}
 
         <textarea
           ref={inputRef}
           className="ss-response-textarea"
-          placeholder="Toque em uma sugestão ou escreva do seu jeito."
+          placeholder="Escreva aqui a frase que vai te trazer de volta para o controle."
           value={draft}
           rows={4}
           onChange={(e) => setDraft(e.target.value)}
@@ -340,19 +342,14 @@ function ResponseComposer({ trap, trapIndex, trapTotal, onSubmit }: {
             }
           }}
         />
-      </div>
 
-      <div className="ss-response-footer">
-        <p className="ss-response-hint">
-          Você pode usar a base como está ou ajustar do seu jeito.
-        </p>
         <button
           type="button"
           className={`button ob-chat-send${draft.trim() ? ' ob-chat-send--active' : ' ob-chat-send--pending'}`}
           disabled={!draft.trim()}
           onClick={handleSubmit}
         >
-          <span>Salvar resposta</span>
+          <span>Salvar e continuar</span>
           <ArrowRight size={16} strokeWidth={2.2} />
         </button>
       </div>
@@ -506,6 +503,8 @@ export function SosSetupPage() {
 
   const timersRef = useRef<number[]>([])
   const bottomRef = useRef<HTMLDivElement>(null)
+  const latestAppMessageRef = useRef<HTMLDivElement>(null)
+  const scrollRef = useRef<HTMLDivElement>(null)
 
   const queueBotMessage = useCallback((text: string, nextStep?: ChatStep, onDelivered?: () => void) => {
     const typingId = createId('typing')
@@ -528,7 +527,7 @@ export function SosSetupPage() {
 
   useEffect(() => {
     const introTimer = window.setTimeout(() => {
-      queueBotMessage('Vamos mapear o que sua mente te diz quando quer te puxar de volta. Escolha as frases que mais costumam aparecer no auge da fissura.')
+      queueBotMessage('Vamos identificar os pensamentos que costumam aparecer quando a vontade vem forte. Escolha as frases que mais combinam com o que passa na sua cabeça nesse momento.')
     }, 0)
     timersRef.current.push(introTimer)
 
@@ -539,7 +538,25 @@ export function SosSetupPage() {
   }, [queueBotMessage])
 
   useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: 'smooth', block: 'end' })
+    if (isTyping) {
+      return
+    }
+
+    if (step === 'response' && scrollRef.current && latestAppMessageRef.current) {
+      window.requestAnimationFrame(() => {
+        if (!scrollRef.current || !latestAppMessageRef.current) return
+        const targetTop = Math.max(0, latestAppMessageRef.current.offsetTop - 12)
+        scrollRef.current.scrollTo({ top: targetTop, behavior: 'auto' })
+      })
+      return
+    }
+
+    if (latestAppMessageRef.current) {
+      latestAppMessageRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' })
+      return
+    }
+
+    bottomRef.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
   }, [messages, step, isTyping])
 
   function handleTrapsSubmit() {
@@ -561,7 +578,7 @@ export function SosSetupPage() {
     }])
     const trap = selectedTraps[0]
     queueBotMessage(
-      `Quando sua mente disser "${trap.text}", toque em uma base curta e ajuste com as suas palavras.`,
+      `Agora escreva a frase que você quer ler quando pensar "${trap.text}". Pode ser curta, direta e do seu jeito.`,
       'response',
     )
   }
@@ -580,7 +597,7 @@ export function SosSetupPage() {
     if (nextIndex < selectedTraps.length) {
       setCurrentTrapIndex(nextIndex)
       const nextTrap = selectedTraps[nextIndex]
-      queueBotMessage(`Boa. Próxima armadilha: "${nextTrap.text}". Escolha outra base e deixe com a sua voz.`)
+      queueBotMessage(`Boa. Agora faça o mesmo para "${nextTrap.text}".`)
     } else {
       queueBotMessage(
         'Perfeito. Seu escudo está completo. Veja como ficou antes de ativar.',
@@ -615,7 +632,7 @@ export function SosSetupPage() {
     setTrapResponses([])
     setCurrentTrapIndex(0)
     setStep('traps')
-    queueBotMessage('Vamos mapear o que sua mente te diz quando quer te puxar de volta. Escolha as frases que mais costumam aparecer no auge da fissura.')
+    queueBotMessage('Vamos identificar os pensamentos que costumam aparecer quando a vontade vem forte. Escolha as frases que mais combinam com o que passa na sua cabeça nesse momento.')
   }
 
   function handleBack() {
@@ -686,13 +703,30 @@ export function SosSetupPage() {
           <ChatProgress step={step} />
         </div>
 
-        <div className="ob-chat-scroll">
+        <div className="ob-chat-scroll" ref={scrollRef}>
           <div className="ob-chat-stack">
-            {messages.map((msg) =>
-              msg.kind === 'typing'
-                ? <TypewriterBubble key={msg.id} />
-                : <TextBubble key={msg.id} role={msg.role} text={msg.text} chips={msg.chips} />,
-            )}
+            {messages.map((msg, index) => {
+              const lastAppTextIndex = [...messages].reverse().findIndex(
+                (message) => message.role === 'app' && message.kind === 'text',
+              )
+              const latestAppTextIndex =
+                lastAppTextIndex === -1 ? -1 : messages.length - 1 - lastAppTextIndex
+
+              const content =
+                msg.kind === 'typing'
+                  ? <TypewriterBubble key={msg.id} />
+                  : <TextBubble key={msg.id} role={msg.role} text={msg.text} chips={msg.chips} />
+
+              if (index === latestAppTextIndex && msg.role === 'app' && msg.kind === 'text') {
+                return (
+                  <div key={`${msg.id}-anchor`} ref={latestAppMessageRef}>
+                    {content}
+                  </div>
+                )
+              }
+
+              return content
+            })}
 
             {!isTyping && step === 'traps' ? (
               <motion.div className="ob-chat-composer" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4, ease: 'easeOut' }}>

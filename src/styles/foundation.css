@@ -222,6 +222,22 @@ body:has(.funnel-shell) {
   touch-action: manipulation;
 }
 
+body:has(.ss-setup-screen),
+body:has(.ss-done-overlay) {
+  padding-top: 0;
+  padding-bottom: 0;
+  padding-left: 0;
+  padding-right: 0;
+  background-color: #0a0b1e;
+  background-image: none;
+  overflow: hidden;
+}
+
+body:has(.ss-setup-screen)::before,
+body:has(.ss-done-overlay)::before {
+  display: none;
+}
+
 h1,
 h2,
 h3,
