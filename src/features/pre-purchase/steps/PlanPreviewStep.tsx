@@ -99,11 +99,13 @@ export function PlanPreviewStep({ symptoms, onBack, onContinue }: PlanPreviewSte
         {/* ── HERO ── */}
         <div className="pp-hero-banner">
           <div className="pp-hero-banner-aura" aria-hidden="true" />
-          <button type="button" onClick={onBack} aria-label="Voltar" className="cp-back-button pp-hero-banner-back">
-            <ArrowLeft size={18} />
-          </button>
           <div className="pp-hero-banner-text">
-            <h1 className="pp-hero-banner-title">Sua<br />Transformação</h1>
+            <div className="pp-hero-banner-headline-row">
+              <button type="button" onClick={onBack} aria-label="Voltar" className="cp-back-button pp-hero-banner-back">
+                <ArrowLeft size={15} />
+              </button>
+              <h1 className="pp-hero-banner-title">Sua Transformação</h1>
+            </div>
             <p className="pp-hero-banner-sub">Em 90 dias com o plano</p>
           </div>
           <div className="pp-hero-banner-illustration">
@@ -199,3 +201,5 @@ export function PlanPreviewStep({ symptoms, onBack, onContinue }: PlanPreviewSte
     </section>
   )
 }
+
+

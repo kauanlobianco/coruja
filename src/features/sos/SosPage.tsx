@@ -1,470 +1,464 @@
 import { useEffect, useEffectEvent, useMemo, useState } from 'react'
-import { motion } from 'framer-motion'
-import {
-  ArrowRight,
-  BrainCircuit,
-  ChevronLeft,
-  Gamepad2,
-  HeartHandshake,
-  MessageCircleMore,
-  ShieldAlert,
-  Sparkles,
-} from 'lucide-react'
+import { AnimatePresence, motion } from 'framer-motion'
+import { Brain, ListChecks, Mic, ShieldCheck, Wind, X } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import { AppShell } from '../../shared/layout/AppShell'
 import { useAppState } from '../../app/state/use-app-state'
 import { appRoutes } from '../../core/config/routes'
-import type { GameId } from '../games/GamesHub'
-import { FindGame } from '../games/games/FindGame/FindGame'
-import { MemoryGame } from '../games/games/MemoryGame/MemoryGame'
-import { StroopGame } from '../games/games/StroopGame/StroopGame'
+import { TypewriterLine } from '../../components/ui/TypewriterLine'
+import { OrbFadeLine } from '../../components/ui/OrbFadeLine'
 import { AiMentorChat } from '../library/components/AiMentorChat'
 import { buildSosRescuePlan } from './sos-rescue-plan'
+import { buildSosSystemPrompt } from './sos-system-prompt'
+import { useVoiceMentor } from './use-voice-mentor'
 
-type SosStage = 'ground' | 'reflect' | 'reconnect' | 'distract' | 'outcome'
+type SosPanel = null | 'shield' | 'breathe' | 'plan'
 
-const breathingSteps = ['Inspire', 'Segure', 'Expire', 'Pause']
-const breathingStepSeconds = 5
+const BREATHING_STEPS = ['Inspire', 'Segure', 'Expire', 'Pause']
+const BREATH_STEP_SECONDS = 5
+const BREATH_TOTAL_CYCLES = 4
+const WAVE_HEIGHTS = [6, 12, 18, 14, 22, 16, 10, 18, 12, 6]
 
-const gameCopy: Record<GameId, { title: string; duration: string; body: string }> = {
-  stroop: {
-    title: 'Missao de foco rapido',
-    duration: '90 segundos',
-    body: 'Puxa sua atencao para fora do automatismo e quebra o embalo da fissura.',
-  },
-  find: {
-    title: 'Missao de foco visual',
-    duration: '90 segundos',
-    body: 'Ajuda seu cerebro a sair da repeticao mental e voltar para o presente.',
-  },
-  memory: {
-    title: 'Missao de memoria',
-    duration: '90 segundos',
-    body: 'Te coloca em uma tarefa curta, concreta e mais calma para atravessar o pico.',
-  },
-  breathe: {
-    title: 'Missao de respiracao',
-    duration: '90 segundos',
-    body: 'Ajuda a reduzir a ativacao e recuperar o ritmo do corpo.',
-  },
-  scramble: {
-    title: 'Missao de palavras',
-    duration: '90 segundos',
-    body: 'Desvia sua atencao para uma tarefa curta e estruturada.',
-  },
-  math: {
-    title: 'Missao numerica',
-    duration: '90 segundos',
-    body: 'Puxa sua mente para um foco simples e objetivo.',
-  },
-  eco: {
-    title: 'Missao visual',
-    duration: '90 segundos',
-    body: 'Interrompe o impulso com uma tarefa curta de atencao.',
-  },
-  rastros: {
-    title: 'Missao de rastros',
-    duration: '90 segundos',
-    body: 'Ajuda a atravessar o pico com foco externo e ritmo.',
-  },
+function PanelOverlay({ onClose }: { onClose: () => void }) {
+  return (
+    <motion.div
+      className="sos-v2-overlay"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.22 }}
+      onClick={onClose}
+    />
+  )
 }
 
-function MissionOption({
-  active,
-  gameId,
-  onSelect,
+function PanelShell({ onClose, children }: { onClose: () => void; children: React.ReactNode }) {
+  return (
+    <>
+      <PanelOverlay onClose={onClose} />
+      <motion.div
+        className="sos-v2-panel"
+        initial={{ y: '100%' }}
+        animate={{ y: 0 }}
+        exit={{ y: '100%' }}
+        transition={{ type: 'spring', stiffness: 320, damping: 34 }}
+      >
+        <button type="button" className="sos-v2-panel-close" onClick={onClose} aria-label="Fechar">
+          <X size={16} strokeWidth={2} />
+        </button>
+        {children}
+      </motion.div>
+    </>
+  )
+}
+
+function ShieldPanel({
+  rescuePlan,
+  motivations,
+  onClose,
 }: {
-  active: boolean
-  gameId: GameId
-  onSelect: (gameId: GameId) => void
+  rescuePlan: ReturnType<typeof buildSosRescuePlan>
+  motivations: string[]
+  onClose: () => void
 }) {
   return (
-    <button
-      type="button"
-      className={`sos-mission-chip${active ? ' is-active' : ''}`}
-      onClick={() => onSelect(gameId)}
-    >
-      {gameCopy[gameId].title}
-    </button>
+    <PanelShell onClose={onClose}>
+      <h2 className="sos-v2-panel-title">Seu lembrete</h2>
+
+      {motivations.length > 0 ? (
+        <div className="sos-v2-panel-section">
+          <span className="sos-v2-panel-label">O que voce quer proteger</span>
+          <div className="sos-v2-panel-chips">
+            {motivations.slice(0, 3).map((motivation) => (
+              <span key={motivation} className="sos-v2-chip">{motivation}</span>
+            ))}
+          </div>
+        </div>
+      ) : null}
+
+      <div className="sos-v2-panel-section">
+        <span className="sos-v2-panel-label">Sua resposta</span>
+        <div className="sos-v2-trap-list">
+          {rescuePlan.trapOptions.map((trap) => (
+            <div key={trap.id} className="sos-v2-trap-item">
+              <p className="sos-v2-trap-text">"{trap.text}"</p>
+              <p className="sos-v2-trap-response">{trap.responseText}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </PanelShell>
+  )
+}
+
+function BreathePanel({ onClose }: { onClose: () => void }) {
+  const [stepIndex, setStepIndex] = useState(0)
+  const [secondsLeft, setSecondsLeft] = useState(BREATH_STEP_SECONDS)
+  const [cycleCount, setCycleCount] = useState(0)
+  const [cycleComplete, setCycleComplete] = useState(false)
+
+  useEffect(() => {
+    if (cycleComplete) return
+
+    const interval = window.setInterval(() => {
+      setSecondsLeft((seconds) => {
+        if (seconds > 1) return seconds - 1
+
+        setStepIndex((index) => {
+          const next = (index + 1) % BREATHING_STEPS.length
+          if (next === 0) {
+            setCycleCount((count) => {
+              const updated = count + 1
+              if (updated >= BREATH_TOTAL_CYCLES) setCycleComplete(true)
+              return updated
+            })
+          }
+          return next
+        })
+
+        return BREATH_STEP_SECONDS
+      })
+    }, 1000)
+
+    return () => window.clearInterval(interval)
+  }, [cycleComplete])
+
+  const progress = (BREATH_STEP_SECONDS - secondsLeft) / BREATH_STEP_SECONDS
+  const circumference = 2 * Math.PI * 44
+
+  return (
+    <PanelShell onClose={onClose}>
+      <h2 className="sos-v2-panel-title">Respira comigo</h2>
+      <p className="sos-v2-panel-sub">Um minuto. Sem decidir nada no meio.</p>
+
+      {cycleComplete ? (
+        <div className="sos-v2-breathe-done">
+          <p className="sos-v2-breathe-done-text">Voce voltou para o corpo.</p>
+          <p className="sos-v2-breathe-done-sub">Agora volta para a tela principal e fica comigo.</p>
+          <button type="button" className="sos-v2-panel-btn" onClick={onClose}>Fechar</button>
+        </div>
+      ) : (
+        <div className="sos-v2-breathe-body">
+          <div className="sos-v2-breathe-orb-wrap">
+            <svg className="sos-v2-breathe-ring" viewBox="0 0 100 100">
+              <circle cx="50" cy="50" r="44" fill="none" stroke="rgba(255,255,255,0.07)" strokeWidth="3.5" />
+              <circle
+                cx="50"
+                cy="50"
+                r="44"
+                fill="none"
+                stroke="#22d3ee"
+                strokeWidth="3.5"
+                strokeDasharray={circumference}
+                strokeDashoffset={circumference * (1 - progress)}
+                strokeLinecap="round"
+                transform="rotate(-90 50 50)"
+                style={{ transition: 'stroke-dashoffset 0.85s linear' }}
+              />
+            </svg>
+
+            <div className="sos-v2-breathe-center">
+              <span className="sos-v2-breathe-phase">{BREATHING_STEPS[stepIndex]}</span>
+              <span className="sos-v2-breathe-count">{secondsLeft}s</span>
+            </div>
+          </div>
+
+          <p className="sos-v2-breathe-hint">
+            {BREATH_TOTAL_CYCLES - cycleCount} ciclos restantes
+          </p>
+        </div>
+      )}
+    </PanelShell>
+  )
+}
+
+function QuickPlanPanel({
+  actions,
+  onClose,
+}: {
+  actions: string[]
+  onClose: () => void
+}) {
+  return (
+    <PanelShell onClose={onClose}>
+      <h2 className="sos-v2-panel-title">Quebra o impulso</h2>
+      <p className="sos-v2-panel-sub">Escolhe uma e faz agora.</p>
+      <ol className="sos-v2-plan-list">
+        {actions.map((item, index) => (
+          <li key={item} className="sos-v2-plan-item">
+            <span className="sos-v2-plan-num">{index + 1}</span>
+            <span>{item}</span>
+          </li>
+        ))}
+      </ol>
+    </PanelShell>
   )
 }
 
 export function SosPage() {
   const navigate = useNavigate()
   const { state, openSosSession } = useAppState()
+
   const rescuePlan = useMemo(
     () => buildSosRescuePlan(state.profile, state.sos.configuration),
     [state.profile, state.sos.configuration],
   )
 
-  const [stepIndex, setStepIndex] = useState(0)
-  const [breathPhaseSecondsLeft, setBreathPhaseSecondsLeft] = useState(breathingStepSeconds)
-  const [stage, setStage] = useState<SosStage>('ground')
-  const [selectedTrapId, setSelectedTrapId] = useState<string | null>(null)
-  const [missionGame, setMissionGame] = useState<GameId>(rescuePlan.recommendedGame)
-  const [activeGame, setActiveGame] = useState<GameId | null>(null)
-  const [mentorOpen, setMentorOpen] = useState(false)
-  const [outcomeChoice, setOutcomeChoice] = useState<'better' | 'hard' | null>(null)
-  const [scrollKey, setScrollKey] = useState(0)
+  const liveLines = useMemo(
+    () => [
+      rescuePlan.presenceLine,
+      rescuePlan.momentLine,
+      rescuePlan.trapLine,
+      rescuePlan.motivationLine,
+      rescuePlan.shieldLine,
+      rescuePlan.actionLine,
+    ],
+    [
+      rescuePlan.presenceLine,
+      rescuePlan.momentLine,
+      rescuePlan.trapLine,
+      rescuePlan.motivationLine,
+      rescuePlan.shieldLine,
+      rescuePlan.actionLine,
+    ],
+  )
 
-  const registerSosSession = useEffectEvent(() => {
-    void openSosSession()
+  const [activePanel, setActivePanel] = useState<SosPanel>(null)
+  const [lineIndex, setLineIndex] = useState(0)
+  const [lineComplete, setLineComplete] = useState(false)
+  const [mentorOpen, setMentorOpen] = useState(false)
+
+  const systemPrompt = useMemo(
+    () => buildSosSystemPrompt(state, rescuePlan),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [],
+  )
+
+  const { voiceState, reply, error: voiceError, handleOrbTap } = useVoiceMentor({
+    systemPrompt,
   })
 
-  useEffect(() => {
-    registerSosSession()
-  }, [])
+  const registerSosSession = useEffectEvent(() => { void openSosSession() })
+  useEffect(() => { registerSosSession() }, [registerSosSession])
 
   useEffect(() => {
-    setMissionGame(rescuePlan.recommendedGame)
-  }, [rescuePlan.recommendedGame])
+    setLineIndex(0)
+    setLineComplete(false)
+  }, [liveLines])
 
   useEffect(() => {
-    setScrollKey((current) => current + 1)
-  }, [stage])
+    if (!lineComplete) return
+    // Pause text cycling while voice is active
+    if (voiceState !== 'idle' && voiceState !== 'error') return
 
-  useEffect(() => {
-    const breathingTimer = window.setInterval(() => {
-      setBreathPhaseSecondsLeft((current) => {
-        if (current <= 1) {
-          setStepIndex((step) => (step + 1) % breathingSteps.length)
-          return breathingStepSeconds
-        }
+    const timeout = window.setTimeout(() => {
+      setLineIndex((index) => (index + 1) % liveLines.length)
+      setLineComplete(false)
+    }, 1500)
 
-        return current - 1
-      })
-    }, 1000)
+    return () => window.clearTimeout(timeout)
+  }, [lineComplete, liveLines.length, voiceState])
 
-    return () => {
-      window.clearInterval(breathingTimer)
-    }
-  }, [])
+  const activeLine = liveLines[lineIndex]
+  const isCommandLine = activeLine === rescuePlan.actionLine
 
-  const selectedTrap =
-    rescuePlan.trapOptions.find((trap) => trap.id === selectedTrapId) ?? null
-
-  const activeResponse = selectedTrap?.responseText ?? rescuePlan.fallbackResponse
-  const mentorSuggestions = selectedTrap
-    ? [
-        `To com a armadilha "${selectedTrap.text}" forte agora.`,
-        'Me ajuda a atravessar os proximos 2 minutos.',
-        'Me da um proximo passo simples agora.',
-      ]
-    : rescuePlan.mentorSuggestions
-
-  function handleMissionStart() {
-    setActiveGame(missionGame)
-  }
-
-  function handleMissionBack() {
-    setActiveGame(null)
-    setStage('outcome')
-  }
-
-  function handleTryAnotherMission() {
-    const nextMission =
-      missionGame === rescuePlan.recommendedGame
-        ? rescuePlan.alternativeGames[0] ?? rescuePlan.recommendedGame
-        : rescuePlan.recommendedGame
-
-    setMissionGame(nextMission)
-    setOutcomeChoice(null)
-    setStage('distract')
-  }
+  // What text to show inside orb — AI reply overrides the typewriter lines
+  const voiceActive = voiceState !== 'idle' && voiceState !== 'error'
 
   return (
-    <>
-      <AppShell
-        title=""
-        eyebrow=""
-        hideTopbar
-        shellMode="system"
-        contentClassName="app-content-sos"
-      >
-        <section className="sos-screen">
-          <div className="sos-stage-layout">
-            <div className="sos-stage-topbar">
-              <span className="sos-stage-chip">SOS ativo</span>
-              <button
-                type="button"
-                className="sos-stage-close"
-                onClick={() => navigate(appRoutes.home)}
-              >
-                <ChevronLeft size={16} strokeWidth={2.2} />
-                Fechar
+    <AppShell title="" eyebrow="" shellMode="entry" hideTopbar contentClassName="app-content-sos">
+      <div className="sos-v3-screen">
+        <div className="sos-v3-topbar">
+          <div className="sos-v3-chip">SOS ativo</div>
+          <button
+            type="button"
+            className="sos-v3-close"
+            onClick={() => navigate(-1)}
+            aria-label="Fechar"
+          >
+            <X size={18} strokeWidth={2} />
+          </button>
+        </div>
+
+        <div className="sos-v3-stage">
+          <div className="sos-v3-core">
+            <motion.button
+              type="button"
+              className={[
+                'sos-v3-orb',
+                voiceState === 'listening' ? 'is-listening' : '',
+                voiceState === 'processing' ? 'is-processing' : '',
+                voiceState === 'speaking' ? 'is-speaking' : '',
+              ].filter(Boolean).join(' ')}
+              onClick={handleOrbTap}
+              initial={{ opacity: 0, scale: 0.94 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.65, ease: [0.22, 1, 0.36, 1] }}
+              whileTap={{ scale: 0.985 }}
+            >
+              <div className="sos-v3-aura sos-v3-aura--one" aria-hidden="true" />
+              <div className="sos-v3-aura sos-v3-aura--two" aria-hidden="true" />
+              <div className="sos-v3-ring sos-v3-ring--outer" aria-hidden="true" />
+              <div className="sos-v3-ring sos-v3-ring--inner" aria-hidden="true" />
+
+              <div className="sos-v3-orb-content">
+                <span className="sos-v3-presence">
+                  {voiceState === 'requesting'
+                    ? 'aguardando microfone...'
+                    : voiceState === 'listening'
+                      ? <span className="sos-v3-mic-hint"><Mic size={11} />ouvindo...</span>
+                      : voiceState === 'processing'
+                        ? 'processando...'
+                        : 'toque para conversar'}
+                </span>
+
+                <div className="sos-v3-message-wrap">
+                  <AnimatePresence mode="wait">
+                    {voiceActive ? (
+                      <motion.div
+                        key={`voice-${voiceState}`}
+                        className="sos-v3-message-line"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        transition={{ duration: 0.35 }}
+                      >
+                        {voiceState === 'speaking' ? (
+                          <OrbFadeLine
+                            key={reply}
+                            text={reply}
+                            holdMs={1600}
+                            className="sos-v3-message sos-v3-message--ai"
+                          />
+                        ) : (
+                          <span className="sos-v3-message sos-v3-message--dim">
+                            {voiceState === 'listening' ? '\u00a0' : 'pensando...'}
+                          </span>
+                        )}
+                      </motion.div>
+                    ) : (
+                      <motion.div
+                        key={`tw-${lineIndex}`}
+                        className="sos-v3-message-line"
+                        initial={{ opacity: 0, filter: 'blur(3px)' }}
+                        animate={{ opacity: 1, filter: 'blur(0px)' }}
+                        exit={{ opacity: 0, filter: 'blur(3px)' }}
+                        transition={{ duration: 0.55, ease: 'easeOut' }}
+                      >
+                        <TypewriterLine
+                          key={`${lineIndex}-${activeLine}`}
+                          text={activeLine}
+                          charDelay={58}
+                          onComplete={() => setLineComplete(true)}
+                          className={`sos-v3-message${isCommandLine ? ' is-command' : ''}`}
+                        />
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
+
+                <div className={`sos-v3-waveform${voiceState === 'listening' ? ' is-active' : ''}`} aria-hidden="true">
+                  {WAVE_HEIGHTS.map((height, index) => (
+                    <div
+                      key={index}
+                      className="sos-v3-wave-bar"
+                      style={{
+                        height: `${height}px`,
+                        animationDelay: `${index * (voiceState === 'listening' ? 0.07 : 0.1)}s`,
+                      }}
+                    />
+                  ))}
+                </div>
+              </div>
+            </motion.button>
+
+            {voiceError ? (
+              <p className="sos-v3-voice-error">{voiceError}</p>
+            ) : null}
+          </div>
+
+          <div className="sos-v3-tools-section">
+            <p className="sos-v3-tools-title">Ferramentas</p>
+            <div className="sos-v3-support-dock" aria-label="Apoios secundarios">
+              <button type="button" className="sos-v3-support-btn" onClick={() => setActivePanel('shield')}>
+                <div className="sos-v3-support-icon sos-v3-support-icon--blue">
+                  <ShieldCheck size={18} strokeWidth={2} />
+                </div>
+                <div className="sos-v3-support-text">
+                  <span className="sos-v3-support-name">Lembrete</span>
+                  <span className="sos-v3-support-desc">Seus motivos e respostas</span>
+                </div>
+              </button>
+
+              <button type="button" className="sos-v3-support-btn" onClick={() => setActivePanel('breathe')}>
+                <div className="sos-v3-support-icon sos-v3-support-icon--teal">
+                  <Wind size={18} strokeWidth={2} />
+                </div>
+                <div className="sos-v3-support-text">
+                  <span className="sos-v3-support-name">Respira</span>
+                  <span className="sos-v3-support-desc">1 minuto de fôlego</span>
+                </div>
+              </button>
+
+              <button type="button" className="sos-v3-support-btn" onClick={() => setActivePanel('plan')}>
+                <div className="sos-v3-support-icon sos-v3-support-icon--orange">
+                  <ListChecks size={18} strokeWidth={2} />
+                </div>
+                <div className="sos-v3-support-text">
+                  <span className="sos-v3-support-name">Aja agora</span>
+                  <span className="sos-v3-support-desc">Quebra o impulso</span>
+                </div>
+              </button>
+
+              <button type="button" className="sos-v3-support-btn" onClick={() => navigate(appRoutes.libraryGames)}>
+                <div className="sos-v3-support-icon sos-v3-support-icon--purple">
+                  <Brain size={18} strokeWidth={2} />
+                </div>
+                <div className="sos-v3-support-text">
+                  <span className="sos-v3-support-name">Desvia</span>
+                  <span className="sos-v3-support-desc">Jogo cognitivo rápido</span>
+                </div>
               </button>
             </div>
-
-            <div key={scrollKey} className="sos-stage-scroll">
-              <motion.div
-                key={stage}
-                className="sos-content"
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.24, ease: 'easeOut' }}
-              >
-                {stage === 'ground' ? (
-                  <>
-                    <div className="sos-hero-copy">
-                      <span className="sos-kicker">
-                        <ShieldAlert size={14} strokeWidth={2.1} />
-                        Voce nao precisa passar por isso sozinho
-                      </span>
-                      <h1>{rescuePlan.entryLine}</h1>
-                      <p className="sos-support-copy">
-                        Vamos atravessar os proximos minutos um passo de cada vez.
-                      </p>
-                    </div>
-
-                    <div className="sos-breathing-stage">
-                      <div className="sos-breathing">
-                        <div className="sos-breathing-perimeter">
-                          <div className="sos-breathing-inner">
-                            <span className="sos-breathing-phase-label">{breathingSteps[stepIndex]}</span>
-                            <div className="sos-breathing-phase-number">{breathPhaseSecondsLeft}</div>
-                          </div>
-                        </div>
-                      </div>
-                      <p className="sos-support-copy">
-                        Respire alguns ciclos comigo. Nao precisa resolver tudo agora.
-                      </p>
-                    </div>
-                  </>
-                ) : null}
-
-                {stage === 'reflect' ? (
-                  <>
-                    <div className="sos-hero-copy">
-                      <span className="sos-kicker">
-                        <HeartHandshake size={14} strokeWidth={2.1} />
-                        Sem pressa
-                      </span>
-                      <h1>O que mais parece com isso agora?</h1>
-                      <p className="sos-support-copy">
-                        Se alguma frase parecer familiar, toque nela. Se nao, siga sem escolher.
-                      </p>
-                    </div>
-
-                    <div className="sos-reflect-card">
-                      <div className="sos-reflect-options">
-                        {rescuePlan.trapOptions.slice(0, 3).map((trap) => (
-                          <button
-                            key={trap.id}
-                            type="button"
-                            className={`sos-reflect-option${selectedTrapId === trap.id ? ' is-active' : ''}`}
-                            onClick={() => setSelectedTrapId((current) => current === trap.id ? null : trap.id)}
-                          >
-                            {trap.text}
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-                  </>
-                ) : null}
-
-                {stage === 'reconnect' ? (
-                  <>
-                    <div className="sos-hero-copy">
-                      <span className="sos-kicker">
-                        <Sparkles size={14} strokeWidth={2.1} />
-                        Volte para o que importa
-                      </span>
-                      <h1>Leia isso devagar.</h1>
-                    </div>
-
-                    <div className="sos-message-card">
-                      <p className="sos-message-quote">{activeResponse}</p>
-                    </div>
-
-                    <div className="sos-support-grid">
-                      <div className="sos-support-card">
-                        <span className="sos-support-label">Seu porque</span>
-                        <p>{rescuePlan.motivation}</p>
-                      </div>
-
-                      <div className="sos-support-card">
-                        <span className="sos-support-label">Se ceder agora</span>
-                        <p>{rescuePlan.consequence}</p>
-                      </div>
-                    </div>
-                  </>
-                ) : null}
-
-                {stage === 'distract' ? (
-                  <>
-                    <div className="sos-hero-copy">
-                      <span className="sos-kicker">
-                        <Gamepad2 size={14} strokeWidth={2.1} />
-                        Missao de foco
-                      </span>
-                      <h1>Agora vamos tirar seu cerebro do automatico.</h1>
-                      <p className="sos-support-copy">
-                        Escolhi uma missao curta para atravessar esse pico com voce.
-                      </p>
-                    </div>
-
-                    <div className="sos-mission-card">
-                      <div className="sos-mission-head">
-                        <div>
-                          <span className="sos-support-label">Recomendado agora</span>
-                          <h2>{gameCopy[missionGame].title}</h2>
-                        </div>
-                        <span className="sos-mission-duration">{gameCopy[missionGame].duration}</span>
-                      </div>
-                      <p>{gameCopy[missionGame].body}</p>
-                    </div>
-
-                    <div className="sos-mission-switcher">
-                      <span className="sos-support-label">Trocar missao</span>
-                      <div className="sos-mission-chip-row">
-                        {[rescuePlan.recommendedGame, ...rescuePlan.alternativeGames].map((gameId) => (
-                          <MissionOption
-                            key={gameId}
-                            active={missionGame === gameId}
-                            gameId={gameId}
-                            onSelect={setMissionGame}
-                          />
-                        ))}
-                      </div>
-                    </div>
-                  </>
-                ) : null}
-
-                {stage === 'outcome' ? (
-                  <>
-                    <div className="sos-hero-copy">
-                      <span className="sos-kicker">
-                        <BrainCircuit size={14} strokeWidth={2.1} />
-                        Reavaliar
-                      </span>
-                      <h1>Como voce esta agora?</h1>
-                      <p className="sos-support-copy">
-                        Nao precisa estar perfeito. O importante e escolher o proximo passo certo.
-                      </p>
-                    </div>
-
-                    {outcomeChoice === null ? (
-                      <div className="sos-outcome-options">
-                        <button type="button" className="sos-outcome-option" onClick={() => setOutcomeChoice('better')}>
-                          Melhorou um pouco
-                        </button>
-                        <button type="button" className="sos-outcome-option" onClick={() => setOutcomeChoice('hard')}>
-                          Ainda esta dificil
-                        </button>
-                        <button type="button" className="sos-outcome-option" onClick={() => setMentorOpen(true)}>
-                          Quero falar com o mentor
-                        </button>
-                      </div>
-                    ) : null}
-
-                    {outcomeChoice === 'better' ? (
-                      <div className="sos-outcome-card">
-                        <p>Boa. O pico perdeu forca. Agora escolha um caminho simples para sustentar isso.</p>
-                      </div>
-                    ) : null}
-
-                    {outcomeChoice === 'hard' ? (
-                      <div className="sos-outcome-card">
-                        <p>Tudo bem. Voce nao falhou. Vamos fazer mais uma missao curta ou chamar o mentor agora.</p>
-                      </div>
-                    ) : null}
-                  </>
-                ) : null}
-              </motion.div>
-            </div>
-
-            <div className="sos-stage-footer">
-              {stage === 'ground' ? (
-                <>
-                  <button type="button" className="sos-primary-button" onClick={() => setStage('reflect')}>
-                    Continuar
-                  </button>
-                  <button type="button" className="sos-secondary-button" onClick={() => setMentorOpen(true)}>
-                    <MessageCircleMore size={15} strokeWidth={2.2} />
-                    Falar com mentor
-                  </button>
-                </>
-              ) : null}
-
-              {stage === 'reflect' ? (
-                <>
-                  <button type="button" className="sos-primary-button" onClick={() => setStage('reconnect')}>
-                    Isso me ajuda
-                  </button>
-                  <button type="button" className="sos-secondary-button" onClick={() => setStage('reconnect')}>
-                    Nao sei agora, seguir mesmo assim
-                  </button>
-                </>
-              ) : null}
-
-              {stage === 'reconnect' ? (
-                <>
-                  <button type="button" className="sos-primary-button" onClick={() => setStage('distract')}>
-                    Ir para missao de foco
-                  </button>
-                  <button type="button" className="sos-secondary-button" onClick={() => setMentorOpen(true)}>
-                    <MessageCircleMore size={15} strokeWidth={2.2} />
-                    Falar com mentor
-                  </button>
-                </>
-              ) : null}
-
-              {stage === 'distract' ? (
-                <>
-                  <button type="button" className="sos-primary-button" onClick={handleMissionStart}>
-                    Comecar missao
-                    <ArrowRight size={16} strokeWidth={2.2} />
-                  </button>
-                  <button type="button" className="sos-secondary-button" onClick={() => setMentorOpen(true)}>
-                    <MessageCircleMore size={15} strokeWidth={2.2} />
-                    Prefiro falar com mentor
-                  </button>
-                </>
-              ) : null}
-
-              {stage === 'outcome' && outcomeChoice === 'better' ? (
-                <>
-                  <button type="button" className="sos-primary-button" onClick={() => navigate(appRoutes.home)}>
-                    Voltar para a Home
-                  </button>
-                  <button type="button" className="sos-secondary-button" onClick={() => navigate(appRoutes.library)}>
-                    Ir para biblioteca
-                  </button>
-                </>
-              ) : null}
-
-              {stage === 'outcome' && outcomeChoice === 'hard' ? (
-                <>
-                  <button type="button" className="sos-primary-button" onClick={handleTryAnotherMission}>
-                    Tentar outra missao
-                  </button>
-                  <button type="button" className="sos-secondary-button" onClick={() => setMentorOpen(true)}>
-                    <MessageCircleMore size={15} strokeWidth={2.2} />
-                    Falar com mentor
-                  </button>
-                </>
-              ) : null}
-            </div>
           </div>
-        </section>
-      </AppShell>
+        </div>
 
-      {mentorOpen ? (
-        <AiMentorChat
-          onBack={() => setMentorOpen(false)}
-          entryMode="sos"
-          sosContext={{
-            selectedTrapText: selectedTrap?.text,
-            responseText: activeResponse,
-            motivation: rescuePlan.motivation,
-          }}
-          initialSuggestions={mentorSuggestions}
-        />
-      ) : null}
+        <AnimatePresence>
+          {activePanel === 'shield' ? (
+            <ShieldPanel
+              key="shield"
+              rescuePlan={rescuePlan}
+              motivations={state.profile.motivations}
+              onClose={() => setActivePanel(null)}
+            />
+          ) : null}
 
-      {activeGame === 'stroop' ? <StroopGame onBack={handleMissionBack} /> : null}
-      {activeGame === 'find' ? <FindGame onBack={handleMissionBack} /> : null}
-      {activeGame === 'memory' ? <MemoryGame onBack={handleMissionBack} /> : null}
-    </>
+          {activePanel === 'breathe' ? (
+            <BreathePanel key="breathe" onClose={() => setActivePanel(null)} />
+          ) : null}
+
+          {activePanel === 'plan' ? (
+            <QuickPlanPanel
+              key="plan"
+              actions={rescuePlan.quickActions}
+              onClose={() => setActivePanel(null)}
+            />
+          ) : null}
+        </AnimatePresence>
+
+        {mentorOpen ? (
+          <AiMentorChat
+            entryMode="sos"
+            initialSuggestions={rescuePlan.mentorSuggestions}
+            sosContext={{
+              selectedTrapText: rescuePlan.activeTrap.text,
+              responseText: rescuePlan.activeTrap.responseText,
+              motivation: rescuePlan.motivation,
+            }}
+            onBack={() => setMentorOpen(false)}
+          />
+        ) : null}
+      </div>
+    </AppShell>
   )
 }

@@ -203,6 +203,8 @@ body:has(.prepurchase-shell) {
   padding-bottom: 0;
   padding-left: 0;
   padding-right: 0;
+  overflow: hidden;
+  overscroll-behavior: none;
   background-color: #080d16;
   background-image:
     radial-gradient(circle at 18% 14%, rgba(43, 181, 196, 0.14) 0%, transparent 30%),

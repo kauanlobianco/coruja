@@ -2,7 +2,6 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import {
   ArrowLeft,
-  ArrowRight,
   Brain,
   ChevronLeft,
   Compass,
@@ -625,7 +624,7 @@ function ResponseComposer({ trap, trapIndex, trapTotal, onSubmit }: {
           onClick={handleSubmit}
         >
           <span>Salvar e continuar</span>
-          <ArrowRight size={16} strokeWidth={2.2} />
+          <SendHorizontal size={14} strokeWidth={2} />
         </button>
       </div>
     </motion.div>
@@ -722,7 +721,7 @@ function UnifiedShieldReview({
           disabled={isSubmitting}
         >
           {isSubmitting ? 'Salvando...' : (
-            <>Ativar meu escudo <ArrowRight size={16} strokeWidth={2.2} /></>
+            <>Ativar meu escudo <SendHorizontal size={14} strokeWidth={2} /></>
           )}
         </button>
       </div>
@@ -1115,26 +1114,25 @@ export function OnboardingChat() {
       <AppShell title="" eyebrow="" shellMode="entry" hideTopbar contentClassName="app-content-onboarding">
         <div className="ob-chat-screen ss-setup-screen">
           <div className={`ob-chat-header${step !== 'motivations' ? ' ob-chat-header--compact' : ''}`}>
-            <div className="ob-chat-header-row">
-              {canGoBack ? (
-                <button type="button" className="ob-chat-back" onClick={handleBack}>
-                  <ArrowLeft size={14} strokeWidth={2.2} />
-                  Voltar
-                </button>
-              ) : null}
-            </div>
             {step === 'motivations' ? (
               <>
                 <h1 className="ob-chat-title">Vamos montar seu plano.</h1>
                 <p className="ob-chat-subtitle">Em poucos passos, você sai daqui protegido.</p>
               </>
             ) : (
-              <>
-                <h1 className="ob-chat-title ob-chat-title--compact">
-                  {STEP_COMPACT[step]?.title ?? ''}
-                </h1>
-                <p className="ob-chat-subtitle">{STEP_COMPACT[step]?.sub ?? ''}</p>
-              </>
+              <div className="ob-chat-header-title-row">
+                {canGoBack ? (
+                  <button type="button" className="ob-chat-back" onClick={handleBack} aria-label="Voltar">
+                    <ArrowLeft size={14} strokeWidth={2.5} />
+                  </button>
+                ) : <span className="ob-chat-back-placeholder" />}
+                <div className="ob-chat-header-text">
+                  <h1 className="ob-chat-title ob-chat-title--compact">
+                    {STEP_COMPACT[step]?.title ?? ''}
+                  </h1>
+                  <p className="ob-chat-subtitle">{STEP_COMPACT[step]?.sub ?? ''}</p>
+                </div>
+              </div>
             )}
             <ChatProgress step={step} />
           </div>
@@ -1177,7 +1175,7 @@ export function OnboardingChat() {
                     onClick={handleMotivationsSubmit}
                   >
                     {canSendMotivations
-                      ? <><span>Continuar</span><ArrowRight size={16} strokeWidth={2.2} /></>
+                      ? <><span>Continuar</span><SendHorizontal size={14} strokeWidth={2} /></>
                       : `Selecione mais ${Math.max(0, 4 - selectedMotivations.length)}`}
                   </button>
                 </motion.div>
@@ -1194,7 +1192,7 @@ export function OnboardingChat() {
                     onClick={handleTriggersSubmit}
                   >
                     {canSendTriggers
-                      ? <><span>Continuar</span><ArrowRight size={16} strokeWidth={2.2} /></>
+                      ? <><span>Continuar</span><SendHorizontal size={14} strokeWidth={2} /></>
                       : `Selecione mais ${Math.max(0, 4 - selectedTriggers.length)}`}
                   </button>
                 </motion.div>
@@ -1211,7 +1209,7 @@ export function OnboardingChat() {
                     onClick={handleGoalSubmit}
                   >
                     {selectedGoal
-                      ? <><span>Confirmar meta</span><ArrowRight size={16} strokeWidth={2.2} /></>
+                      ? <><span>Confirmar meta</span><SendHorizontal size={14} strokeWidth={2} /></>
                       : 'Escolha uma meta'}
                   </button>
                 </motion.div>
@@ -1228,7 +1226,7 @@ export function OnboardingChat() {
                     onClick={handleTrapsSubmit}
                   >
                     {canSendTraps
-                      ? <><span>Continuar</span><ArrowRight size={16} strokeWidth={2.2} /></>
+                      ? <><span>Continuar</span><SendHorizontal size={14} strokeWidth={2} /></>
                       : `Selecione mais ${Math.max(0, 2 - selectedTraps.length)}`}
                   </button>
                 </motion.div>

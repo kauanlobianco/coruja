@@ -3767,6 +3767,8 @@ dd {
   position: relative;
   display: flex;
   flex-direction: column;
+  width: 100%;
+  max-width: 100%;
   min-height: 100%;
   height: 100%;
   padding: 0;
@@ -3826,6 +3828,8 @@ dd {
 }
 
 .pain-carousel-body {
+  width: 100%;
+  max-width: 100%;
   padding: 0 20px;
   flex: 1;
   min-height: 0;
@@ -3836,25 +3840,31 @@ dd {
 
 .pain-carousel-stage {
   position: relative;
+  width: 100%;
+  max-width: 100%;
   flex: 1;
   min-height: 0;
   overflow-x: hidden;
   overflow-y: hidden;
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   justify-content: center;
-  padding: 18px 12px 12px;
+  padding: 34px 12px 12px;
   margin: 0;
 }
 
 .pain-carousel-stage > * {
   width: 100%;
+  max-width: 100%;
   min-height: auto;
+  margin-inline: auto;
 }
 
 .pain-carousel-content {
   display: flex;
   flex-direction: column;
+  width: 100%;
+  max-width: 100%;
   align-items: center;
   justify-content: flex-start;
   flex: 1 0 auto;
@@ -3862,7 +3872,7 @@ dd {
 }
 
 .pain-carousel-content-editorial {
-  gap: 18px;
+  gap: 22px;
   justify-content: flex-start;
   width: 100%;
   min-width: 0;
@@ -3877,7 +3887,7 @@ dd {
 }
 
 .pain-carousel-brain-bubble {
-  width: min(316px, 100%);
+  width: min(332px, 100%);
   aspect-ratio: 316 / 244;
   height: auto;
   border-radius: 32px;
@@ -3919,7 +3929,7 @@ dd {
 }
 
 .pain-carousel-brain-bubble.is-solution {
-  width: min(316px, 100%);
+  width: min(332px, 100%);
   box-shadow:
     0 18px 42px rgba(0, 0, 0, 0.16),
     0 10px 22px rgba(68, 183, 214, 0.09),
@@ -3957,7 +3967,7 @@ dd {
 }
 
 .solution-carousel-art-bubble {
-  margin-bottom: 22px;
+  margin-bottom: 26px;
 }
 
 .pain-carousel-illustration-image {
@@ -4096,7 +4106,7 @@ dd {
 
 .pain-carousel-title {
   margin: 0;
-  font-size: clamp(1.4rem, 4.5vw, 1.76rem);
+  font-size: clamp(1.52rem, 4.9vw, 1.92rem);
   font-weight: 700;
   color: #fff;
   line-height: 1.1;
@@ -4107,25 +4117,25 @@ dd {
 
 .pain-carousel-copy-stack {
   display: grid;
-  gap: clamp(12px, 2.2vh, 20px);
+  gap: clamp(14px, 2.5vh, 22px);
   justify-items: center;
   width: 100%;
-  max-width: 314px;
+  max-width: 334px;
   min-width: 0;
 }
 
 .pain-carousel-editorial-copy {
   display: grid;
-  gap: 12px;
+  gap: 14px;
   justify-items: center;
   width: 100%;
-  max-width: 308px;
+  max-width: 328px;
   min-width: 0;
 }
 
 .pain-carousel-title-editorial {
   margin: 0;
-  font-size: clamp(1.62rem, 5vw, 2.3rem);
+  font-size: clamp(1.82rem, 5.8vw, 2.58rem);
   line-height: 1.04;
   letter-spacing: -0.035em;
   text-align: center;
@@ -4141,8 +4151,8 @@ dd {
 
 .pain-carousel-lead {
   margin: 0;
-  font-size: clamp(0.94rem, 2.5vw, 1rem);
-  line-height: 1.42;
+  font-size: clamp(1.02rem, 2.9vw, 1.12rem);
+  line-height: 1.46;
   font-weight: 600;
   color: rgba(255, 255, 255, 0.88);
   text-align: center;
@@ -4151,8 +4161,8 @@ dd {
 
 .pain-carousel-support {
   margin: 0;
-  font-size: clamp(0.88rem, 2.3vw, 0.94rem);
-  line-height: 1.5;
+  font-size: clamp(0.94rem, 2.6vw, 1.02rem);
+  line-height: 1.54;
   color: rgba(255, 255, 255, 0.64);
   text-align: center;
   text-wrap: pretty;
@@ -4160,7 +4170,7 @@ dd {
 
 .solution-carousel-title-editorial {
   max-width: none;
-  font-size: clamp(1.62rem, 5vw, 2.3rem);
+  font-size: clamp(1.82rem, 5.8vw, 2.58rem);
   line-height: 1.04;
   letter-spacing: -0.035em;
   text-align: center;
@@ -4169,38 +4179,38 @@ dd {
 
 .solution-carousel-lead {
   max-width: 30ch;
-  font-size: clamp(0.94rem, 2.5vw, 0.98rem);
-  line-height: 1.4;
+  font-size: clamp(1.02rem, 2.9vw, 1.1rem);
+  line-height: 1.44;
   color: rgba(255, 255, 255, 0.92);
 }
 
 .solution-carousel-support {
   max-width: 32ch;
-  font-size: clamp(0.88rem, 2.3vw, 0.95rem);
-  line-height: 1.48;
+  font-size: clamp(0.94rem, 2.6vw, 1.02rem);
+  line-height: 1.52;
   color: rgba(255, 255, 255, 0.74);
 }
 
 .solution-carousel-copy-stack {
-  gap: clamp(10px, 2vh, 14px);
-  max-width: 320px;
+  gap: clamp(12px, 2.2vh, 16px);
+  max-width: 334px;
 }
 
 .solution-carousel-hero-content {
   justify-content: flex-start;
-  gap: 18px;
-  padding-top: 8px;
+  gap: 22px;
+  padding-top: 18px;
   padding-bottom: 8px;
 }
 
 .solution-carousel-hero-art {
-  width: 90%;
+  width: 94%;
   margin-inline: auto;
-  margin-top: 12px;
+  margin-top: 18px;
   margin-bottom: 2px;
   flex: none;
   min-height: 0;
-  height: min(210px, 28svh);
+  height: min(228px, 30svh);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -4229,8 +4239,8 @@ dd {
 }
 
 .solution-carousel-hero-copy {
-  max-width: 318px;
-  gap: 12px;
+  max-width: 334px;
+  gap: 14px;
   margin-top: 0;
   margin-bottom: 12px;
 }
@@ -4553,21 +4563,21 @@ dd {
   height: auto;
   min-height: auto;
   min-width: 0;
-  width: calc(100% + 36px);
+  width: auto;
   max-width: none;
-  padding: 0;
+  padding:
+    calc(2px + env(safe-area-inset-top, 0px))
+    0
+    calc(12px + env(safe-area-inset-bottom, 0px));
   background: transparent;
   overflow: visible;
   overflow-x: hidden;
   position: relative;
-  margin-top: calc(-1 * (18px + env(safe-area-inset-top, 0px)));
-  margin-right: -18px;
-  margin-bottom: calc(-1 * (26px + env(safe-area-inset-bottom, 0px)));
-  margin-left: -18px;
-  padding:
-    calc(18px + env(safe-area-inset-top, 0px))
-    0
-    calc(10px + env(safe-area-inset-bottom, 0px));
+  margin:
+    calc(-1 * (18px + env(safe-area-inset-top, 0px)))
+    -18px
+    calc(-1 * (26px + env(safe-area-inset-bottom, 0px)))
+    -18px;
   box-sizing: border-box;
   background:
     radial-gradient(
@@ -4618,8 +4628,18 @@ dd {
   flex-direction: column;
   gap: 16px;
   width: 100%;
+  min-height: auto;
   min-width: 0;
-  padding: 2px 20px 0;
+  padding:
+    env(safe-area-inset-top, 0px)
+    20px
+    calc(18px + env(safe-area-inset-bottom, 0px));
+  overflow: visible;
+}
+
+.social-proof-scroll > * {
+  width: min(100%, 364px);
+  margin-inline: auto;
 }
 
 .social-proof-intro {
@@ -4820,10 +4840,13 @@ dd {
 
 .social-proof-graph-stage {
   width: 100%;
-  height: 224px;
+  aspect-ratio: 400 / 200;
+  height: auto;
   min-height: 224px;
+  max-height: 280px;
   position: relative;
   display: grid;
+  justify-items: center;
   align-items: stretch;
   margin-top: 10px;
   overflow: hidden;
@@ -4831,8 +4854,13 @@ dd {
 }
 
 .social-proof-graph-stage.is-blurred .social-proof-graph-svg {
-  filter: blur(5px);
-  opacity: 0.32;
+  filter: blur(4px) saturate(0.92);
+  opacity: 0.4;
+}
+
+.social-proof-graph-stage.is-activating .social-proof-graph-svg {
+  filter: blur(2px) saturate(0.96);
+  opacity: 0.52;
 }
 
 .sp-dot {
@@ -4846,13 +4874,16 @@ dd {
 .social-proof-graph-svg {
   display: block;
   width: 100%;
-  height: 224px;
+  max-width: 100%;
+  height: 100%;
   min-height: 224px;
   flex: none;
   overflow: visible;
   filter: blur(0px);
   opacity: 1;
-  transition: filter 0.55s ease, opacity 0.55s ease;
+  transition:
+    filter 0.8s cubic-bezier(0.16, 1, 0.3, 1),
+    opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 /* Overlay de ativacao centralizado sobre o grafico */
@@ -4870,9 +4901,12 @@ dd {
   -webkit-tap-highlight-color: transparent;
   background: radial-gradient(
     ellipse at 50% 44%,
-    rgba(30, 18, 8, 0.55) 0%,
-    rgba(8, 10, 20, 0.82) 65%
+    rgba(30, 18, 8, 0.46) 0%,
+    rgba(8, 10, 20, 0.74) 65%
   );
+  transition:
+    background 0.7s cubic-bezier(0.16, 1, 0.3, 1),
+    opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .social-proof-activate-overlay:active .sp-activate-logo {
@@ -4890,7 +4924,7 @@ dd {
   font-size: clamp(1.15rem, 5.5vw, 1.4rem);
   line-height: 0.95;
   letter-spacing: 0.06em;
-  transition: transform 0.15s ease;
+  transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.28s ease;
   animation: sp-logo-enter 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
@@ -4971,16 +5005,20 @@ dd {
   display: grid;
   gap: 8px;
   padding-top: 20px;
+  overflow: visible;
 }
 
 .social-proof-testimonials {
   gap: 14px;
   padding: 2px 2px 10px 0;
   margin-top: -2px;
+  overflow-y: hidden;
+  overscroll-behavior-x: contain;
+  -webkit-overflow-scrolling: touch;
 }
 
 .social-proof-testimonials .testimonial-card-horizontal {
-  width: min(92%, 332px);
+  width: min(90%, 328px);
   min-height: 196px;
 }
 
@@ -5281,7 +5319,7 @@ dd {
 
 @media (max-width: 390px) {
   .pain-carousel-content-editorial {
-    gap: 18px;
+    gap: 20px;
   }
 
   .pain-carousel-brain-bubble:not(.is-solution) {
@@ -5289,12 +5327,12 @@ dd {
   }
 
   .pain-carousel-editorial-copy {
-    max-width: 292px;
+    max-width: 304px;
   }
 
   .pain-carousel-copy-stack {
-    max-width: 296px;
-    gap: 11px;
+    max-width: 308px;
+    gap: 12px;
   }
 
   .solution-carousel-hero-art {
@@ -5304,31 +5342,31 @@ dd {
   }
 
   .solution-carousel-hero-copy {
-    max-width: 300px;
+    max-width: 308px;
   }
 
   .pain-carousel-title-editorial {
     max-width: 10.8ch;
-    font-size: clamp(1.72rem, 7.8vw, 2rem);
+    font-size: clamp(1.84rem, 8.2vw, 2.1rem);
     line-height: 1.05;
   }
 
   .pain-carousel-title {
     max-width: 11.6ch;
-    font-size: clamp(1.42rem, 6.8vw, 1.66rem);
+    font-size: clamp(1.5rem, 7.2vw, 1.74rem);
     line-height: 1.08;
   }
 
   .pain-carousel-lead {
     max-width: 23ch;
-    font-size: 0.95rem;
-    line-height: 1.42;
+    font-size: 1rem;
+    line-height: 1.45;
   }
 
   .pain-carousel-support {
     max-width: 28ch;
-    font-size: 0.9rem;
-    line-height: 1.5;
+    font-size: 0.95rem;
+    line-height: 1.52;
   }
 }
 
@@ -5342,13 +5380,13 @@ dd {
   }
 
   .pain-carousel-stage {
-    padding-top: 10px;
+    padding-top: 20px;
     padding-bottom: 8px;
   }
 
   .pain-carousel-brain-bubble,
   .pain-carousel-brain-bubble.is-solution {
-    width: min(280px, 100%);
+    width: min(294px, 100%);
   }
 
   .pain-carousel-illustration-image,
@@ -5360,28 +5398,28 @@ dd {
 
   .solution-carousel-hero-art {
     margin-top: 0;
-    height: min(180px, 24svh);
+    height: min(194px, 25svh);
   }
 
   .pain-carousel-title-editorial,
   .solution-carousel-title-editorial {
-    font-size: clamp(1.46rem, 4.4vw, 1.9rem);
+    font-size: clamp(1.58rem, 4.8vw, 2rem);
   }
 
   .pain-carousel-title {
-    font-size: clamp(1.26rem, 4.1vw, 1.56rem);
+    font-size: clamp(1.34rem, 4.4vw, 1.66rem);
   }
 
   .pain-carousel-lead,
   .solution-carousel-lead {
-    font-size: 0.92rem;
-    line-height: 1.38;
+    font-size: 0.98rem;
+    line-height: 1.42;
   }
 
   .pain-carousel-support,
   .solution-carousel-support {
-    font-size: 0.85rem;
-    line-height: 1.42;
+    font-size: 0.9rem;
+    line-height: 1.46;
   }
 
   .solution-carousel-copy-stack {
@@ -5407,12 +5445,12 @@ dd {
   .pain-carousel-copy-stack,
   .pain-carousel-editorial-copy,
   .solution-carousel-hero-copy {
-    gap: 8px;
+    gap: 10px;
   }
 
   .pain-carousel-brain-bubble,
   .pain-carousel-brain-bubble.is-solution {
-    width: min(244px, 100%);
+    width: min(258px, 100%);
     border-radius: 26px;
   }
 
@@ -5423,7 +5461,7 @@ dd {
   }
 
   .solution-carousel-hero-art {
-    height: min(152px, 22svh);
+    height: min(164px, 23svh);
   }
 
   .pain-carousel-illustration-image,
@@ -5435,25 +5473,25 @@ dd {
 
   .pain-carousel-title-editorial,
   .solution-carousel-title-editorial {
-    font-size: clamp(1.28rem, 4vw, 1.62rem);
+    font-size: clamp(1.38rem, 4.2vw, 1.74rem);
     line-height: 1;
   }
 
   .pain-carousel-title {
-    font-size: clamp(1.14rem, 3.7vw, 1.36rem);
+    font-size: clamp(1.2rem, 3.9vw, 1.46rem);
     line-height: 1.04;
   }
 
   .pain-carousel-lead,
   .solution-carousel-lead {
-    font-size: 0.86rem;
-    line-height: 1.3;
+    font-size: 0.91rem;
+    line-height: 1.34;
   }
 
   .pain-carousel-support,
   .solution-carousel-support {
-    font-size: 0.78rem;
-    line-height: 1.3;
+    font-size: 0.83rem;
+    line-height: 1.34;
   }
 
   .carousel-progress-nav {
@@ -5674,6 +5712,7 @@ dd {
 .app-content-onboarding {
   padding: 0;
 }
+
 
 .account-auth-field {
   display: grid;
@@ -5917,4 +5956,1659 @@ dd {
   .account-auth-card {
     padding: 24px 20px calc(env(safe-area-inset-bottom) + 24px);
   }
+}
+
+/* ==========================================================================
+   SOS v2 — Presence-first redesign
+   ========================================================================== */
+
+.sos-v2-screen {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  overflow: hidden;
+  background:
+    radial-gradient(ellipse at 30% 0%, rgba(34, 211, 238, 0.18) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 10%, rgba(14, 165, 233, 0.1) 0%, transparent 40%),
+    #0c0e15;
+  padding-top: calc(env(safe-area-inset-top, 0px) + 8px);
+}
+
+/* --- Topbar --- */
+
+.sos-v2-topbar {
+  display: flex;
+  align-items: center;
+  padding: 0 20px 6px;
+  flex-shrink: 0;
+}
+
+.sos-v2-close-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.06);
+  color: rgba(255, 255, 255, 0.4);
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.sos-v2-close-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.75);
+}
+
+/* --- Orb region --- */
+
+.sos-v2-orb-region {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 16px;
+  flex-shrink: 0;
+}
+
+/* Decorative circles at top-right */
+.sos-v2-deco-a {
+  position: absolute;
+  top: -52px;
+  right: 18px;
+  width: 110px;
+  height: 110px;
+  border-radius: 50%;
+  background: rgba(36, 36, 46, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.055);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.sos-v2-deco-b {
+  position: absolute;
+  top: -28px;
+  right: -8px;
+  width: 88px;
+  height: 88px;
+  border-radius: 50%;
+  background: rgba(30, 30, 40, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.04);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* The main orb — circular glass */
+.sos-v2-orb {
+  position: relative;
+  width: min(calc(100vw - 32px), 340px);
+  height: min(calc(100vw - 32px), 340px);
+  border-radius: 50%;
+  background: rgb(20, 20, 26);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow:
+    inset 0 0 0 12px rgba(255, 255, 255, 0.025),
+    inset 0 0 0 26px rgba(255, 255, 255, 0.012),
+    0 0 0 1px rgba(255, 255, 255, 0.04),
+    0 12px 60px rgba(0, 0, 0, 0.55);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Inner concentric glass rings */
+.sos-v2-orb-inner-ring-1 {
+  position: absolute;
+  inset: 16px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.045);
+  pointer-events: none;
+}
+
+.sos-v2-orb-inner-ring-2 {
+  position: absolute;
+  inset: 34px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.028);
+  pointer-events: none;
+}
+
+/* Content inside orb */
+.sos-v2-orb-content {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 0 24px;
+  text-align: center;
+}
+
+.sos-v2-orb-greeting {
+  display: block;
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.38);
+  letter-spacing: 0.01em;
+}
+
+.sos-v2-orb-main {
+  display: block;
+  font-size: clamp(26px, 7vw, 32px);
+  font-weight: 700;
+  color: #fff;
+  letter-spacing: -0.03em;
+  line-height: 1.15;
+}
+
+/* --- Waveform --- */
+
+.sos-v2-waveform {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 2px;
+}
+
+.sos-v2-wave-bar {
+  width: 3px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.32);
+  animation: sos-wave-pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes sos-wave-pulse {
+  0%, 100% { transform: scaleY(0.45); opacity: 0.28; }
+  50%       { transform: scaleY(1);   opacity: 0.62; }
+}
+
+/* --- Explore / Tools section --- */
+
+.sos-v2-explore {
+  flex: 1;
+  padding: 18px 16px calc(env(safe-area-inset-bottom, 0px) + 20px);
+  overflow-y: auto;
+  min-height: 0;
+  scrollbar-width: none;
+}
+
+.sos-v2-explore::-webkit-scrollbar { display: none; }
+
+.sos-v2-explore-title {
+  margin: 0 0 12px 4px;
+  font-size: 22px;
+  font-weight: 700;
+  color: #fff;
+  letter-spacing: -0.02em;
+}
+
+.sos-v2-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.sos-v2-card {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 9px;
+  padding: 16px;
+  background: #1e1e26;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 18px;
+  cursor: pointer;
+  text-align: left;
+  -webkit-tap-highlight-color: transparent;
+  transition: background 0.15s;
+}
+
+.sos-v2-card:hover  { background: #242430; }
+.sos-v2-card:active { background: #2a2a38; }
+
+.sos-v2-card-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  flex-shrink: 0;
+}
+
+.sos-v2-card-icon--blue   { background: rgba(34, 211, 238, 0.14); color: #22d3ee; }
+.sos-v2-card-icon--violet { background: rgba(139, 92, 246, 0.14); color: #a78bfa; }
+.sos-v2-card-icon--green  { background: rgba(74, 222, 128, 0.14); color: #4ade80; }
+.sos-v2-card-icon--orange { background: rgba(251, 146, 60, 0.14); color: #fb923c; }
+
+.sos-v2-card-name {
+  font-size: 14px;
+  font-weight: 700;
+  color: #fff;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+}
+
+.sos-v2-card-desc {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.38);
+  line-height: 1.45;
+}
+
+/* --- Overlay + Panel shell --- */
+
+.sos-v2-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.65);
+  z-index: 99;
+}
+
+.sos-v2-panel {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  background: #141418;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 20px 20px 0 0;
+  padding: 20px 20px calc(env(safe-area-inset-bottom, 0px) + 24px);
+  max-height: 82vh;
+  overflow-y: auto;
+  scrollbar-width: none;
+}
+
+.sos-v2-panel::-webkit-scrollbar { display: none; }
+
+.sos-v2-panel-close {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  margin-left: auto;
+  margin-bottom: 12px;
+  border: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.07);
+  color: rgba(255, 255, 255, 0.5);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.sos-v2-panel-title {
+  margin: 0 0 4px;
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: #fff;
+}
+
+.sos-v2-panel-sub {
+  margin: 0 0 16px;
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.45);
+}
+
+.sos-v2-panel-label {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.38);
+}
+
+.sos-v2-panel-section { margin-top: 20px; }
+
+.sos-v2-panel-btn {
+  margin-top: 20px;
+  width: 100%;
+  min-height: 44px;
+  border: 0;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+/* --- Shield panel --- */
+
+.sos-v2-panel-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.sos-v2-chip {
+  display: inline-flex;
+  align-items: center;
+  height: 28px;
+  padding: 0 10px;
+  border-radius: 999px;
+  background: rgba(43, 181, 196, 0.1);
+  border: 1px solid rgba(43, 181, 196, 0.2);
+  color: rgba(43, 181, 196, 0.9);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.sos-v2-trap-list { display: flex; flex-direction: column; gap: 14px; }
+
+.sos-v2-trap-item {
+  padding: 14px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 14px;
+}
+
+.sos-v2-trap-text {
+  margin: 0 0 6px;
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.38);
+  font-style: italic;
+}
+
+.sos-v2-trap-response {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.82);
+  line-height: 1.45;
+}
+
+/* --- Breathe panel --- */
+
+.sos-v2-breathe-body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  padding-top: 16px;
+}
+
+.sos-v2-breathe-orb-wrap { position: relative; width: 160px; height: 160px; }
+
+.sos-v2-breathe-ring { width: 100%; height: 100%; }
+
+.sos-v2-breathe-center {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+}
+
+.sos-v2-breathe-phase { font-size: 16px; font-weight: 700; color: #fff; letter-spacing: -0.01em; }
+.sos-v2-breathe-count { font-size: 13px; color: rgba(255, 255, 255, 0.45); }
+.sos-v2-breathe-hint  { margin: 0; font-size: 12px; color: rgba(255, 255, 255, 0.35); text-align: center; }
+
+.sos-v2-breathe-done {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding-top: 12px;
+  text-align: center;
+}
+
+.sos-v2-breathe-done-text { margin: 0; font-size: 20px; font-weight: 700; color: #fff; }
+.sos-v2-breathe-done-sub  { margin: 0; font-size: 13px; color: rgba(255, 255, 255, 0.45); }
+
+/* --- Quick plan panel --- */
+
+.sos-v2-plan-list {
+  margin: 16px 0 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.sos-v2-plan-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 12px;
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.sos-v2-plan-num {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: rgba(43, 181, 196, 0.12);
+  color: rgba(43, 181, 196, 0.8);
+  font-size: 11px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+/* ==========================================================================
+   SOS v2 - Intervention-first overrides
+   ========================================================================== */
+
+.sos-v2-screen {
+  background:
+    radial-gradient(circle at 18% 0%, rgba(29, 161, 242, 0.18) 0%, transparent 36%),
+    radial-gradient(circle at 85% 8%, rgba(79, 172, 254, 0.12) 0%, transparent 30%),
+    linear-gradient(180deg, #0a0f18 0%, #090d15 46%, #080b11 100%);
+  padding-top: calc(env(safe-area-inset-top, 0px) + 10px);
+}
+
+.sos-v2-topbar {
+  justify-content: space-between;
+  gap: 12px;
+  padding: 0 20px 8px;
+}
+
+.sos-v2-status-chip {
+  display: inline-flex;
+  align-items: center;
+  min-height: 32px;
+  padding: 0 12px;
+  border-radius: 999px;
+  background: rgba(99, 188, 255, 0.12);
+  border: 1px solid rgba(99, 188, 255, 0.18);
+  color: rgba(214, 239, 255, 0.92);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.sos-v2-close-btn {
+  color: rgba(255, 255, 255, 0.46);
+  transition: background 0.15s, color 0.15s, transform 0.15s;
+}
+
+.sos-v2-close-btn:hover {
+  color: rgba(255, 255, 255, 0.82);
+  transform: translateY(-1px);
+}
+
+.sos-v2-body {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 8px 16px calc(env(safe-area-inset-bottom, 0px) + 22px);
+  scrollbar-width: none;
+}
+
+.sos-v2-body::-webkit-scrollbar { display: none; }
+
+.sos-v2-hero,
+.sos-v2-support {
+  width: min(100%, 520px);
+  margin: 0 auto;
+}
+
+.sos-v2-hero {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.sos-v2-orb-region {
+  min-height: 230px;
+  padding: 4px 0 2px;
+}
+
+.sos-v2-deco-a,
+.sos-v2-deco-b {
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.sos-v2-deco-a {
+  top: -6px;
+  right: 12%;
+  width: 120px;
+  height: 120px;
+  background: radial-gradient(circle, rgba(43, 140, 255, 0.18) 0%, rgba(43, 140, 255, 0.02) 72%, transparent 100%);
+  filter: blur(2px);
+}
+
+.sos-v2-deco-b {
+  top: auto;
+  bottom: 8px;
+  left: 14%;
+  width: 88px;
+  height: 88px;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.08) 0%, transparent 72%);
+  border: 0;
+}
+
+.sos-v2-orb {
+  width: min(calc(100vw - 120px), 220px);
+  height: min(calc(100vw - 120px), 220px);
+  min-width: 180px;
+  min-height: 180px;
+  border: 0;
+  background:
+    radial-gradient(circle at 32% 30%, rgba(140, 211, 255, 0.2) 0%, rgba(140, 211, 255, 0) 34%),
+    radial-gradient(circle at 50% 50%, rgba(16, 36, 58, 0.94) 0%, rgba(9, 16, 27, 0.98) 72%, rgba(5, 10, 17, 1) 100%);
+  box-shadow:
+    inset 0 0 0 10px rgba(255, 255, 255, 0.03),
+    inset 0 0 38px rgba(108, 191, 255, 0.08),
+    0 22px 60px rgba(0, 0, 0, 0.46),
+    0 0 0 1px rgba(255, 255, 255, 0.08);
+}
+
+.sos-v2-orb-inner-ring-1 {
+  inset: 14px;
+  border-color: rgba(255, 255, 255, 0.06);
+}
+
+.sos-v2-orb-inner-ring-2 {
+  inset: 28px;
+  border-color: rgba(255, 255, 255, 0.04);
+}
+
+.sos-v2-orb-content {
+  gap: 8px;
+}
+
+.sos-v2-orb-greeting {
+  min-height: 32px;
+  font-size: 12px;
+  color: rgba(214, 232, 255, 0.64);
+  line-height: 1.35;
+}
+
+.sos-v2-orb-main {
+  font-size: clamp(28px, 8vw, 36px);
+  font-weight: 800;
+  color: #f7fbff;
+  line-height: 1;
+}
+
+.sos-v2-waveform {
+  margin-top: 4px;
+}
+
+.sos-v2-wave-bar {
+  background: linear-gradient(180deg, rgba(165, 222, 255, 0.92) 0%, rgba(85, 180, 255, 0.45) 100%);
+}
+
+.sos-v2-intervention {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 22px 20px 20px;
+  border-radius: 28px;
+  background: linear-gradient(180deg, rgba(14, 22, 35, 0.94) 0%, rgba(11, 18, 29, 0.9) 100%);
+  border: 1px solid rgba(134, 195, 255, 0.12);
+  box-shadow: 0 18px 54px rgba(0, 0, 0, 0.28);
+}
+
+.sos-v2-intervention-kicker {
+  display: inline-flex;
+  width: fit-content;
+  min-height: 28px;
+  align-items: center;
+  padding: 0 10px;
+  border-radius: 999px;
+  background: rgba(102, 195, 255, 0.1);
+  color: rgba(191, 228, 255, 0.9);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.sos-v2-intervention-line,
+.sos-v2-intervention-support {
+  margin: 0;
+  color: rgba(235, 243, 255, 0.84);
+}
+
+.sos-v2-intervention-line {
+  font-size: 17px;
+  line-height: 1.42;
+  letter-spacing: -0.02em;
+}
+
+.sos-v2-intervention-line--lead {
+  font-size: clamp(24px, 6.4vw, 31px);
+  font-weight: 800;
+  color: #ffffff;
+  line-height: 1.08;
+}
+
+.sos-v2-intervention-line--command {
+  margin-top: 2px;
+  font-size: 20px;
+  font-weight: 800;
+  color: #bfe8ff;
+}
+
+.sos-v2-intervention-support {
+  font-size: 13px;
+  line-height: 1.5;
+  color: rgba(210, 225, 242, 0.62);
+}
+
+.sos-v2-memory-card {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 18px 18px 16px;
+  border-radius: 24px;
+  background: rgba(10, 16, 27, 0.9);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.sos-v2-memory-head {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.sos-v2-memory-eyebrow {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(192, 214, 236, 0.56);
+}
+
+.sos-v2-memory-chips,
+.sos-v2-panel-chips {
+  gap: 8px;
+}
+
+.sos-v2-memory-chip,
+.sos-v2-chip {
+  min-height: 28px;
+  background: rgba(91, 162, 225, 0.1);
+  border: 1px solid rgba(91, 162, 225, 0.18);
+  color: rgba(199, 230, 255, 0.92);
+}
+
+.sos-v2-memory-row {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.sos-v2-memory-label {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(173, 194, 218, 0.5);
+}
+
+.sos-v2-memory-text {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.5;
+  color: rgba(237, 244, 255, 0.86);
+}
+
+.sos-v2-primary-cta {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 4px;
+  width: 100%;
+  min-height: 68px;
+  padding: 18px 18px 17px;
+  border: 0;
+  border-radius: 22px;
+  background: linear-gradient(135deg, #7ed7ff 0%, #49b9ff 50%, #1e95f4 100%);
+  color: #08121d;
+  box-shadow: 0 16px 34px rgba(29, 149, 244, 0.28);
+  cursor: pointer;
+  text-align: left;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.sos-v2-primary-cta span {
+  font-size: 19px;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+}
+
+.sos-v2-primary-cta small {
+  font-size: 12px;
+  font-weight: 600;
+  color: rgba(8, 18, 29, 0.72);
+}
+
+.sos-v2-support {
+  margin-top: 26px;
+}
+
+.sos-v2-support-head {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 12px;
+}
+
+.sos-v2-support-title {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 700;
+  color: #fff;
+  letter-spacing: -0.02em;
+}
+
+.sos-v2-support-copy {
+  margin: 0;
+  font-size: 13px;
+  color: rgba(196, 210, 228, 0.56);
+  line-height: 1.45;
+}
+
+.sos-v2-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.sos-v2-card {
+  gap: 10px;
+  background: rgba(19, 26, 39, 0.86);
+  border-radius: 20px;
+  transition: transform 0.15s ease, background 0.15s ease, border-color 0.15s ease;
+}
+
+.sos-v2-card:hover {
+  background: rgba(25, 34, 50, 0.94);
+  border-color: rgba(255, 255, 255, 0.12);
+  transform: translateY(-1px);
+}
+
+.sos-v2-card:active {
+  transform: translateY(0);
+}
+
+.sos-v2-card-icon {
+  width: 42px;
+  height: 42px;
+  border-radius: 13px;
+}
+
+.sos-v2-card-icon--blue   { background: rgba(66, 203, 255, 0.14); color: #63d7ff; }
+.sos-v2-card-icon--violet { background: rgba(167, 139, 250, 0.14); color: #bea9ff; }
+.sos-v2-card-icon--green  { background: rgba(74, 222, 128, 0.14); color: #74ef9e; }
+.sos-v2-card-icon--orange { background: rgba(251, 146, 60, 0.14); color: #ffb06d; }
+
+.sos-v2-card-desc {
+  color: rgba(203, 216, 233, 0.5);
+}
+
+.sos-v2-overlay {
+  background: rgba(1, 5, 10, 0.74);
+}
+
+.sos-v2-panel {
+  background: #101720;
+  border-radius: 24px 24px 0 0;
+  box-shadow: 0 -24px 60px rgba(0, 0, 0, 0.36);
+}
+
+.sos-v2-panel-title {
+  font-size: 20px;
+}
+
+.sos-v2-panel-sub {
+  color: rgba(205, 218, 235, 0.54);
+}
+
+.sos-v2-panel-label {
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: rgba(179, 198, 220, 0.44);
+}
+
+.sos-v2-panel-btn {
+  min-height: 46px;
+  border-radius: 14px;
+  color: rgba(241, 247, 255, 0.8);
+  font-weight: 700;
+}
+
+.sos-v2-trap-item {
+  border-radius: 16px;
+}
+
+.sos-v2-trap-text {
+  color: rgba(203, 216, 233, 0.45);
+}
+
+.sos-v2-trap-response {
+  color: rgba(238, 244, 255, 0.86);
+}
+
+.sos-v2-plan-item {
+  border-radius: 14px;
+  color: rgba(240, 245, 255, 0.82);
+}
+
+.sos-v2-plan-num {
+  color: rgba(152, 225, 255, 0.86);
+}
+
+@media (max-width: 420px) {
+  .sos-v2-orb {
+    width: min(calc(100vw - 132px), 200px);
+    height: min(calc(100vw - 132px), 200px);
+  }
+
+  .sos-v2-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .sos-v2-intervention {
+    padding: 20px 18px 18px;
+  }
+}
+
+/* ==========================================================================
+   SOS v3 - Live presence stage
+   ========================================================================== */
+
+.typewriter-cursor {
+  display: inline-block;
+  width: 0.08em;
+  height: 1em;
+  margin-left: 0.08em;
+  vertical-align: -0.08em;
+  background: currentColor;
+  border-radius: 999px;
+}
+
+.sos-v3-screen {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 50% 24%, rgba(83, 190, 255, 0.16) 0%, transparent 24%),
+    radial-gradient(circle at 14% 12%, rgba(83, 190, 255, 0.12) 0%, transparent 22%),
+    radial-gradient(circle at 86% 16%, rgba(255, 255, 255, 0.06) 0%, transparent 18%),
+    linear-gradient(180deg, #04070c 0%, #070c13 45%, #05090f 100%);
+  padding: calc(env(safe-area-inset-top, 0px) + 10px) 16px calc(env(safe-area-inset-bottom, 0px) + 18px);
+}
+
+.sos-v3-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  width: 100%;
+  max-width: 540px;
+  margin: 0 auto;
+}
+
+.sos-v3-chip {
+  display: inline-flex;
+  align-items: center;
+  min-height: 30px;
+  padding: 0 12px;
+  border-radius: 999px;
+  background: rgba(115, 205, 255, 0.08);
+  border: 1px solid rgba(115, 205, 255, 0.14);
+  color: rgba(224, 243, 255, 0.82);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.sos-v3-close {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.05);
+  color: rgba(255, 255, 255, 0.54);
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.sos-v3-close:hover {
+  background: rgba(255, 255, 255, 0.09);
+  color: rgba(255, 255, 255, 0.84);
+}
+
+.sos-v3-stage {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  max-width: 540px;
+  margin: 0 auto;
+  padding-top: 10px;
+}
+
+.sos-v3-core {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
+  width: 100%;
+}
+
+.sos-v3-orb {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: min(100%, 430px);
+  aspect-ratio: 1 / 1;
+  border: 0;
+  border-radius: 50%;
+  padding: 0;
+  background:
+    radial-gradient(circle at 34% 28%, rgba(159, 224, 255, 0.2) 0%, rgba(159, 224, 255, 0) 22%),
+    radial-gradient(circle at 50% 50%, rgba(12, 24, 39, 0.96) 0%, rgba(7, 14, 24, 0.98) 70%, rgba(3, 7, 13, 1) 100%);
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 255, 255, 0.08),
+    inset 0 0 32px rgba(87, 190, 255, 0.09),
+    0 28px 64px rgba(0, 0, 0, 0.46);
+  cursor: pointer;
+  overflow: hidden;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.sos-v3-aura,
+.sos-v3-ring {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.sos-v3-aura--one {
+  inset: -12%;
+  background: radial-gradient(circle, rgba(65, 177, 255, 0.18) 0%, rgba(65, 177, 255, 0) 64%);
+  filter: blur(8px);
+  animation: sos-v3-aura-breathe 4.2s ease-in-out infinite;
+}
+
+.sos-v3-aura--two {
+  inset: -5%;
+  border: 1px solid rgba(141, 216, 255, 0.1);
+  opacity: 0.72;
+  animation: sos-v3-aura-breathe 4.2s ease-in-out infinite reverse;
+}
+
+.sos-v3-ring--outer {
+  inset: 6%;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  animation: sos-v3-ring-pulse 3.4s ease-in-out infinite;
+}
+
+.sos-v3-ring--inner {
+  inset: 15%;
+  border: 1px solid rgba(255, 255, 255, 0.04);
+  animation: sos-v3-ring-pulse 3.4s ease-in-out infinite reverse;
+}
+
+.sos-v3-orb-content {
+  position: relative;
+  z-index: 1;
+  width: 76%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  text-align: center;
+}
+
+.sos-v3-presence {
+  min-height: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  color: rgba(203, 231, 255, 0.58);
+}
+
+.sos-v3-message-wrap {
+  min-height: 132px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.sos-v3-message {
+  font-size: clamp(24px, 6.8vw, 34px);
+  font-weight: 700;
+  line-height: 1.12;
+  letter-spacing: -0.045em;
+  color: #f7fbff;
+  text-wrap: balance;
+}
+
+.sos-v3-message.is-command {
+  color: #9fe0ff;
+  font-weight: 800;
+}
+
+.sos-v3-waveform {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.sos-v3-wave-bar {
+  width: 3px;
+  border-radius: 999px;
+  background: linear-gradient(180deg, rgba(173, 229, 255, 0.98) 0%, rgba(80, 187, 255, 0.42) 100%);
+  animation: sos-v3-wave 1.5s ease-in-out infinite;
+}
+
+.sos-v3-primary-cta {
+  min-width: 220px;
+  min-height: 60px;
+  padding: 0 26px;
+  border: 0;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #88deff 0%, #4abfff 48%, #2498f8 100%);
+  color: #05111c;
+  font-size: 18px;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  box-shadow: 0 16px 30px rgba(36, 152, 248, 0.28);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+
+@keyframes sos-v3-aura-breathe {
+  0%, 100% {
+    transform: scale(0.96);
+    opacity: 0.52;
+  }
+
+  50% {
+    transform: scale(1.03);
+    opacity: 0.9;
+  }
+}
+
+@keyframes sos-v3-ring-pulse {
+  0%, 100% {
+    transform: scale(0.995);
+    opacity: 0.36;
+  }
+
+  50% {
+    transform: scale(1.02);
+    opacity: 0.78;
+  }
+}
+
+@keyframes sos-v3-wave {
+  0%, 100% {
+    transform: scaleY(0.42);
+    opacity: 0.28;
+  }
+
+  50% {
+    transform: scaleY(1);
+    opacity: 0.88;
+  }
+}
+
+@media (max-width: 520px) {
+  .sos-v3-orb {
+    width: min(100%, 360px);
+  }
+
+  .sos-v3-message-wrap {
+    min-height: 118px;
+  }
+}
+
+@media (max-width: 420px) {
+  .sos-v3-screen {
+    padding-left: 14px;
+    padding-right: 14px;
+  }
+
+  .sos-v3-orb {
+    width: min(100%, 320px);
+  }
+
+  .sos-v3-orb-content {
+    width: 78%;
+  }
+
+  .sos-v3-message-wrap {
+    min-height: 106px;
+  }
+
+  .sos-v3-message {
+    font-size: clamp(22px, 7vw, 30px);
+  }
+
+  .sos-v3-support-dock {
+    gap: 8px;
+  }
+}
+
+@media (max-height: 740px) {
+  .sos-v3-stage {
+    padding-top: 6px;
+  }
+
+  .sos-v3-core {
+    gap: 16px;
+  }
+
+  .sos-v3-orb {
+    width: min(100%, 330px);
+  }
+
+  .sos-v3-message-wrap {
+    min-height: 92px;
+  }
+
+  .sos-v3-primary-cta {
+    min-height: 54px;
+  }
+}
+
+/* ==========================================================================
+   SOS v3 — Full-presence screen
+   ========================================================================== */
+
+/* ─── Container fix ──────────────────────────────────────────────────────── */
+
+.app-content-sos {
+  padding: 0 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  flex: 1;
+  height: 100%;
+  gap: 0 !important;
+  overflow: hidden;
+  align-content: unset;
+}
+
+/* override the higher-specificity media-query rule in foundation.css */
+.app-shell:not(.app-shell-preview-enabled) .app-content-sos,
+.app-shell .app-content-sos {
+  padding: 0 !important;
+}
+
+.app-shell:has(.app-content-sos) .app-frame::before { display: none; }
+.app-shell:has(.app-content-sos) .app-frame { background: none; }
+
+/* ─── Screen ─────────────────────────────────────────────────────────────── */
+
+.sos-v3-screen {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  overflow: hidden;
+  background:
+    radial-gradient(ellipse at 28% 0%, rgba(236, 151, 49, 0.28) 0%, transparent 50%),
+    radial-gradient(ellipse at 85% 6%, rgba(227, 91, 46, 0.16) 0%, transparent 40%),
+    #0e0b08;
+  padding-top: calc(env(safe-area-inset-top, 0px) + 10px);
+}
+
+/* ─── Topbar ─────────────────────────────────────────────────────────────── */
+
+.sos-v3-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 20px 10px;
+  flex-shrink: 0;
+}
+
+.sos-v3-chip {
+  display: inline-flex;
+  align-items: center;
+  height: 26px;
+  padding: 0 10px;
+  border-radius: 999px;
+  background: rgba(236, 151, 49, 0.15);
+  border: 1px solid rgba(236, 151, 49, 0.35);
+  color: #ec9731;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.sos-v3-close {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.06);
+  color: rgba(255, 255, 255, 0.4);
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.sos-v3-close:hover { background: rgba(255,255,255,0.1); color: rgba(255,255,255,0.75); }
+
+/* ─── Stage — main content area ─────────────────────────────────────────── */
+
+.sos-v3-stage {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 20px calc(env(safe-area-inset-bottom, 0px) + 24px);
+  min-height: 0;
+}
+
+/* ─── Core — orb + CTA ───────────────────────────────────────────────────── */
+
+.sos-v3-core {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  width: 100%;
+}
+
+/* ─── Orb ────────────────────────────────────────────────────────────────── */
+
+.sos-v3-orb {
+  position: relative;
+  width: min(calc(100vw - 48px), 300px);
+  height: min(calc(100vw - 48px), 300px);
+  border-radius: 50%;
+  background: radial-gradient(circle at 40% 35%, #1c1208 0%, #110d06 60%, #0e0b08 100%);
+  border: 1px solid rgba(236, 151, 49, 0.22);
+  box-shadow:
+    inset 0 0 0 12px rgba(255, 255, 255, 0.018),
+    inset 0 0 0 26px rgba(255, 255, 255, 0.008),
+    0 0 0 1px rgba(236, 151, 49, 0.08),
+    0 0 48px rgba(227, 91, 46, 0.18),
+    0 16px 64px rgba(0, 0, 0, 0.65);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  -webkit-tap-highlight-color: transparent;
+  animation: sos-orb-pulse 3s ease-in-out infinite;
+}
+
+@keyframes sos-orb-pulse {
+  0%, 100% {
+    box-shadow:
+      inset 0 0 0 12px rgba(255, 255, 255, 0.018),
+      inset 0 0 0 26px rgba(255, 255, 255, 0.008),
+      0 0 0 1px rgba(236, 151, 49, 0.08),
+      0 0 36px rgba(227, 91, 46, 0.12),
+      0 16px 64px rgba(0, 0, 0, 0.65);
+  }
+  50% {
+    box-shadow:
+      inset 0 0 0 12px rgba(255, 255, 255, 0.018),
+      inset 0 0 0 26px rgba(255, 255, 255, 0.008),
+      0 0 0 1px rgba(236, 151, 49, 0.14),
+      0 0 72px rgba(227, 91, 46, 0.32),
+      0 0 120px rgba(236, 151, 49, 0.12),
+      0 16px 64px rgba(0, 0, 0, 0.65);
+  }
+}
+
+/* Aura rings — decorative circles like the reference, positioned top-right */
+.sos-v3-aura {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.sos-v3-aura--one {
+  top: -44px;
+  right: -16px;
+  width: 108px;
+  height: 108px;
+  background: rgba(32, 34, 46, 0.9);
+  border: 1px solid rgba(255, 255, 255, 0.055);
+}
+
+.sos-v3-aura--two {
+  top: -22px;
+  right: -42px;
+  width: 86px;
+  height: 86px;
+  background: rgba(26, 28, 40, 0.75);
+  border: 1px solid rgba(255, 255, 255, 0.038);
+}
+
+/* Glass rings inside orb */
+.sos-v3-ring {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.sos-v3-ring--outer {
+  inset: 14px;
+  border: 1px solid rgba(236, 151, 49, 0.12);
+}
+
+.sos-v3-ring--inner {
+  inset: 30px;
+  border: 1px solid rgba(236, 151, 49, 0.07);
+}
+
+/* Orb content */
+.sos-v3-orb-content {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 0 22px;
+  text-align: center;
+}
+
+.sos-v3-presence {
+  display: block;
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.36);
+  letter-spacing: 0.01em;
+}
+
+.sos-v3-message-wrap {
+  min-height: 52px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+}
+
+.sos-v3-message-line {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+}
+
+.sos-v3-message {
+  display: block;
+  font-size: 18px;
+  font-weight: 600;
+  color: #fff;
+  letter-spacing: -0.02em;
+  line-height: 1.3;
+  text-align: center;
+  max-width: 100%;
+}
+
+.sos-v3-message.is-command {
+  color: #ec9731;
+  font-weight: 700;
+}
+
+/* ─── Waveform ───────────────────────────────────────────────────────────── */
+
+.sos-v3-waveform {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.sos-v3-wave-bar {
+  width: 3px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.28);
+  animation: sos-wave-pulse 1.5s ease-in-out infinite;
+}
+
+/* ─── Primary CTA ────────────────────────────────────────────────────────── */
+
+.sos-v3-primary-cta {
+  width: 100%;
+  max-width: min(calc(100vw - 48px), 300px);
+  height: 52px;
+  border: 0;
+  border-radius: 14px;
+  background: linear-gradient(135deg, #ec9731 0%, #e35b2e 100%);
+  color: #fff;
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  box-shadow: 0 4px 28px rgba(227, 91, 46, 0.38);
+  transition: opacity 0.15s, transform 0.1s;
+}
+
+.sos-v3-primary-cta:hover  { opacity: 0.9; }
+.sos-v3-primary-cta:active { transform: scale(0.985); }
+
+/* ─── Support dock — 2×2 tool cards ─────────────────────────────────────── */
+
+.sos-v3-tools-section {
+  width: 100%;
+}
+
+.sos-v3-tools-title {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.3);
+  margin: 0 0 10px 2px;
+}
+
+.sos-v3-support-dock {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  width: 100%;
+}
+
+.sos-v3-support-btn {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 14px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 18px;
+  color: rgba(255, 255, 255, 0.85);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: background 0.18s, border-color 0.18s, transform 0.12s;
+  text-align: left;
+}
+
+.sos-v3-support-btn:active {
+  transform: scale(0.97);
+  background: rgba(255, 255, 255, 0.07);
+}
+
+.sos-v3-support-icon {
+  flex-shrink: 0;
+  width: 38px;
+  height: 38px;
+  border-radius: 11px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.sos-v3-support-icon--blue   { background: rgba(59, 130, 246, 0.22); color: #60a5fa; }
+.sos-v3-support-icon--teal   { background: rgba(20, 184, 166, 0.22); color: #2dd4bf; }
+.sos-v3-support-icon--orange { background: rgba(236, 151, 49, 0.22); color: #f59e0b; }
+.sos-v3-support-icon--purple { background: rgba(139, 92, 246, 0.22); color: #a78bfa; }
+
+.sos-v3-support-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.sos-v3-support-name {
+  font-size: 13px;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.9);
+  line-height: 1.2;
+}
+
+.sos-v3-support-desc {
+  font-size: 11px;
+  font-weight: 400;
+  color: rgba(255, 255, 255, 0.38);
+  line-height: 1.3;
+}
+
+/* ─── SOS v3 — Voice states ──────────────────────────────────────────────── */
+
+/* Listening: faster wave + bright border pulse */
+.sos-v3-orb.is-listening {
+  border-color: rgba(236, 151, 49, 0.45);
+  animation: sos-orb-listen 1.2s ease-in-out infinite;
+}
+
+@keyframes sos-orb-listen {
+  0%, 100% {
+    box-shadow:
+      inset 0 0 0 12px rgba(255,255,255,0.018),
+      inset 0 0 0 26px rgba(255,255,255,0.008),
+      0 0 0 2px rgba(236, 151, 49, 0.2),
+      0 0 48px rgba(227, 91, 46, 0.25),
+      0 16px 64px rgba(0,0,0,0.65);
+  }
+  50% {
+    box-shadow:
+      inset 0 0 0 12px rgba(255,255,255,0.018),
+      inset 0 0 0 26px rgba(255,255,255,0.008),
+      0 0 0 5px rgba(236, 151, 49, 0.12),
+      0 0 80px rgba(227, 91, 46, 0.45),
+      0 0 130px rgba(236, 151, 49, 0.18),
+      0 16px 64px rgba(0,0,0,0.65);
+  }
+}
+
+/* Waveform faster when listening */
+.sos-v3-waveform.is-active .sos-v3-wave-bar {
+  animation-duration: 0.6s;
+  background: rgba(236, 151, 49, 0.55);
+}
+
+/* Processing: dim pulse */
+.sos-v3-orb.is-processing {
+  border-color: rgba(236, 151, 49, 0.18);
+  animation: sos-orb-process 2s ease-in-out infinite;
+}
+
+@keyframes sos-orb-process {
+  0%, 100% { opacity: 0.75; }
+  50%       { opacity: 1; }
+}
+
+/* Speaking: steady soft glow */
+.sos-v3-orb.is-speaking {
+  border-color: rgba(236, 151, 49, 0.3);
+  animation: none;
+  box-shadow:
+    inset 0 0 0 12px rgba(255,255,255,0.018),
+    inset 0 0 0 26px rgba(255,255,255,0.008),
+    0 0 0 1px rgba(236, 151, 49, 0.1),
+    0 0 56px rgba(227, 91, 46, 0.28),
+    0 16px 64px rgba(0,0,0,0.65);
+}
+
+/* AI reply text */
+.sos-v3-message--ai {
+  color: rgba(255, 255, 255, 0.92);
+  font-weight: 500;
+  font-size: 17px;
+}
+
+.sos-v3-message--dim {
+  color: rgba(255, 255, 255, 0.3);
+  font-size: 15px;
+  font-weight: 400;
+}
+
+/* OrbFadeLine */
+.orb-fade-line-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.orb-fade-more {
+  display: block;
+  font-size: 13px;
+  letter-spacing: 3px;
+  color: rgba(236, 151, 49, 0.55);
+  line-height: 1;
+  text-align: center;
+}
+
+/* Mic hint inside orb */
+.sos-v3-mic-hint {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: #ec9731;
+}
+
+/* Voice error */
+.sos-v3-voice-error {
+  margin: 8px 0 0;
+  font-size: 11px;
+  color: rgba(255, 120, 120, 0.8);
+  text-align: center;
 }

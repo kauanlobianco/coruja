@@ -183,7 +183,10 @@ export function DiagnosisStep({ diagnosis, onBack, onContinue }: DiagnosisStepPr
                 <motion.div
                   className="diagnosis-compare-bar diagnosis-compare-bar-reference"
                   initial={{ height: 12, opacity: 0.5 }}
-                  animate={{ height: `${referenceBarHeight}%`, opacity: showComparison ? 1 : 0.5 }}
+                  animate={{
+                    height: showComparison ? `${referenceBarHeight}%` : 12,
+                    opacity: showComparison ? 1 : 0.5,
+                  }}
                   transition={{ duration: 1.45, ease: [0.22, 1, 0.36, 1], delay: 0.05 }}
                 >
                   <span className="diagnosis-compare-bar-value">{referencePercent}%</span>
@@ -197,7 +200,10 @@ export function DiagnosisStep({ diagnosis, onBack, onContinue }: DiagnosisStepPr
                 <motion.div
                   className="diagnosis-compare-bar diagnosis-compare-bar-user"
                   initial={{ height: 12, opacity: 0.5 }}
-                  animate={{ height: `${userBarHeight}%`, opacity: showComparison ? 1 : 0.5 }}
+                  animate={{
+                    height: showComparison ? `${userBarHeight}%` : 12,
+                    opacity: showComparison ? 1 : 0.5,
+                  }}
                   transition={{ duration: 2.2, ease: [0.22, 1, 0.36, 1], delay: 0.35 }}
                 >
                   <span className="diagnosis-compare-bar-value">{scorePercent}%</span>
@@ -254,10 +260,7 @@ export function DiagnosisStep({ diagnosis, onBack, onContinue }: DiagnosisStepPr
             })}
           </div>
 
-          <p className="diagnosis-disclaimer">
-            * Este resultado e apenas uma indicacao,
-            <br />nao um diagnostico medico.
-          </p>
+          <p className="diagnosis-disclaimer">* Este resultado e apenas uma indicacao, nao um diagnostico medico.</p>
 
           <button type="button" className="diagnosis-cta" onClick={onContinue}>
             Entender consequencias

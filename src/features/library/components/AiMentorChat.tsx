@@ -232,9 +232,9 @@ export function AiMentorChat({
   }
 
   const isSosMode = entryMode === 'sos'
-  const heroTitle = isSosMode ? 'Estou com voce agora.' : 'Ola! Sou seu mentor virtual.'
+  const heroTitle = isSosMode ? 'Eu ja estou com voce aqui.' : 'Ola! Sou seu mentor virtual.'
   const heroSubtitle = isSosMode
-    ? 'Podemos atravessar este pico juntos. Me diga em uma frase o que esta mais pesado agora.'
+    ? 'Me responde em uma frase curta. Eu vou te puxar passo a passo neste pico.'
     : 'Estou aqui para te apoiar na sua jornada. Pode me perguntar qualquer coisa - sem julgamentos.'
   const suggestions =
     initialSuggestions && initialSuggestions.length > 0 ? initialSuggestions : DEFAULT_SUGGESTIONS
@@ -244,6 +244,9 @@ export function AiMentorChat({
       : sosContext?.motivation
         ? `Lembrete do seu porque: ${sosContext.motivation}`
         : null
+    : null
+  const sosResponseLine = isSosMode && sosContext?.responseText
+    ? `Sua resposta escrita antes da crise: "${sosContext.responseText}".`
     : null
 
   const content = (
@@ -281,6 +284,7 @@ export function AiMentorChat({
                 <p className="ai-chat-empty-title">{heroTitle}</p>
                 <p className="ai-chat-empty-sub">{heroSubtitle}</p>
                 {sosContextLine ? <p className="ai-chat-empty-context">{sosContextLine}</p> : null}
+                {sosResponseLine ? <p className="ai-chat-empty-context">{sosResponseLine}</p> : null}
                 <div className="ai-chat-suggestions">
                   {suggestions.map((suggestion) => (
                     <button

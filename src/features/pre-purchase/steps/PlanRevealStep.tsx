@@ -28,67 +28,65 @@ export function PlanRevealStep({ name, onBack, onContinue }: PlanRevealStepProps
   const planDate = getPlanDate()
   const planDateShort = getPlanDateShort()
 
-  const [typedSubtitle, setTypedSubtitle] = useState('')
+  const [showSubtitle, setShowSubtitle] = useState(false)
   const [showDate, setShowDate] = useState(false)
   const [streakCount, setStreakCount] = useState(0)
   const [settled, setSettled] = useState(false)
 
-  const subtitleDone = typedSubtitle.length >= SUBTITLE.length
+  const isCounting = streakCount > 0 && !settled
 
   useEffect(() => {
     const cleanups: (() => void)[] = []
+    const animateCount = (
+      from: number,
+      to: number,
+      duration: number,
+      easing: (t: number) => number,
+      onFinish?: () => void,
+    ) => {
+      const start = performance.now()
+      let rafId = 0
+
+      const frame = (now: number) => {
+        const progress = Math.min((now - start) / duration, 1)
+        const eased = easing(progress)
+        setStreakCount(Math.round(from + (to - from) * eased))
+
+        if (progress < 1) {
+          rafId = requestAnimationFrame(frame)
+        } else {
+          onFinish?.()
+        }
+      }
+
+      rafId = requestAnimationFrame(frame)
+      cleanups.push(() => cancelAnimationFrame(rafId))
+    }
+
     const later = (fn: () => void, ms: number) => {
       const t = setTimeout(fn, ms)
       cleanups.push(() => clearTimeout(t))
     }
-    const interval = (fn: () => void, ms: number) => {
-      const t = setInterval(fn, ms)
-      cleanups.push(() => clearInterval(t))
-      return t
-    }
-
-    // Fase 1: pausa inicial, depois digita o subtítulo no lugar certo
+    // Fase 1: pausa inicial, depois revela o subtitulo
     later(() => {
-      let i = 0
-      const t = interval(() => {
-        i++
-        setTypedSubtitle(SUBTITLE.slice(0, i))
-        if (i >= SUBTITLE.length) {
-          clearInterval(t)
+      setShowSubtitle(true)
 
-          // Fase 2: pausa, mostra bloco de data
-          later(() => {
-            setShowDate(true)
+      // Fase 2: pausa, mostra bloco de data
+      later(() => {
+        setShowDate(true)
 
-            // Fase 3: pausa, conta streak 0 → 90
+        // Fase 3: pausa, conta streak 0 -> 90
+        later(() => {
+          animateCount(0, COUNT_UP_TARGET, 1280, (t) => 1 - Math.pow(1 - t, 3), () => {
             later(() => {
-              let count = 0
-              const up = interval(() => {
-                count++
-                setStreakCount(count)
-                if (count >= COUNT_UP_TARGET) {
-                  clearInterval(up)
-
-                  // Fase 4: pausa, volta para 0
-                  later(() => {
-                    const down = interval(() => {
-                      count--
-                      setStreakCount(count)
-                      if (count <= 0) {
-                        clearInterval(down)
-                        setStreakCount(0)
-
-                        // Fase 5: settled
-                        later(() => setSettled(true), 250)
-                      }
-                    }, 8)
-                  }, 350)
-                }
-              }, 20)
-            }, 500)
-          }, 280)
-        }
-      }, 30)
+              animateCount(COUNT_UP_TARGET, 0, 820, (t) => 1 - Math.pow(1 - t, 2), () => {
+                setStreakCount(0)
+                later(() => setSettled(true), 250)
+              })
+            }, 380)
+          })
+        }, 500)
+      }, 420)
     }, 500)
 
     return () => cleanups.forEach((fn) => fn())
@@ -111,10 +109,14 @@ export function PlanRevealStep({ name, onBack, onContinue }: PlanRevealStepProps
         <div className="pr-hero">
           <h1 className="pr-name">{displayName}</h1>
 
-          <p className="pr-plan-ready">
-            {typedSubtitle}
-            {typedSubtitle.length > 0 && !subtitleDone && <span className="pr-cursor" />}
-          </p>
+          <motion.p
+            className="pr-plan-ready"
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: showSubtitle ? 1 : 0, y: showSubtitle ? 0 : 10 }}
+            transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+          >
+            {SUBTITLE}
+          </motion.p>
 
           <motion.div
             className="pr-date-block"
@@ -133,10 +135,25 @@ export function PlanRevealStep({ name, onBack, onContinue }: PlanRevealStepProps
         {/* Card — entra lentamente de baixo */}
         <div className="pr-card-wrapper">
           <motion.div
-            initial={{ y: 360, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            transition={{ duration: 1.3, ease: [0.25, 0.46, 0.45, 0.94] }}
+            initial={{ y: 440, opacity: 0, scale: 0.92, rotateX: 14, filter: 'blur(10px)' }}
+            animate={{ y: 0, opacity: 1, scale: 1, rotateX: 0, filter: 'blur(0px)' }}
+            transition={{ duration: 1.95, ease: [0.16, 1, 0.3, 1] }}
+            style={{ transformOrigin: 'center bottom' }}
           >
+            <motion.div
+              animate={isCounting
+                ? {
+                    x: [0, -1.5, 1.5, -1, 1, 0],
+                    y: [0, -1, 0.5, -0.5, 0],
+                    rotateZ: [0, -0.35, 0.35, -0.2, 0.2, 0],
+                    scale: [1, 1.006, 0.998, 1.004, 1],
+                  }
+                : { x: 0, y: 0, rotateZ: 0, scale: 1 }}
+              transition={isCounting
+                ? { duration: 0.42, ease: 'easeInOut', repeat: Infinity }
+                : { duration: 0.22, ease: 'easeOut' }}
+              style={{ transformOrigin: 'center center' }}
+            >
             <div className="pp-identity-card">
               <div className="pp-identity-card-shine" aria-hidden="true" />
 
@@ -179,6 +196,7 @@ export function PlanRevealStep({ name, onBack, onContinue }: PlanRevealStepProps
                 </div>
               </div>
             </div>
+            </motion.div>
           </motion.div>
         </div>
 
@@ -206,3 +224,5 @@ export function PlanRevealStep({ name, onBack, onContinue }: PlanRevealStepProps
     </section>
   )
 }
+
+

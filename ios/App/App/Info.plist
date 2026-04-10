@@ -47,5 +47,7 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<true/>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>O Coruja precisa do microfone para você conversar com seu mentor de sobriedade durante momentos de crise.</string>
 </dict>
 </plist>

@@ -13,6 +13,9 @@ const sectionTransition = {
   ease: [0.22, 1, 0.36, 1] as const,
 }
 
+const smoothEase = [0.22, 1, 0.36, 1] as const
+const softEase = [0.16, 1, 0.3, 1] as const
+
 // Laranja: variações acentuadas com picos para cima mas sempre caindo de volta
 const BAD_LINE =
   'M 20 148 C 40 148, 52 118, 72 116 C 92 114, 104 158, 124 164 C 144 168, 156 140, 176 144 C 196 148, 208 164, 230 162 C 252 160, 266 126, 284 130 C 302 134, 318 164, 342 165 C 356 166, 368 160, 380 160'
@@ -44,7 +47,7 @@ export function SocialProofStep({ onBack, onContinue }: SocialProofStepProps) {
   // Apos a animacao do toggle, transicionar para done
   useEffect(() => {
     if (phase !== 'activating') return
-    const t = setTimeout(() => setPhase('done'), 820)
+    const t = setTimeout(() => setPhase('done'), 980)
     return () => clearTimeout(t)
   }, [phase])
 
@@ -102,10 +105,10 @@ export function SocialProofStep({ onBack, onContinue }: SocialProofStepProps) {
           </AnimatePresence>
 
           {/* Stage */}
-          <div className={`social-proof-graph-stage ${phase === 'blurred' ? 'is-blurred' : ''}`}>
+          <div className={`social-proof-graph-stage ${phase === 'blurred' ? 'is-blurred' : ''} ${phase === 'activating' ? 'is-activating' : ''}`}>
             <svg
               viewBox="0 0 400 200"
-              preserveAspectRatio="none"
+              preserveAspectRatio="xMidYMid meet"
               className="social-proof-graph-svg"
               aria-label="Gráfico comparativo de recuperação"
             >
@@ -132,7 +135,7 @@ export function SocialProofStep({ onBack, onContinue }: SocialProofStepProps) {
                 d={BAD_FILL}
                 fill="url(#spEmberGrad)"
                 animate={{ opacity: phase !== 'drawing' ? 0.09 : 0 }}
-                transition={{ duration: 0.7 }}
+                transition={{ duration: 0.9, ease: softEase }}
               />
 
               {/* Bolinha fim laranja */}
@@ -143,7 +146,7 @@ export function SocialProofStep({ onBack, onContinue }: SocialProofStepProps) {
                     initial={{ opacity: 0, scale: 0.5 }}
                     animate={{ opacity: 1, scale: 1 }}
                     exit={{ opacity: 0 }}
-                    transition={{ duration: 0.28 }}
+                    transition={{ duration: 0.4, ease: smoothEase }}
                   />
                 )}
               </AnimatePresence>
@@ -155,7 +158,7 @@ export function SocialProofStep({ onBack, onContinue }: SocialProofStepProps) {
                     key="cyan"
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
-                    transition={{ duration: 0.2, delay: 0.15 }}
+                    transition={{ duration: 0.45, delay: 0.18, ease: softEase }}
                   >
                     <motion.path
                       d={GOOD_LINE}
@@ -166,21 +169,21 @@ export function SocialProofStep({ onBack, onContinue }: SocialProofStepProps) {
                       strokeLinejoin="round"
                       initial={{ pathLength: 0 }}
                       animate={{ pathLength: 1 }}
-                      transition={{ duration: 2.8, ease: 'easeInOut', delay: 0.2 }}
+                      transition={{ duration: 3.1, ease: softEase, delay: 0.22 }}
                     />
                     <motion.path
                       d={GOOD_FILL}
                       fill="url(#spCyanGrad)"
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 0.07 }}
-                      transition={{ duration: 0.6, delay: 1.2 }}
+                      transition={{ duration: 0.85, delay: 1.28, ease: softEase }}
                     />
                     {/* Bolinha fim ciano — aparece quando a linha termina */}
                     <motion.ellipse
                       cx="380" cy="64" rx="6.8" ry="5.7" fill="#58d0e4"
                       initial={{ opacity: 0, scale: 0.5 }}
                       animate={{ opacity: 1, scale: 1 }}
-                      transition={{ duration: 0.3, delay: 3.0 }}
+                      transition={{ duration: 0.45, delay: 3.08, ease: smoothEase }}
                     />
                   </motion.g>
                 )}
@@ -191,7 +194,7 @@ export function SocialProofStep({ onBack, onContinue }: SocialProofStepProps) {
                 cx="20" cy="148" rx="5.2" ry="4.4" fill="#fff"
                 initial={{ opacity: 0, scale: 0.5 }}
                 animate={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.28, delay: 0.1 }}
+                transition={{ duration: 0.38, delay: 0.12, ease: smoothEase }}
               />
 
               <text x="84"  y="194" fill="rgba(255,255,255,0.32)" fontSize="11" textAnchor="middle">Mês 1</text>
@@ -223,10 +226,10 @@ export function SocialProofStep({ onBack, onContinue }: SocialProofStepProps) {
               {overlayVisible && (
                 <motion.div
                   className="social-proof-activate-overlay"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0, scale: 0.9, transition: { duration: 0.5, ease: [0.22, 1, 0.36, 1] } }}
-                  transition={{ duration: 0.5, ease: 'easeOut' }}
+                  initial={{ opacity: 0, backdropFilter: 'blur(0px)' }}
+                  animate={{ opacity: 1, backdropFilter: phase === 'activating' ? 'blur(1px)' : 'blur(0px)' }}
+                  exit={{ opacity: 0, transition: { duration: 0.7, ease: softEase } }}
+                  transition={{ duration: 0.65, ease: softEase }}
                   onClick={handleActivate}
                   role="button"
                   aria-label="Ativar Foco Mode"
@@ -248,13 +251,13 @@ export function SocialProofStep({ onBack, onContinue }: SocialProofStepProps) {
                           background: 'linear-gradient(135deg, #ec9731 0%, #e35b2e 100%)',
                           boxShadow: '0 4px 16px rgba(227,91,46,0.55), 0 0 28px rgba(227,91,46,0.3)',
                         }}
-                        transition={{ duration: 0.35, ease: 'easeInOut' }}
+                        transition={{ duration: 0.55, ease: softEase }}
                       >
                         {/* Knob desliza da esquerda para a direita */}
                         <motion.div
                           className="sp-toggle-knob"
                           animate={{ x: isToggleOn ? '0.82em' : '0em' }}
-                          transition={{ duration: 0.38, ease: [0.22, 1, 0.36, 1] }}
+                          transition={{ duration: 0.52, ease: smoothEase }}
                         />
                       </motion.div>
 
@@ -269,7 +272,7 @@ export function SocialProofStep({ onBack, onContinue }: SocialProofStepProps) {
                         initial={{ opacity: 0, y: 6 }}
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: -4 }}
-                        transition={{ duration: 0.3, delay: 0.25 }}
+                        transition={{ duration: 0.42, delay: 0.2, ease: softEase }}
                       >
                         Toque para ativar
                       </motion.p>

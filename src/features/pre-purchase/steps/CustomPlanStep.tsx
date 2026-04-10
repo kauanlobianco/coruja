@@ -219,15 +219,13 @@ export function CustomPlanStep({
   return (
     <>
       <section className="cp-page">
-        <div className="quiz-custom-header">
-          <button onClick={onBack} aria-label="Voltar" className="cp-back-button">
-            <ArrowLeft size={18} />
-          </button>
-        </div>
-
-        {/* Hero */}
         <div className="cp-tl-hero">
-          <h2 className="cp-tl-hero-title">Sua jornada<br />dia a dia</h2>
+          <div className="cp-tl-hero-headline-row">
+            <button onClick={onBack} aria-label="Voltar" className="cp-back-button cp-tl-back-button">
+              <ArrowLeft size={15} />
+            </button>
+            <h2 className="cp-tl-hero-title">Sua Jornada</h2>
+          </div>
           <p className="cp-tl-hero-sub">Cada ferramenta, no momento certo.</p>
         </div>
 
